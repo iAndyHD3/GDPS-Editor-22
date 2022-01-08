@@ -1,0 +1,10 @@
+*.apk
+*.aar
+*.ap_
+*.aab
+*.bat
+.vs
+out
+x32/libs
+x32/obj
+backup/
