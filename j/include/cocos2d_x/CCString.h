@@ -28,7 +28,7 @@ public:
 	double doubleValue() const;
 	float floatValue() const;
 	const char *getCString() const;
-	bool __cdecl initWithFormat(const char *fmt, ...);
+	bool initWithFormat(const char *fmt, ...);
 	int intValue() const;
 	unsigned int length() const;
 	unsigned int uintValue() const;

@@ -17,6 +17,8 @@
 class __attribute__( (aligned( 4 )) ) GJBaseGameLayer : public cocos2d::CCLayer, TriggerEffectDelegate
 {
 public:
+    PlayerObject* p1; // 0x284
+    PlayerObject* p2; // 0x288
     cocos2d::CCNode* dword130;  // 0x130
     cocos2d::CCNode* dword134;
     cocos2d::CCNode* dword138;

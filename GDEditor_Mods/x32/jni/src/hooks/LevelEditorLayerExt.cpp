@@ -12,9 +12,9 @@ bool LevelEditorLayerExt::init_hk(GJGameLevel * level) {
       LevelEditorLayer * ptr = this;
 
       
-    if( !dynamic_cast< GJBaseGameLayer* >( ptr )->init( ) )
+/*     if( !dynamic_cast< GJBaseGameLayer* >( ptr )->init( ) )
         return false;
-
+ */
     ptr->quickUpdatePos_ = true;
     ptr->firstThing2 = 1;
 
@@ -287,9 +287,7 @@ bool LevelEditorLayerExt::init_hk(GJGameLevel * level) {
 
     ptr->firstThing2 = 0;
 
-    CCLog("Mod_Menu: END !!!");
-    return true;
-       
+    CCLog("Mod_Menu: END !!!");       
     return true;
 
 }

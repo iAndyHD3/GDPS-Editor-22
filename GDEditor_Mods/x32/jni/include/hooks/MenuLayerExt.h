@@ -372,10 +372,7 @@ void onRequestCompleted(cocos2d::extension::CCHttpClient *sender, cocos2d::exten
 		auto levelFix = GM->getGameVariable("100004");
 		auto menuClear = GM->getGameVariable("100003");
 
-        auto txt = CCLabelBMFont::create("Mod developed by Blaze\nBugfixed by Italian Apk Downloader", "chatFont.fnt");
-        txt->setPosition(ccp(winSize.width/2,winSize.height - 10));
-        txt->setScale(0.5);
-        txt->setAlignment(kCCTextAlignmentCenter);
+        
 
         auto btn = ButtonSprite::create("Support Blaze!",80,10,10,1);
         auto myButton = CCMenuItemSpriteExtra::create(
@@ -402,13 +399,16 @@ const char * level = decodeZLib.c_str();
 		this->addChild(labellevel, 10);
 */
 
-		 //auto label22 = CCLabelBMFont::create("Version 2.2.0.6 Beta 5", "chatFont.fnt");
-		auto label22 = CCLabelBMFont::create("Version 2.2.0.7", "chatFont.fnt");
+		 //auto label22 = CCLabelBMFont::create("Version 2.2.0.8 Beta 3 V1", "chatFont.fnt");
+		auto label22 = CCLabelBMFont::create("Version 2.2.0.8", "chatFont.fnt");
 		if(GM->getGameVariable("100004")) {
 			
 	label22->setPosition(CCPoint(dir->getScreenRight() - 80, dir->getScreenTop() - 10));
-		} else {	
+	//label22->setPosition(CCPoint(dir->getScreenRight() - 200, dir->getScreenTop() - 10));
+		} else {
+			
 		 label22->setPosition(CCPoint(dir->getScreenRight() - 55, dir->getScreenTop() - 10));
+		 //label22->setPosition(CCPoint(dir->getScreenRight() - 200, dir->getScreenTop() - 10));
 		}
     label22->setAnchorPoint({ 0, 0 });
     label22->setScale(.5);
@@ -439,7 +439,6 @@ const char * level = decodeZLib.c_str();
         reinterpret_cast<CCSprite*>(bottomMenu4)->setPosition({winSize.width / 2 + 110, winSize.height - 275});
 		btn4->setScale(1.4);
         bottomMenu4->addChild(myButton4);
-		this->addChild(bottomMenu4);
 
 
 		if(!levelFix) {
@@ -462,9 +461,8 @@ const char * level = decodeZLib.c_str();
 		        this->addChild(bottomMenu, 100);
 		        this->addChild(bottomMenu2, 100);
 		        this->addChild(bottomMenu3, 100);
+				this->addChild(bottomMenu4);
 				this->addChild(label22);
-				this->addChild(txt);
-				
 				if(!levelFix){
 				bottomMenu2->addChild(myButton2);
 				}

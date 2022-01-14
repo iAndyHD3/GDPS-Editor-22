@@ -203,6 +203,7 @@ void dict_hk( cocos2d::CCDictionary* d, CCObject* obj, int key )
         dict( d, obj, key );
         break;
     }
+
 }
 
 bool isGauntlet = false;
@@ -212,20 +213,6 @@ CCSpriteFrame* sprite_hk( CCSpriteFrameCache* ptr, const char* s )
 {
     // LOGD("SPRITE: %s", s);
 
-    if ( !strcmp( s, "pixelb_03_01_color_001.png" ) )
-        return old5( ptr, "pixelb_03_01_001.png" );
-
-    if ( !strcmp( s, "pixelb_03_02_color_001.png" ) )
-        return old5( ptr, "pixelb_03_02_001.png" );
-
-    if ( !strcmp( s, "pixelart_045_color_001.png" ) )
-        return old5( ptr, "pixelart_045_001.png" );
-
-    if ( !strcmp( s, "pixelart_016_color_001.png" ) )
-        return old5( ptr, "pixelart_016_001.png" );
-
-    if ( !strcmp( s, "pixelart_044_color_001.png" ) )
-        return old5( ptr, "pixelart_044_001.png" );
 
     if( !strcmp( s, "GJ_fullBtn_001.png" )  )
         return old5( ptr, "GJ_creatorBtn_001.png" );
@@ -767,7 +754,7 @@ void loader()
 	//color doesnt update but well there it is
 	//HookManager::do_hook(getPointerFromSymbol(cocos2d,"_ZN12PlayerObject15updateGlowColorEv"), (void*) PlayerObject_updateGlowColorhook,(void **)&PlayerObject_updateGlowColortrp);
 
-	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11GameManager11colorForIdxEi"), (void*) GameManager_colorForIdx_hook, (void **) &GameManager_colorForIdx_trp);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11GameManager11colorForIdxEi"), (void*) getPointer(&GameManager_colorForIdx_hook), (void **) &GameManager_colorForIdx_trp);
 
 	//this hooks didnt really work well, here to test other things faster, having hooks ready
 	//HookManager::do_hook(getPointerFromSymbol(cocos2d,"_ZN18LevelSettingsLayer4initEP19LevelSettingsObjectP16LevelEditorLayer"), (void*) getPointer(&onFacebookExt::init_hk), (void **) &onFacebookExt::init_trp);
@@ -790,11 +777,11 @@ void loader()
 	//_ZN12LoadingLayer4initEb this is real loading layer, _ZN12LoadingLayer15loadingFinishedEv seems like its actually when you transition into menu layer
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN12LoadingLayer15loadingFinishedEv"), (void*) loading_hook, (void **) &loading_trp);
 	
-	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN7cocos2d12CCDictionary9setObjectEPNS_8CCObjectEi"), (void*) dict_hk, (void **) &dict);
-	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN7cocos2d18CCSpriteFrameCache17spriteFrameByNameEPKc"), (void*) sprite_hk, (void **) &old5);
+	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN7cocos2d12CCDictionary9setObjectEPNS_8CCObjectEi"), (void*) dict_hk, (void **) &dict);
+	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN7cocos2d18CCSpriteFrameCache17spriteFrameByNameEPKc"), (void*) sprite_hk, (void **) &old5);
 	
 	//HookManager::do_hook((void*) &clippingRect_hk, (void*) v_hk, (void **) &v_trp);
-	
+	//to here
 	HookManager::do_hook((void*) &menu_hk, getPointer(&MenuLayerExt::init_hk), (void **) &MenuLayerExt::init_trp);
 	
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16MultiplayerLayer4initEv"), (void*) getPointer(&MultiplayerLayerExt::init_hk), (void **) &MultiplayerLayerExt::init_trp);
@@ -805,7 +792,7 @@ void loader()
 	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16LevelEditorLayer4initEP11GJGameLevel"), (void*) getPointer(&LevelEditorLayerExt::init_hk), (void **) &LevelEditorLayerExt::init_trp);
 	
 	
-		//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN10GameObject13createWithKeyEi"), (void*) getPointer(&creata_hk), (void **) &old4);
+//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN10GameObject13createWithKeyEi"), (void*) getPointer(&creata_hk), (void **) &old4);
 
 	
 	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN14EditLevelLayer6onBackEPN7cocos2d8CCObjectE"), (void*) getPointer(&EditLevelLayerExt::onBack_hk), (void **) &EditLevelLayerExt::onBack_trp);
@@ -910,9 +897,7 @@ void loader()
 	
 	
 	
-	
-	tmp->addPatch("libcocos2dcpp.so", 0x36D95E, "00 bf 00 bf");
-	tmp->addPatch("libcocos2dcpp.so", 0x36D8DA, "00 bf 00 bf");
+
 	
 	
 	tmp->addPatch("libcocos2dcpp.so", 0x7A402E, "73 77 6e 31 31");
@@ -934,7 +919,7 @@ void loader()
 
 }
 
-  JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved)
+   JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved)
 {
 	//init_handle();
 	pthread_t t;

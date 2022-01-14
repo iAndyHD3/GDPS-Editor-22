@@ -27,6 +27,7 @@
 
 using namespace cocos2d;
 
+
 bool (*old3)(LevelEditorLayer*, GJGameLevel*) = nullptr;
 void (*old)(EditLevelLayer*, cocos2d::CCObject*) = nullptr;
 void (*old2)(LevelEditorLayer*) = nullptr;
@@ -73,26 +74,7 @@ bool menu_hk(CCLayer* ptr)
 {
     auto m = menu( ptr );
 
-    auto pos = CCDirector::sharedDirector()->getWinSize( );
 
-    auto menu = CCMenu::create( );
-    auto btn = CCMenuItemSpriteExtra::create(
-        ButtonSprite::create( AY_OBFUSCATE("Support Blaze!"), 0.35 ),
-        nullptr,
-        ptr,
-        menu_selector(MenuLayerExt::OnBlaze)
-    );
-    //menu->addChild( btn );
-    menu->setPositionY(90);
-    auto director = CCDirector::sharedDirector();
-		auto dir = CCDirector::sharedDirector();
-        auto winSize = director->getWinSize();
-
-    auto txt = CCLabelBMFont::create("Mod by developed Blaze\nBugfixed and Updated By Eitan", "chatFont.fnt");
-        txt->setPosition(winSize.width/2,winSize.height - 10);
-        txt->setScale(0.5);
-    ptr->addChild(txt);
-    ptr->addChild( menu, 1000 );
 
     return m;
 }
@@ -456,20 +438,6 @@ CCSpriteFrame* sprite_hk( CCSpriteFrameCache* ptr, const char* s )
 {
     // LOGD("SPRITE: %s", s);
 
-    if ( !strcmp( s, "pixelb_03_01_color_001.png" ) )
-        return old5( ptr, "pixelb_03_01_001.png" );
-
-    if ( !strcmp( s, "pixelb_03_02_color_001.png" ) )
-        return old5( ptr, "pixelb_03_02_001.png" );
-
-    if ( !strcmp( s, "pixelart_045_color_001.png" ) )
-        return old5( ptr, "pixelart_045_001.png" );
-
-    if ( !strcmp( s, "pixelart_016_color_001.png" ) )
-        return old5( ptr, "pixelart_016_001.png" );
-
-    if ( !strcmp( s, "pixelart_044_color_001.png" ) )
-        return old5( ptr, "pixelart_044_001.png" );
 
     if( !strcmp( s, "GJ_fullBtn_001.png" )  )
         return old5( ptr, "GJ_creatorBtn_001.png" );
@@ -511,13 +479,13 @@ const char* loading_hk( CCLayer* ptr )
 void (*dict)( CCDictionary*, CCObject*, int);
 void dict_hk( cocos2d::CCDictionary* d, CCObject* obj, int key )
 {
-    switch( key )
+    switch(key)
     {
     case 0x7DF: // add if statement for string check
         return dict( d, CCString::create( "edit_eRotateBtn_001.png" ), key );
         break;
 
-    case 0x814:
+    case 0x778:
         return dict( d, CCString::create( "edit_eAdvRandomBtn_001.png" ), key );
         break;
 
@@ -527,6 +495,10 @@ void dict_hk( cocos2d::CCDictionary* d, CCObject* obj, int key )
 
     case 0xA8D:
         return dict( d, CCString::create( "edit_ePauseMoverBtn_001.png" ), key );
+        break;
+		
+	case 0xA8E:
+        return dict( d, CCString::create( "edit_eResumeComBtn_001.png" ), key );
         break;
 
     case 0x80E:
@@ -674,8 +646,15 @@ void release_hk(PlayerObject* self,int button){
 void (*clippingRect)( GLint, GLint, GLsizei, GLsizei );
 void clippingRect_hk( GLint x, GLint y, GLsizei width, GLsizei height )
 {
+	if(GM->inEditor_) {
+		
     // LOGD( "SIZE: (%i, %i, %i, %i)", x, y, width, height );
     clippingRect( x, y, 1000, 1000 );
+	
+	} else {
+		
+		clippingRect(x, y, width, height);
+	}
 }
 
 
@@ -706,7 +685,7 @@ void lib_entry( )
     gdmk::do_inline_hook( addr4, create_hk, &old4 );
 
     const auto [ addr5, _5 ] = gdmk::get_proc_addr( OB("_ZN7cocos2d18CCSpriteFrameCache17spriteFrameByNameEPKc") );
-    //gdmk::do_inline_hook( addr5, sprite_hk, &old5 );
+    gdmk::do_inline_hook( addr5, sprite_hk, &old5 );
 
     const auto [ addr10, _10 ] = gdmk::get_proc_addr( OB("_ZN10PauseLayer11customSetupEv") );
     gdmk::do_inline_hook( addr10, pause_hk, &pause );
@@ -715,7 +694,7 @@ void lib_entry( )
     // gdmk::do_inline_hook( addr12, levelinfoinit_hk, &levelinfoinit );
 
     const auto [ addr13, _13 ] = gdmk::get_proc_addr( OB("_ZN7cocos2d12CCDictionary9setObjectEPNS_8CCObjectEi") );
-    //gdmk::do_inline_hook( addr13, dict_hk, &dict );
+    gdmk::do_inline_hook( addr13, dict_hk, &dict );
 
     const auto [ addr15, _15 ] = gdmk::get_proc_addr( OB("_ZN12CreatorLayer4initEv") );
     gdmk::do_inline_hook( addr15, world_hk, &world );
@@ -740,6 +719,10 @@ void lib_entry( )
 
     const auto addr27 = std::get<0>( gdmk::get_proc_addr(OB("_ZN12PlayerObject13releaseButtonE12PlayerButton")));
     gdmk::do_inline_hook( addr27, release_hk, &release_trp);
+	
+	const auto addr28 = std::get<0>( gdmk::get_proc_addr(OB("glScissor")));
+    gdmk::do_inline_hook( addr27, clippingRect_hk, &clippingRect);
+	
+	
     ///_ZN12PlayerObject13releaseButtonE12PlayerButton
 }
-

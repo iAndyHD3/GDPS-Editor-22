@@ -10,13 +10,6 @@ include $(PREBUILT_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_CPP_FEATURES := rtti
-LOCAL_MODULE := androidml
-LOCAL_SRC_FILES := libraries/libandroidml.so
-LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/include/libzip
-include $(PREBUILT_SHARED_LIBRARY)
-
-include $(CLEAR_VARS)
-LOCAL_CPP_FEATURES := rtti
 LOCAL_MODULE := dobby
 LOCAL_SRC_FILES := libraries/libdobby.so
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/include/libzip
@@ -57,7 +50,7 @@ LOCAL_CFLAGS := -w
 LOCAL_CPP_FEATURES := rtti
 LOCAL_MODULE := game
 LOCAL_DISABLE_FORMAT_STRING_CHECKS := true
-LOCAL_SHARED_LIBRARIES := cocos2dcpp hooking shira androidml
+LOCAL_SHARED_LIBRARIES := cocos2dcpp hooking shira
 TARGET_ARCH_ABI := all
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/include \
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/include/includes \

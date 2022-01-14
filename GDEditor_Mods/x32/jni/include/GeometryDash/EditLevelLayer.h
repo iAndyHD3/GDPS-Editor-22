@@ -19,8 +19,13 @@ public:
     bool isPlaying_;
     bool lowDetailMode_;
     int levelType_;
+	bool inEditorLayer;
     std::string levelName_;
     UploadActionPopup* uploadPopup_;
+	    unsigned char _pad1[ 0x24 ];
+    GJGameLevel* level; // 0x140
+    cocos2d::CCArray* a1; // 0x144
+    cocos2d::CCArray* a2; // 0x148
 
 public:
     EditLevelLayer();

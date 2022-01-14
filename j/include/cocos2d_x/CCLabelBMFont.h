@@ -103,7 +103,7 @@ public:
 	static CCLabelBMFont *create(const char *text, const char *font, float fontSize, CCTextAlignment, CCPoint);
 	static CCLabelBMFont *create();
 	static CCLabelBMFont *createBatched(const char *, const char *, CCArray *);
-	static void __cdecl purgeCachedData();
+	static void purgeCachedData();
 
 	void createFontChars();
 	CCBMFontConfiguration *getConfiguration() const;

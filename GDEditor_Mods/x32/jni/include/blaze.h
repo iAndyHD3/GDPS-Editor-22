@@ -26,13 +26,13 @@ extern bool (*cctouch)(UILayer *,cocos2d::CCTouch *,cocos2d::CCEvent *);
 extern bool (*touchend)(UILayer *,cocos2d::CCTouch *,cocos2d::CCEvent *);
 extern ObjectToolbox * (*toolbox)(void);
 extern void (*clippingRect)(int,int,int,int);
-void cctouch_hk(UILayer *,cocos2d::CCTouch *,cocos2d::CCEvent *);
-void touchend_hk(UILayer *,cocos2d::CCTouch *,cocos2d::CCEvent *);
+//void cctouch_hk(UILayer *,cocos2d::CCTouch *,cocos2d::CCEvent *);
+//void touchend_hk(UILayer *,cocos2d::CCTouch *,cocos2d::CCEvent *);
 void exitEdit_hk(PauseLayer *);
 bool init_hk(LevelEditorLayer *,GJGameLevel *);
 void create_hk(int);
 extern bool (*unlocked)(void *,int,int);
-void unlocked_hk(void *,int,int);
+//void unlocked_hk(void *,int,int);
 
 //extern void (*pause)(PauseLayer *);
 
