@@ -77,6 +77,7 @@ static __TYPE__* create() \
 
 
 #include "CCKeypadDispatcher.h"
+#include "CCFileUtils.h"
 
 
 #include "CCLabelBMFont.h"

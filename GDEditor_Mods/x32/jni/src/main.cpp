@@ -281,6 +281,7 @@ void OptionsLayer_customSetup_hk(OptionsLayer *layer)
 	m->addChild(myButton1);
 
 }
+extern int restartCounter;
 
 int(*onToggleTrampoline)(void *pthis, const char *val);
 void hook_onToggle(void *pthis, const char *val)
@@ -288,6 +289,12 @@ void hook_onToggle(void *pthis, const char *val)
 	int v = atoi(val);
 
 	onToggleTrampoline(pthis, val);
+	
+	if(v == 0074) {
+		
+	 restartCounter = restartCounter++;
+	}
+	
 
 	if (v > 100000)
 	{
@@ -744,6 +751,38 @@ bool GaragLayer_init_hook(CCLayer *pthis)
 	return res;
 }
 
+
+/* CCSpriteFrame* (*old5)(CCSpriteFrameCache*, const char*) = nullptr;
+CCSpriteFrame* sprite_hk( CCSpriteFrameCache* ptr, const char* s )
+{
+    // LOGD("SPRITE: %s", s);
+
+
+    if( !strcmp( s, "GJ_fullBtn_001.png" )  )
+        return old5( ptr, "GJ_creatorBtn_001.png" );
+    
+    if( !strcmp( s, "GJ_freeStuffBtn_001.png" )  )
+        return old5( ptr, "GJ_dailyRewardBtn_001.png" );
+
+    if( !strcmp( s, "GJ_freeLevelsBtn_001.png" )  )
+        return old5( ptr, "GJ_moreGamesBtn_001.png" );
+
+    if ( !strcmp( s, "GJ_gauntletsBtn_001.png" ) )
+    {
+        if( !isGauntlet )
+        {
+            isGauntlet = true;
+            return old5( ptr, "GJ_versusBtn_001.png" );
+        }
+        {
+            isGauntlet = false;
+            return old5( ptr, "GJ_gauntletsBtn_001.png" );
+        }
+    }
+
+    return old5( ptr, s );
+} */
+
 extern void lib_entry();
 
 void loader()
@@ -753,6 +792,11 @@ void loader()
 
 	//color doesnt update but well there it is
 	//HookManager::do_hook(getPointerFromSymbol(cocos2d,"_ZN12PlayerObject15updateGlowColorEv"), (void*) PlayerObject_updateGlowColorhook,(void **)&PlayerObject_updateGlowColortrp);
+
+
+	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN7cocos2d18CCSpriteFrameCache17spriteFrameByNameEPKc"), (void*) sprite_hk, (void **) &old5);
+
+
 
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11GameManager11colorForIdxEi"), (void*) getPointer(&GameManager_colorForIdx_hook), (void **) &GameManager_colorForIdx_trp);
 
@@ -781,10 +825,11 @@ void loader()
 	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN7cocos2d18CCSpriteFrameCache17spriteFrameByNameEPKc"), (void*) sprite_hk, (void **) &old5);
 	
 	//HookManager::do_hook((void*) &clippingRect_hk, (void*) v_hk, (void **) &v_trp);
-	//to here
+	
 	HookManager::do_hook((void*) &menu_hk, getPointer(&MenuLayerExt::init_hk), (void **) &MenuLayerExt::init_trp);
 	
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16MultiplayerLayer4initEv"), (void*) getPointer(&MultiplayerLayerExt::init_hk), (void **) &MultiplayerLayerExt::init_trp);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN10PauseLayer11customSetupEv"), (void*) getPointer(&PauseLayerExt::init_hk), (void **) &PauseLayerExt::init_trp);
 
 
 	
@@ -797,7 +842,7 @@ void loader()
 	
 	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN14EditLevelLayer6onBackEPN7cocos2d8CCObjectE"), (void*) getPointer(&EditLevelLayerExt::onBack_hk), (void **) &EditLevelLayerExt::onBack_trp);
 
-	HookManager::do_hook((void*) &pause_hk, getPointer(&PauseLayerExt::init_hk), (void **) &PauseLayerExt::init_trp);
+	//HookManager::do_hook((void*) &pause1_hk, getPointer(&PauseLayerExt::init_hk), (void **) &PauseLayerExt::init_trp);
 
 	
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN9PlayLayer6updateEf"), getPointer(&PlayLayerExt::update_hk), (void **) &PlayLayerExt::update_trp);
@@ -837,10 +882,13 @@ void loader()
 	
 	
 	//tmp->addPatch("libcocos2dcpp.so", 0x007A617F, "47 4a 5f 63 72 65 61 74 65 42 74 6e 5f 30 30 32"); //GJ_createBtn_001.png -> GJ_createBtn_002.png
-	
-	
-	
-
+	/*
+	//hide editor button in pause
+		tmp->addPatch("libcocos2dcpp.so", 0x2AF71A, "00 bf 00 bf");
+		tmp->addPatch("libcocos2dcpp.so", 0x2AF72A, "00 bf 00 bf");
+		tmp->addPatch("libcocos2dcpp.so", 0x2AF73A, "00 bf 00 bf");
+*/
+			
 /*
 ************************************
 	this patch fixes all the editor crashes, however levels like expurgation with a lot of triggers crash
@@ -867,6 +915,8 @@ void loader()
 	tmp->addPatch("libcocos2dcpp.so", 0x288A3E, "00 bf"); 
 	tmp->addPatch("libcocos2dcpp.so", 0x28EB70, "00 bf 00 bf");
 	
+	//bg
+    tmp->addPatch("libcocos2dcpp.so", 0x28CE5C, "19 23"); 
 
 
 	//fix level too short
@@ -894,10 +944,15 @@ void loader()
 
 	tmp->addPatch("libcocos2dcpp.so",0x2EA824,"00 bf");
 
+/*	
+	//cube
+tmp->addPatch("libcocos2dcpp.so", 0x2EB1B8, "96 29");
+tmp->addPatch("libcocos2dcpp.so", 0x2EBC4C, "4F F0 96 09"); 
+tmp->addPatch("libcocos2dcpp.so", 0x2EACC4, "96 27");
+tmp->addPatch("libcocos2dcpp.so", 0x26B53E, "96 29");
+tmp->addPatch("libcocos2dcpp.so", 0x2653E4, "96 29");
 	
-	
-	
-
+*/
 	
 	
 	tmp->addPatch("libcocos2dcpp.so", 0x7A402E, "73 77 6e 31 31");
@@ -906,7 +961,7 @@ void loader()
 	tmp->addPatch("libcocos2dcpp.so", 0x7A4056, "73 77 6e 31 31");
 
 	//package for save
-	//tmp->addPatch("libcocos2dcpp.so", 0x785011, "67 65 6f 6d 65 74 72 79 6a 75 6d 70 74 65 73 74");
+	tmp->addPatch("libcocos2dcpp.so", 0x785011, "67 65 6f 6d 65 74 72 79 6a 75 6d 70 6c 69 74 61");
 
 	tmp->Modify();
 

@@ -89,12 +89,12 @@ bool AdvancedIconSelect::init()
 	ML500->setScale(.7);
 	plus->setScale(.7);
 	NHJ->setScale(.7);
-	Dahila->setScale(.7);
+	Dahila->setScale(.5);
 	PlayDash->setScale(.7);
 	Henyx->setScale(.7);
 	Falso->setScale(.7);
 	GhostPower->setScale(.7);
-	SenpaiShika->setScale(.7);
+	SenpaiShika->setScale(.5);
 	
 	
 				
@@ -271,10 +271,10 @@ bool AdvancedIconSelect::init()
 			break;
 			case 28:
 			Dahila->setScale(.5);
-			DahilaBtn->setPosition(initX + 405, initY + 40);
-			plus->setPosition(initX + 435, initY + 40);
 			SenpaiShika->setScale(.5);
+			plus->setPosition(initX + 435, initY + 40);
 			SenpaiShikaBtn->setPosition(initX + 480, initY + 40);
+			DahilaBtn->setPosition(initX + 405, initY + 40);
 			break;
 			case 29: case 30:
 			Aleiz21Btn->setPosition(initX + 420, initY + 40);
@@ -450,9 +450,9 @@ robtopBtn->setPosition(initX + 420, initY + 40);
 			NHJBtn->setPosition(initX + 420, initY + 40);
 			break;
 			case 28:
-			DahilaBtn->setPosition(initX + 405, initY + 40);
 			plus->setPosition(initX + 435, initY + 40);
 			SenpaiShikaBtn->setPosition(initX + 480, initY + 40);
+			DahilaBtn->setPosition(initX + 405, initY + 40);
 			break;
 			case 29: case 30:
 			Aleiz21Btn->setPosition(initX + 420, initY + 40);

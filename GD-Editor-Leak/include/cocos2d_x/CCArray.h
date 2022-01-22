@@ -51,7 +51,7 @@ public:
 	bool initWithArray(CCArray *pArray);
 	bool initWithCapacity(unsigned int capacity);
 	bool initWithObject(CCObject *pObject);
-	bool initWithObjects(CCObject *firstObject, ...);
+	bool  initWithObjects(CCObject *firstObject, ...);
 	void insertObject(CCObject *pObject, unsigned int index);
 	bool isEqualToArray(CCArray *pArray);
 	CCObject *lastObject();

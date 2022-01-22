@@ -82,6 +82,7 @@ LOCAL_SRC_FILES := 	src/main.cpp \
 					src/hooks/AccountRegisterLayerExt.cpp \
 					src/hooks/onFacebookExt.cpp \
 					src/hooks/onRobtopExt.cpp \
+					src/hooks/MenuLayerExt.cpp \
 					include/Encryption/Encryption.cpp 
 
 LOCAL_LDLIBS := -llog \

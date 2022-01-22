@@ -148,6 +148,7 @@ void PauseLayerExt::addPageControl() {
 
     misc->addChild(backBtn);
     misc->addChild(nextbtn);
+	
 
     //this->addChild(misc);
 }

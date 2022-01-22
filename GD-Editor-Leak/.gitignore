@@ -1,0 +1,8 @@
+.git
+libs
+obj
+pre.*
+src/platformer.cpp
+.vscode
+android-ndk-r16b-linux-x86_64/
+.bat

@@ -40,7 +40,7 @@ public:
 	void alignItemsInColumns(unsigned int columns, ...);
 	void alignItemsInColumns(unsigned int columns, va_list args);
 	void alignItemsInColumnsWithArray(CCArray *rows);
-	void  alignItemsInRows(unsigned int rows, ...);
+	void alignItemsInRows(unsigned int rows, ...);
 	void alignItemsInRows(unsigned int rows, va_list args);
 	void alignItemsInRowsWithArray(CCArray *columns);
 	void alignItemsVertically();

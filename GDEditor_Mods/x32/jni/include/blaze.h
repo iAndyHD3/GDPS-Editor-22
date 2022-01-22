@@ -39,7 +39,7 @@ extern bool (*unlocked)(void *,int,int);
 extern void (*dict)(cocos2d::CCDictionary *,cocos2d::CCObject *,int);
 extern void (*exitEdit)(PauseLayer *);
 void dict_hk(cocos2d::CCDictionary *,cocos2d::CCObject *,int);
-void pause_hk(PauseLayer *);
+void pause1_hk(PauseLayer *);
 extern bool (*levelinfoinit)(LevelInfoLayer *,GJGameLevel *,bool);
 void levelinfoinit_hk(LevelInfoLayer *,GJGameLevel *,bool);
 
