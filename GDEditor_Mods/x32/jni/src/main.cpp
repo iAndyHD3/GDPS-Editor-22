@@ -837,7 +837,7 @@ void loader()
 	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16LevelEditorLayer4initEP11GJGameLevel"), (void*) getPointer(&LevelEditorLayerExt::init_hk), (void **) &LevelEditorLayerExt::init_trp);
 	
 	
-//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN10GameObject13createWithKeyEi"), (void*) getPointer(&creata_hk), (void **) &old4);
+        //HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN10GameObject13createWithKeyEi"), (void*) getPointer(&creata_hk), (void **) &old4);
 
 	
 	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN14EditLevelLayer6onBackEPN7cocos2d8CCObjectE"), (void*) getPointer(&EditLevelLayerExt::onBack_hk), (void **) &EditLevelLayerExt::onBack_trp);
@@ -875,7 +875,7 @@ void loader()
 	//LOGD("TTTTT!");
  
 	//2E9914
-	 tmp->addPatch("libcocos2dcpp.so", 0x2E9914, "6f f0 01 00 70 47");
+	tmp->addPatch("libcocos2dcpp.so", 0x2E9914, "6f f0 01 00 70 47");
 	tmp->addPatch("libcocos2dcpp.so", 0x2ECC64, "00 bf");
 	//tmp->addPatch("libcocos2dcpp.so", 0x2B1F52, "00 bf 00 bf 00 bf 00 bf");
 	//tmp->addPatch("libcocos2dcpp.so", 0x2B1F92, "00 bf");
@@ -894,7 +894,7 @@ void loader()
 	this patch fixes all the editor crashes, however levels like expurgation with a lot of triggers crash
 	tmp->addPatch("libcocos2dcpp.so", 0x44D2AE, "00 bf 00 bf");
 	*/
-		tmp->addPatch("libcocos2dcpp.so", 0x44D2AE, "00 bf 00 bf");
+        tmp->addPatch("libcocos2dcpp.so", 0x44D2AE, "00 bf 00 bf");
 	/*
 	
 	
@@ -908,15 +908,18 @@ void loader()
 	//patch refresh
 
 	tmp->addPatch("libcocos2dcpp.so", 0x2388EE, "00 20");
-	 tmp->addPatch("libcocos2dcpp.so", 0x2388DC, "00 20");
+	tmp->addPatch("libcocos2dcpp.so", 0x2388DC, "00 20");
 
 	//playtest try
 	
 	tmp->addPatch("libcocos2dcpp.so", 0x288A3E, "00 bf"); 
 	tmp->addPatch("libcocos2dcpp.so", 0x28EB70, "00 bf 00 bf");
 	
-	//bg
-    tmp->addPatch("libcocos2dcpp.so", 0x28CE5C, "19 23"); 
+	//backgrounds
+        tmp->addPatch("libcocos2dcpp.so", 0x28CE5C, "19 23"); 
+	//grounds
+	tmp->addPatch("libcocos2dcpp.so", 0x28CE72, "12 23"); 
+	
 
 
 	//fix level too short
@@ -944,15 +947,14 @@ void loader()
 
 	tmp->addPatch("libcocos2dcpp.so",0x2EA824,"00 bf");
 
-/*	
+        /*	
 	//cube
-tmp->addPatch("libcocos2dcpp.so", 0x2EB1B8, "96 29");
-tmp->addPatch("libcocos2dcpp.so", 0x2EBC4C, "4F F0 96 09"); 
-tmp->addPatch("libcocos2dcpp.so", 0x2EACC4, "96 27");
-tmp->addPatch("libcocos2dcpp.so", 0x26B53E, "96 29");
-tmp->addPatch("libcocos2dcpp.so", 0x2653E4, "96 29");
-	
-*/
+        tmp->addPatch("libcocos2dcpp.so", 0x2EB1B8, "96 29");
+        tmp->addPatch("libcocos2dcpp.so", 0x2EBC4C, "4F F0 96 09"); 
+        tmp->addPatch("libcocos2dcpp.so", 0x2EACC4, "96 27");
+        tmp->addPatch("libcocos2dcpp.so", 0x26B53E, "96 29");
+        tmp->addPatch("libcocos2dcpp.so", 0x2653E4, "96 29");
+         */
 	
 	
 	tmp->addPatch("libcocos2dcpp.so", 0x7A402E, "73 77 6e 31 31");
@@ -970,7 +972,7 @@ tmp->addPatch("libcocos2dcpp.so", 0x2653E4, "96 29");
 	pauseBtn->addPatch("libcocos2dcpp.so", 0x7896A9, "32");
 
 
-//pthread_exit(reinterpret_cast<void*> (0));
+        //pthread_exit(reinterpret_cast<void*> (0));
 
 }
 
