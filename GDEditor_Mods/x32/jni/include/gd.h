@@ -44,4 +44,7 @@
 #include "GJGarageLayer.h"
 #include "GaragePage.h"
 #include "VideoOptionsLayer.h"
+#include "GJAccountManager.h"
+#include "ProfilePage.h"
+#include "CommentCell.h"
 #endif

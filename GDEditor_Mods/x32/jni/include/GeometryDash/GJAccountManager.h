@@ -3,6 +3,8 @@
 #include <cocos2dx/CCNode.h>
 #include <string>
 
+#include "GDAPI_Macros.h"
+
 class GJAccountRegisterDelegate;
 class GJAccountLoginDelegate;
 class GJAccountDelegate;
@@ -26,6 +28,14 @@ public:
     GJAccountBackupDelegate *backupDelegate_;       // 0x120
     GJAccountSyncDelegate *syncDelegate_;           // 0x124
     GJAccountSettingsDelegate *settingsDelegate_;   // 0x128
+
+// fixed class members by offsets
+public:
+    CLASS_MEMBER(std::string, accountUserName, 0x100);
+    CLASS_MEMBER(int, accountIDRand, 0x104);
+    CLASS_MEMBER(int, accountIDSeed, 0x108);
+
+    bool isLoggedIn() { return this->_accountIDRand() - this->_accountIDSeed() > 0; }
 
 public:
     GJAccountManager();

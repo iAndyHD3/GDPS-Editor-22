@@ -2,8 +2,14 @@
 
 #include <cocos2dx/CCLayer.h>
 
+#include "CCMenuItemSpriteExtra.h"
+
 class MenuLayer : public cocos2d::CCLayer 
 {
+public:
+    CLASS_MEMBER(CCLabelBMFont*, playerUsernameLabel, 0x138);
+    CLASS_MEMBER(CCMenuItemSpriteExtra*, profileBtn, 0x13C);
+
 public:
     MenuLayer();
     virtual ~MenuLayer();

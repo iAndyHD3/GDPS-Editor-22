@@ -621,54 +621,6 @@ cocos2d::_ccColor3B GameManager_colorForIdx_hook(GameManager *pthis, int value)
 	}
 }
 
-// hook ProfilePage 
-
-void* (*profilePage_trp)(CCLayer*, GJUserScore*);
-void* profilePage_hook(CCLayer* self, GJUserScore* userData) {
-	
-	auto ret = profilePage_trp(self, userData);
-	int modBadgeLevel = userData->modBadge_;
-	
-	if (modBadgeLevel > 2) {
-		auto layer = (CCLayer*)self->getChildren()->objectAtIndex(0);
-		
-		for(int c = 0 ; c < layer->getChildrenCount(); c++) {
-		auto modBadgeSpr = (CCSprite*)layer->getChildren()->objectAtIndex(c);
-		
-		
-		if(modBadgeSpr->getChildrenCount() == 0) {
-			if(modBadgeSpr->getPositionX() > 180 && modBadgeSpr-> getPositionY() == 284) {
-				
-				#include <sstream>  
-				
-				stringstream ss;
-				
-				ss<<modBadgeLevel;
-				
-				std::string SmodBadge;
-				ss>>SmodBadge;
-				
-				auto spriteCache = CCSpriteFrameCache::sharedSpriteFrameCache();
-
-				spriteCache->addSpriteFramesWithFile("GJ_GameSheet03-hd.plist");
-				spriteCache->addSpriteFramesWithFile("GJ_GameSheet03.plist");
-				
-				std::string modpng = "modBadge_02_001.png";
-				
-				std::string modFrame = modpng.replace(11,1,SmodBadge);
-				
-				const char* finalSprite = modFrame.c_str();
-
-	auto finalSprite2 = spriteCache->spriteFrameByName(finalSprite);
- 
-				modBadgeSpr->setDisplayFrame(finalSprite2);
-			}
-		}
-	}
-}
-return ret;
-}
-
 void *(*CreatorLayer_init_trp)(LevelSettingsLayer *pthis, LevelSettingsObject *a2, LevelEditorLayer *a3);
 void *CreatorLayer_init_hook(LevelSettingsLayer *pthis, LevelSettingsObject *a2, LevelEditorLayer *a3)
 {
@@ -783,6 +735,69 @@ CCSpriteFrame* sprite_hk( CCSpriteFrameCache* ptr, const char* s )
     return old5( ptr, s );
 } */
 
+// fix profile btn
+void (*MenuLayer_updateUserProfileButtonO)(MenuLayer*);
+void MenuLayer_updateUserProfileButtonH(MenuLayer *self) {
+	auto AM = GJAccountManager::sharedState();
+
+	self->_profileBtn()->setVisible(AM->isLoggedIn());
+	self->_playerUsernameLabel()->setVisible(true);
+	self->_playerUsernameLabel()->setString(AM->_accountUserName().c_str());
+
+	if(AM->isLoggedIn()) {
+		self->_profileBtn()->setVisible(true);
+		self->_playerUsernameLabel()->limitLabelWidth(70, 0.7, 0);
+	}
+}
+
+void (*ProfilePage_loadPageFromUserInfoO)(ProfilePage*, GJUserScore*);
+void ProfilePage_loadPageFromUserInfoH(ProfilePage* self, GJUserScore* userData) {
+	ProfilePage_loadPageFromUserInfoO(self, userData);
+
+	// custom mod badges
+	int modBadgeLevel = userData->_modBadge();
+
+	if(modBadgeLevel > 2) {
+		for(int i = 0; i < self->_someArray()->count(); i++) {
+			auto thing = (CCSprite*)self->_someArray()->objectAtIndex(i);
+
+			if(thing->getChildrenCount() == 0 && thing->getPositionX() > 226 && thing->getPositionY() > 283) {
+				auto customSprStr = CCString::createWithFormat("modBadge_%02d_001.png", modBadgeLevel);
+
+				auto customModBadgeSpr = CCSpriteFrameCache::sharedSpriteFrameCache()->spriteFrameByName(customSprStr->getCString());
+
+				if(customModBadgeSpr != nullptr) {
+					thing->setDisplayFrame(customModBadgeSpr);
+				}
+
+				break;
+			}
+		}
+	}
+}
+
+// gotta do this when the comments actually work
+void (*CommentCell_loadFromCommentO)(CommentCell*, GJComment*);
+void CommentCell_loadFromCommentH(CommentCell* self, GJComment* commentData) {
+	CommentCell_loadFromCommentO(self, commentData);
+
+	int modBadgeLevel = commentData->_modBadge();
+
+	// testing
+	modBadgeLevel = 3;
+	/*
+	if(modBadgeLevel > 3) {
+		for(int i = 0; i < self->_menu()->getChildrenCount(); i++) {
+			auto thing = (CCNode*)self->_menu()->getChildren()->objectAtIndex(i);
+
+			if(thing->getChildrenCount() == 0) {
+				
+			}
+		}
+	}
+	*/
+}
+
 extern void lib_entry();
 
 void loader()
@@ -811,7 +826,8 @@ void loader()
 	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN22SetupCameraRotatePopup4initEP16EffectGameObjectPN7cocos2d7CCArrayE"), (void**) &SetupRotatePopupLayer_trp, (void *) &SetupRotatePopupLayer_trp);
 	
 	
-	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11ProfilePage20loadPageFromUserInfoEP11GJUserScore"), (void**) &profilePage_trp, (void *) &profilePage_hook);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11ProfilePage20loadPageFromUserInfoEP11GJUserScore"), (void*)ProfilePage_loadPageFromUserInfoH, (void**)&ProfilePage_loadPageFromUserInfoO);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11CommentCell15loadFromCommentEP9GJComment"), (void*)CommentCell_loadFromCommentH, (void**)&CommentCell_loadFromCommentO);
 
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN20AccountRegisterLayer4initEv"), (void*) getPointer(&AccountRegisterLayerExt::init_hk), (void **) &AccountRegisterLayerExt::init_trp);
 
@@ -827,6 +843,7 @@ void loader()
 	//HookManager::do_hook((void*) &clippingRect_hk, (void*) v_hk, (void **) &v_trp);
 	
 	HookManager::do_hook((void*) &menu_hk, getPointer(&MenuLayerExt::init_hk), (void **) &MenuLayerExt::init_trp);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN9MenuLayer23updateUserProfileButtonEv"), (void*)MenuLayer_updateUserProfileButtonH, (void**)&MenuLayer_updateUserProfileButtonO);
 	
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16MultiplayerLayer4initEv"), (void*) getPointer(&MultiplayerLayerExt::init_hk), (void **) &MultiplayerLayerExt::init_trp);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN10PauseLayer11customSetupEv"), (void*) getPointer(&PauseLayerExt::init_hk), (void **) &PauseLayerExt::init_trp);
