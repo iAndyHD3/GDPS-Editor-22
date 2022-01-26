@@ -798,6 +798,47 @@ void CommentCell_loadFromCommentH(CommentCell* self, GJComment* commentData) {
 	*/
 }
 
+bool (*SelectArtLayer_initO)(SelectArtLayer*, SelectArtType);
+bool SelectArtLayer_initH(SelectArtLayer* self, SelectArtType type) {
+	if(!SelectArtLayer_initO(self, type)) return false;
+
+	int maxTextures = 25; // not sure if this is right but even if its too much it won't crash
+
+	if(type == SelectArtType::ground) maxTextures = 17;
+
+	auto spriteCache = CCSpriteFrameCache::sharedSpriteFrameCache();
+
+	for(int i = 0; i < maxTextures; i++) {
+		auto bgBtn = (CCMenuItemSpriteExtra*)self->_bgSelectMenu()->getChildren()->objectAtIndex(i);
+
+		if(bgBtn != nullptr) {
+			const char* frameSprStr;
+
+			if(type == SelectArtType::ground) frameSprStr = "gIcon_%02d_001.png";
+			else frameSprStr = "bgIcon_%02d_001.png";
+
+			auto frameStr = CCString::createWithFormat(frameSprStr, i + 1)->getCString();
+
+			auto frameSpr = spriteCache->spriteFrameByName(frameStr);
+
+			if(frameSpr != nullptr) {
+				auto bgBtnSpr = (CCSprite*)bgBtn->getChildByTag(1);
+
+				if(bgBtnSpr != nullptr) bgBtnSpr->setDisplayFrame(frameSpr);
+			}
+		}
+	}
+
+	// the ok btn is the only btn without a tag apparently
+	if(type == SelectArtType::background) {
+		auto okBtn = (CCMenuItemSpriteExtra*)self->_bgSelectMenu()->getChildren()->objectAtIndex(self->_bgSelectMenu()->getChildrenCount() - 1);
+
+		okBtn->setPositionX(90);
+	}
+
+	return true;
+}
+
 extern void lib_entry();
 
 void loader()
@@ -811,7 +852,7 @@ void loader()
 
 	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN7cocos2d18CCSpriteFrameCache17spriteFrameByNameEPKc"), (void*) sprite_hk, (void **) &old5);
 
-
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN14SelectArtLayer4initE13SelectArtType"), (void*) getPointer(&SelectArtLayer_initH), (void **) &SelectArtLayer_initO);
 
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11GameManager11colorForIdxEi"), (void*) getPointer(&GameManager_colorForIdx_hook), (void **) &GameManager_colorForIdx_trp);
 
@@ -933,11 +974,10 @@ void loader()
 	tmp->addPatch("libcocos2dcpp.so", 0x28EB70, "00 bf 00 bf");
 	
 	//backgrounds
-        tmp->addPatch("libcocos2dcpp.so", 0x28CE5C, "19 23"); 
+    tmp->addPatch("libcocos2dcpp.so", 0x28CE5C, "19 23"); 
+	
 	//grounds
 	tmp->addPatch("libcocos2dcpp.so", 0x28CE72, "12 23"); 
-	
-
 
 	//fix level too short
 	tmp->addPatch("libcocos2dcpp.so", 0x241ADA, "00 bf");

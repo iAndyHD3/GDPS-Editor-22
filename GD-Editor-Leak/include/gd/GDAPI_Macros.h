@@ -126,3 +126,9 @@ extern GD_DLL double staticGDVersionD;
 #define MAKE_GD_FUNC(returnType, className, funcName, ...)
 #define MAKE_GD_FUNC_CTOR(className, ...)
 #define MAKE_GD_FUNC_DTOR(className)
+
+// get class members by offset
+#define CLASS_MEMBER(__TYPE__, __GETTER__, __OFFSET__) \
+    inline __TYPE__& _##__GETTER__() { \
+        return *((__TYPE__*)((uintptr_t)this + __OFFSET__)); \
+    }

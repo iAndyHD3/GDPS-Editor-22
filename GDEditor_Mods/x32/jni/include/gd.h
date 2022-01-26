@@ -47,4 +47,5 @@
 #include "GJAccountManager.h"
 #include "ProfilePage.h"
 #include "CommentCell.h"
+#include "SelectArtLayer.h"
 #endif
