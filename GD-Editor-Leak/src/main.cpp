@@ -770,6 +770,7 @@ void lib_entry( )
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16EditorPauseLayer8onResumeEPN7cocos2d8CCObjectE"), (void*) updateOptions_hk, (void **) &updateOptions); 
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN14EditLevelLayer4initEP11GJGameLevel"), (void*) setUpLevelInfo_hk, (void **) &setUpLevelInfo); 
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN14LevelInfoLayer4initEP11GJGameLevelb"), (void*) levelinfoinit_hk, (void **) &levelinfoinit);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16LevelEditorLayer13updateOptionsEv"), (void*) updateOptions_hk, (void **) &updateOptions);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN12LoadingLayer16getLoadingStringEv"), (void*) loading_hk, (void **) &loading);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN14EditLevelLayer6onEditEPN7cocos2d8CCObjectE"), (void*) onEdit_hk, (void **) &old);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16LevelEditorLayer4initEP11GJGameLevel"), (void*) init_hk, (void **) &old3);
