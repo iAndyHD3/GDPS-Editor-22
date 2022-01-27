@@ -213,7 +213,7 @@ const char * level = decodeZLib.c_str();
     label22->setAnchorPoint({ 0, 0 });
     label22->setScale(.5);
 	
-	auto label33 = CCLabelBMFont::create("Beta 7", "chatFont.fnt");
+	auto label33 = CCLabelBMFont::create("Beta 9", "chatFont.fnt");
 		if(GM->getGameVariable("100004")) {
 			
 	label33->setPosition(CCPoint(dir->getScreenRight() - 80, dir->getScreenTop() - 20));

@@ -181,6 +181,10 @@ bool AdvancedIconSelect::init()
     swingCreator->setScale(.7);
     menu->addChild(swingCreator, 101);
 	
+		auto viewProfile = CCSprite::create("GJ_viewProfileTxt_002.png");
+	viewProfile->setPosition(CCPoint(initX + 340,initY+60));
+	menu->addChild(viewProfile);
+	
 	if(pos == 1) {
 		robtopBtn->setPosition(initX + 420, initY + 40); 			
 	}
@@ -321,9 +325,13 @@ bool AdvancedIconSelect::init()
    JetpackCreator->setPosition(initX + 285,initY+40);
     JetpackCreator->setScale(.7);
     menu->addChild(JetpackCreator, 101);
+	
+	auto viewProfile = CCSprite::create("GJ_viewProfileTxt_002.png");
+	viewProfile->setPosition(CCPoint(initX + 340,initY+60));
+	menu->addChild(viewProfile);
 		
 				    float space = 50;
-    int totalIcons = 3;
+    int totalIcons = 4;
 
 		
 		    for(int k = 0; k < totalIcons / 5 + (totalIcons % 5 != 0); k ++){
@@ -360,9 +368,14 @@ bool AdvancedIconSelect::init()
 			break;
 			case 2:
 			PlayDashBtn->setPosition(initX + 420, initY + 40);
+			break;
 			case 3:
 			GhostPowerBtn->setPosition(initX + 440, initY + 40);
-		
+			break;
+			case 4:
+			RetroAdvance64Btn->setPosition(initX + 440,initY+40);
+			break;
+
     }
 		
 		
@@ -525,6 +538,10 @@ robtopBtn->setPosition(initX + 420, initY + 40);
 			break;
 			case 3:
 			GhostPowerBtn->setPosition(initX + 440, initY + 40);
+			break;
+			case 4:
+			RetroAdvance64Btn->setPosition(initX + 440,initY+40);
+			break;
 		
     }
 	}

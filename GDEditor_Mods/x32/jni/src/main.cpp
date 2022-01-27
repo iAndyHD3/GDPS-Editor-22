@@ -833,7 +833,8 @@ bool SelectArtLayer_initH(SelectArtLayer* self, SelectArtType type) {
 	if(type == SelectArtType::background) {
 		auto okBtn = (CCMenuItemSpriteExtra*)self->_bgSelectMenu()->getChildren()->objectAtIndex(self->_bgSelectMenu()->getChildrenCount() - 1);
 
-		okBtn->setPositionX(90);
+		okBtn->setPositionX(80);
+		okBtn->setPositionY(okBtn->getPositionY() + 5);
 	}
 
 	return true;
@@ -867,8 +868,8 @@ void loader()
 	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN22SetupCameraRotatePopup4initEP16EffectGameObjectPN7cocos2d7CCArrayE"), (void**) &SetupRotatePopupLayer_trp, (void *) &SetupRotatePopupLayer_trp);
 	
 	
-	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11ProfilePage20loadPageFromUserInfoEP11GJUserScore"), (void*)ProfilePage_loadPageFromUserInfoH, (void**)&ProfilePage_loadPageFromUserInfoO);
-	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11CommentCell15loadFromCommentEP9GJComment"), (void*)CommentCell_loadFromCommentH, (void**)&CommentCell_loadFromCommentO);
+	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11ProfilePage20loadPageFromUserInfoEP11GJUserScore"), (void*)ProfilePage_loadPageFromUserInfoH, (void**)&ProfilePage_loadPageFromUserInfoO);
+	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11CommentCell15loadFromCommentEP9GJComment"), (void*)CommentCell_loadFromCommentH, (void**)&CommentCell_loadFromCommentO);
 
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN20AccountRegisterLayer4initEv"), (void*) getPointer(&AccountRegisterLayerExt::init_hk), (void **) &AccountRegisterLayerExt::init_trp);
 
@@ -883,7 +884,9 @@ void loader()
 	
 	//HookManager::do_hook((void*) &clippingRect_hk, (void*) v_hk, (void **) &v_trp);
 	
-	HookManager::do_hook((void*) &menu_hk, getPointer(&MenuLayerExt::init_hk), (void **) &MenuLayerExt::init_trp);
+	//HookManager::do_hook((void*) &menu_hk, getPointer(&MenuLayerExt::init_hk), (void **) &MenuLayerExt::init_trp);
+		HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN9MenuLayer4initEv"), (void*) getPointer(&MenuLayerExt::init_hk), (void **) &MenuLayerExt::init_trp);
+
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN9MenuLayer23updateUserProfileButtonEv"), (void*)MenuLayer_updateUserProfileButtonH, (void**)&MenuLayer_updateUserProfileButtonO);
 	
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16MultiplayerLayer4initEv"), (void*) getPointer(&MultiplayerLayerExt::init_hk), (void **) &MultiplayerLayerExt::init_trp);
@@ -914,8 +917,8 @@ void loader()
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11GameManager18toggleGameVariableEPKc"), (void*) hook_onToggle, (void **) &onToggleTrampoline);
 	
 	
-	//HookManager::do_hook(
-	//getPointerFromSymbol(cocos2d, "_ZN12PlayerObject13releaseButtonE12PlayerButton"), (void*) release_hk, (void **) &release_trp, true);
+	HookManager::do_hook(
+	getPointerFromSymbol(cocos2d, "_ZN12PlayerObject13releaseButtonE12PlayerButton"), (void*) release_hk, (void **) &release_trp, true);
 
 	//239A60
 

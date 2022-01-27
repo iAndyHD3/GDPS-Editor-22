@@ -1,4 +1,3 @@
-
 #include <vector>
 #include "DrawGridLayer.h"
 #include "LevelEditorLayer.h"
@@ -23,18 +22,17 @@
 #include "LevelInfoLayer.h"
 #include "ParticlePreviewLayer.h"
 #include <iostream>
-
-#include "obfuscate.h"
 #include "hooking.h"
+#include "obfuscate.h"
 
 using namespace cocos2d;
 
 bool (*old3)(LevelEditorLayer*, GJGameLevel*) = nullptr;
 void (*old)(EditLevelLayer*, cocos2d::CCObject*) = nullptr;
 void (*old2)(LevelEditorLayer*) = nullptr;
+bool insideEditor = false;
 
 GameObject* (*old4)(int) = nullptr;
-bool insideEditor;
 
 void onEdit_hk( EditLevelLayer* ptr, cocos2d::CCObject* sender )
 {
@@ -44,6 +42,8 @@ void onEdit_hk( EditLevelLayer* ptr, cocos2d::CCObject* sender )
         // ptr->setKeypadEnabled( false ); 0x20C not 0x204
 
         ptr->inEditorLayer_ = true;
+		extern bool insideEditor;
+		insideEditor = true;
         GM->editorScene_ = 3;
 
         ptr->verifyLevelName();
@@ -60,14 +60,7 @@ void onEdit_hk( EditLevelLayer* ptr, cocos2d::CCObject* sender )
 }
 
 
-bool (*menu)(CCLayer*);
-bool menu_hk(CCLayer* ptr)
-{
-    auto m = menu( ptr );
 
-
-    return m;
-}
 
 bool (*cctouch)(UILayer*, cocos2d::CCTouch*, cocos2d::CCEvent*);
 bool cctouch_hk(UILayer* ptr, cocos2d::CCTouch* pTouch, cocos2d::CCEvent* pEvent)
@@ -129,9 +122,8 @@ bool init_hk( LevelEditorLayer* ptr, GJGameLevel* level )
 
     auto gm = GameManager::sharedState( );
     gm->inEditor_ = true;
-	extern bool insideEditor;
-   insideEditor = true;
-
+		extern bool insideEditor;
+		insideEditor = true;
     ptr->smoothFix = gm->getGameVariable( "0102" );
 
     ptr->ignoreDamage = gm->getGameVariable( "0009" );
@@ -386,7 +378,7 @@ GameObject* create_hk( int key )
         auto pixelKey = mid_num( tb );
         // LOGD("ART: %i", pixelKey);
 
-        return old4( pixelKey > 80 ? 1 : key );
+        return old4( pixelKey > 140 ? 1 : key );
     }
 
     if( !strcmp( tb, "pixelb_03_01_001.png" ) )
@@ -467,14 +459,13 @@ bool unlocked_hk(void* ptr, int a1, int a2)
 const char* (*loading)(cocos2d::CCLayer*);
 const char* loading_hk( CCLayer* ptr )
 {
-
     return AY_OBFUSCATE("Mod developed by Blaze");
 }
 
 void (*dict)( CCDictionary*, CCObject*, int);
 void dict_hk( cocos2d::CCDictionary* d, CCObject* obj, int key )
 {
-       switch(key)
+      switch(key)
     {
     case 0x7DF: // add if statement for string check
         return dict( d, CCString::create( "edit_eRotateBtn_001.png" ), key );
@@ -507,9 +498,22 @@ void dict_hk( cocos2d::CCDictionary* d, CCObject* obj, int key )
     }
 }
 
+bool (*levelinfoinit)( LevelInfoLayer*, GJGameLevel*, bool );
+bool levelinfoinit_hk( LevelInfoLayer* ptr, GJGameLevel* level, bool a3 )
+{
+    auto r = levelinfoinit( ptr, level, a3 );
 
+        auto dir = cocos2d::CCDirector::sharedDirector();
+     auto winSize = cocos2d::CCDirector::sharedDirector()->getWinSize();
+	 auto gameSpeed = dir->getScheduler()->_fTimeScale;
+	 
+	 if(gameSpeed != 1) {
+		gameSpeed = 1;
+	 }
+	
 
-
+    return r;
+}
 
 #include "CreatorLayer.h"
 
@@ -659,14 +663,13 @@ void* edit_hk(EditLevelLayer* se, CCObject* self ){
     return uis;
 }
 
-
 bool(*levelsettings)(LevelSettingsLayer*, LevelSettingsObject*, LevelEditorLayer*);
 bool levelsettings_hk(LevelSettingsLayer* ptr, LevelSettingsObject* a2, LevelEditorLayer* a3) {
 	
 	    auto ret = levelsettings(ptr, a2, a3);
+		
 		extern bool insideEditor;
 		insideEditor = false;
-		GM->inEditor_ = false;
 
      auto winsize = cocos2d::CCDirector::sharedDirector()->getWinSize();
 	
@@ -684,25 +687,19 @@ bool levelsettings_hk(LevelSettingsLayer* ptr, LevelSettingsObject* a2, LevelEdi
 	return ret;
 };
 
-bool(*setUpLevelInfo)(EditLevelLayer*);
-bool setUpLevelInfo_hk(EditLevelLayer* ptr) {
+bool(*setUpLevelInfo)(EditLevelLayer*, GJGameLevel*);
+bool setUpLevelInfo_hk(EditLevelLayer* ptr, GJGameLevel* level) {
 	
-	    auto ret = setUpLevelInfo(ptr);
+	    auto ret = setUpLevelInfo(ptr, level);
 
      auto dir = cocos2d::CCDirector::sharedDirector();
-     auto winSize = cocos2d::CCDirector::sharedDirector()->getWinSize();
 	 if(dir->getScheduler()->_fTimeScale != 1) {
     dir->getScheduler()->_fTimeScale = 1;
 	 }
 	
-		
-		//ptr->addChild(bottomMenu4);
-
+	
 	return ret;
 };
-
-
-
 
 
 
@@ -770,7 +767,9 @@ void lib_entry( )
 	#define targetLibName ("libcocos2dcpp.so")
 	auto cocos2d = dlopen(targetLibName != "" ? targetLibName : NULL, RTLD_LAZY);
 	
-	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16EditorPauseLayer8onResumeEPN7cocos2d8CCObjectE"), (void*) updateOptions_hk, (void **) &updateOptions);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16EditorPauseLayer8onResumeEPN7cocos2d8CCObjectE"), (void*) updateOptions_hk, (void **) &updateOptions); 
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN14EditLevelLayer4initEP11GJGameLevel"), (void*) setUpLevelInfo_hk, (void **) &setUpLevelInfo); 
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN14LevelInfoLayer4initEP11GJGameLevelb"), (void*) levelinfoinit_hk, (void **) &levelinfoinit);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN12LoadingLayer16getLoadingStringEv"), (void*) loading_hk, (void **) &loading);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN14EditLevelLayer6onEditEPN7cocos2d8CCObjectE"), (void*) onEdit_hk, (void **) &old);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16LevelEditorLayer4initEP11GJGameLevel"), (void*) init_hk, (void **) &old3);
@@ -780,14 +779,14 @@ void lib_entry( )
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN12CreatorLayer4initEv"), (void*) world_hk, (void **) &world );
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN10PauseLayer6onEditEPN7cocos2d8CCObjectE"), (void*) exitEdit_hk, (void **) &exitEdit);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN7UILayer12ccTouchBeganEPN7cocos2d7CCTouchEPNS0_7CCEventE"), (void*) cctouch_hk, (void **) &cctouch);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN7UILayer12ccTouchEndedEPN7cocos2d7CCTouchEPNS0_7CCEventE"), (void*) touchend_hk, (void **) &touchend); //end touch
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN8EditorUIC2Ev"), (void*) ui_hk, (void **) &ui);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN14EditLevelLayer6onBackEPN7cocos2d8CCObjectE"), (void*) edit_hk, (void **) &edit);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "glScissor"), (void*) clippingRect_hk, (void **) &clippingRect);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN18LevelSettingsLayer4initEP19LevelSettingsObjectP16LevelEditorLayer"), (void*) levelsettings_hk, (void **) &levelsettings);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16GameStatsManager14isItemUnlockedE10UnlockTypei"), (void*) unlocked_hk, (void **) &unlocked);
 
-	const auto addr17 = std::get<0>( gdmk::get_proc_addr(OB("_ZN9MenuLayer4initEv")));
-     gdmk::do_inline_hook( addr17, menu_hk, &menu);
+
 	
 	/*
 
