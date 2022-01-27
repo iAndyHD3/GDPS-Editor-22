@@ -883,7 +883,7 @@ void loader()
 	
 	//HookManager::do_hook((void*) &clippingRect_hk, (void*) v_hk, (void **) &v_trp);
 	
-	HookManager::do_hook((void*) &menu_hk, getPointer(&MenuLayerExt::init_hk), (void **) &MenuLayerExt::init_trp);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN9MenuLayer4initEv"), (void*) getPointer(&MenuLayerExt::init_hk), (void **) &MenuLayerExt::init_trp);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN9MenuLayer23updateUserProfileButtonEv"), (void*)MenuLayer_updateUserProfileButtonH, (void**)&MenuLayer_updateUserProfileButtonO);
 	
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16MultiplayerLayer4initEv"), (void*) getPointer(&MultiplayerLayerExt::init_hk), (void **) &MultiplayerLayerExt::init_trp);
