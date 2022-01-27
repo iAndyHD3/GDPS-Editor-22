@@ -1,4 +1,3 @@
-
 #include <vector>
 #include "DrawGridLayer.h"
 #include "LevelEditorLayer.h"
@@ -770,7 +769,7 @@ void lib_entry( )
 	#define targetLibName ("libcocos2dcpp.so")
 	auto cocos2d = dlopen(targetLibName != "" ? targetLibName : NULL, RTLD_LAZY);
 	
-	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16EditorPauseLayer8onResumeEPN7cocos2d8CCObjectE"), (void*) updateOptions_hk, (void **) &updateOptions);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16LevelEditorLayer13updateOptionsEv"), (void*) updateOptions_hk, (void **) &updateOptions);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN12LoadingLayer16getLoadingStringEv"), (void*) loading_hk, (void **) &loading);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN14EditLevelLayer6onEditEPN7cocos2d8CCObjectE"), (void*) onEdit_hk, (void **) &old);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16LevelEditorLayer4initEP11GJGameLevel"), (void*) init_hk, (void **) &old3);
