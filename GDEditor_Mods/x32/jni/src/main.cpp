@@ -1081,6 +1081,9 @@ void loader()
 	tmp->addPatch("libcocos2dcpp.so", 0x7A406E, "73 77 6e 31 31");
 	tmp->addPatch("libcocos2dcpp.so", 0x7A4056, "73 77 6e 31 31");
 
+	// probably fix platformer kick
+	tmp->addPatch("libcocos2dcpp.so", 0x247EC4, "00 BF 00 BF");
+
 	//package for save
 	tmp->addPatch("libcocos2dcpp.so", 0x785011, "67 65 6f 6d 65 74 72 79 6a 75 6d 70 6c 69 74 61");
 
