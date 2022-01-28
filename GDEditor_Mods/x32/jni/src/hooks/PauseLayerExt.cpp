@@ -4,20 +4,11 @@
 #include "PauseLayerExt.h"
 #include "GDPSManager.h"
 #include "patch.h"
+#include "gd.h"
 
 class SliderThumb {
 public:
     float getValue();
-};
-
-
-class Slider : public CCSprite{
-public:
-    static Slider* create(cocos2d::CCNode *,void (cocos2d::CCObject::*)(cocos2d::CCObject*),float);
-    void setValue(float);
-    void setBarVisibility(bool);
-    float getValue();
-
 };
 
 

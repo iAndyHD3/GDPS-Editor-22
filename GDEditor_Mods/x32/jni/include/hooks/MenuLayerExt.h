@@ -25,7 +25,7 @@ public:
     float getValue();
 };
 
-
+/*
 class Slider : public CCSprite{
 public:
     static Slider* create(cocos2d::CCNode *,void (cocos2d::CCObject::*)(cocos2d::CCObject*),float);
@@ -34,6 +34,7 @@ public:
     float getValue();
 
 };
+*/
 
 
 

@@ -877,6 +877,35 @@ bool SetGroupIDLayer_initH(SetGroupIDLayer* self, GameObject* object, CCArray* i
 	return true;
 }
 
+	  void* (*SetupCameraRotatePopupO)(SetupCameraRotatePopup*, EffectGameObject*, cocos2d::CCArray*);
+ void* SetupCameraRotatePopupH(SetupCameraRotatePopup* self, EffectGameObject* a2, cocos2d::CCArray* a3) {
+
+        auto ret = SetupCameraRotatePopupO(self, a2, a3);
+		
+        auto dir = CCDirector::sharedDirector();
+		auto winSize = CCDirector::sharedDirector()->getWinSize();
+		
+		auto moveTimeInput = self->_moveTimeInput();
+		moveTimeInput->setPositionX(moveTimeInput->getPositionX() + 200);
+		
+		auto slider = self->_slider();
+		slider->setPositionX(slider->getPositionX() + 200);
+		
+	auto moveInputBG = extension::CCScale9Sprite::create("square02_small.png", { 0, 0, 40, 40 });
+	moveInputBG->setPosition(moveTimeInput->getPosition());
+	moveInputBG->setOpacity(100);
+	moveInputBG->setContentSize(CCSize(50, 30));
+
+	self->addChild(moveInputBG);
+		
+	self->registerWithTouchDispatcher();
+	CCDirector::sharedDirector()->getTouchDispatcher()->incrementForcePrio(2);
+	self->setTouchEnabled(true);
+
+        return ret;
+}
+    
+
 extern void lib_entry();
 
 void loader()
@@ -890,7 +919,8 @@ void loader()
 
 	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN7cocos2d18CCSpriteFrameCache17spriteFrameByNameEPKc"), (void*) sprite_hk, (void **) &old5);
 
-	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN15SetGroupIDLayer4initEP10GameObjectPN7cocos2d7CCArrayE"), (void*) getPointer(&SetGroupIDLayer_initH), (void **) &SetGroupIDLayer_initO);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN15SetGroupIDLayer4initEP10GameObjectPN7cocos2d7CCArrayE"), (void*) getPointer(&SetGroupIDLayer_initH), (void **) &SetGroupIDLayer_initO); 
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN22SetupCameraRotatePopup4initEP16EffectGameObjectPN7cocos2d7CCArrayE"), (void*) getPointer(&SetupCameraRotatePopupH), (void **) &SetupCameraRotatePopupO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN14SelectArtLayer4initE13SelectArtType"), (void*) getPointer(&SelectArtLayer_initH), (void **) &SelectArtLayer_initO);
 
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11GameManager11colorForIdxEi"), (void*) getPointer(&GameManager_colorForIdx_hook), (void **) &GameManager_colorForIdx_trp);

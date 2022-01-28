@@ -44,12 +44,12 @@ bool ObjectOptionsLayer::init(SetGroupIDLayer* parent, GameObject* object, CCArr
 
         // title label
         auto titleLabel = CCLabelBMFont::create("Object Options", "goldFont.fnt");
-        titleLabel->setScale(.8);
+        titleLabel->setScale(.7);
         titleLabel->setPosition(winSize.width / 2, winSize.height / 2 + 138);
         layer->addChild(titleLabel, 2);
 
         // ok button
-        auto okBtnSpr = ButtonSprite::create("OK", 0, 0, .8, false, "goldFont.fnt", "GJ_button_01.png", 0);
+        auto okBtnSpr = ButtonSprite::create("OK", 42, 0, .8, true, "goldFont.fnt", "GJ_button_01.png", 30);
         auto okBtn = CCMenuItemSpriteExtra::create(okBtnSpr, okBtnSpr, this, menu_selector(ObjectOptionsLayer::onClose));
         okBtn->setPosition(winSize.width / 2, winSize.height / 2 - 132);
 
@@ -65,18 +65,18 @@ bool ObjectOptionsLayer::init(SetGroupIDLayer* parent, GameObject* object, CCArr
         auto togglesMenu = CCMenu::create();
 
         // - left
-        createToggleButton("Dont\nFade", CCPoint(-130, 80), this, menu_selector(ObjectOptionsLayer::onDontFade), togglesMenu, parent->_dontFadeToggled(), true); // Dont Fade
-        createToggleButton("Dont\nEnter", CCPoint(-130, 40), this, menu_selector(ObjectOptionsLayer::onDontEnter), togglesMenu, parent->_dontEnterToggled(), true); // Dont Enter
-        createToggleButton("No\nEffects", CCPoint(-130, 0), this, menu_selector(ObjectOptionsLayer::onHideEffects), togglesMenu, parent->_hideEffectsToggled(), true); // No Effects
-        createToggleButton("Group\nParent", CCPoint(-130, -40), this, menu_selector(ObjectOptionsLayer::onGroupParent), togglesMenu, parent->_groupParentToggled(), true); // Group Parent
-        createToggleButton("High\nDetail", CCPoint(-130, -80), this, menu_selector(ObjectOptionsLayer::onHighDetail), togglesMenu, parent->_highDetailToggled(), true); // High Detail
+        createToggleButton("Dont\nFade", CCPoint(-130, 90), this, menu_selector(ObjectOptionsLayer::onDontFade), togglesMenu, parent->_dontFadeToggled(), true); // Dont Fade
+        createToggleButton("Dont\nEnter", CCPoint(-130, 50), this, menu_selector(ObjectOptionsLayer::onDontEnter), togglesMenu, parent->_dontEnterToggled(), true); // Dont Enter
+        createToggleButton("No\nEffects", CCPoint(-130, 10), this, menu_selector(ObjectOptionsLayer::onHideEffects), togglesMenu, parent->_hideEffectsToggled(), true); // No Effects
+        createToggleButton("Group\nParent", CCPoint(-130, -30), this, menu_selector(ObjectOptionsLayer::onGroupParent), togglesMenu, parent->_groupParentToggled(), true); // Group Parent
+        createToggleButton("High\nDetail", CCPoint(-130, -70), this, menu_selector(ObjectOptionsLayer::onHighDetail), togglesMenu, parent->_highDetailToggled(), true); // High Detail
 
         // - right
-        createToggleButton("Untouchable", CCPoint(60, 80), this, menu_selector(ObjectOptionsLayer::onUntouchable), togglesMenu, parent->_untouchableToggled(), true); // Untouchable
-        createToggleButton("Passable", CCPoint(60, 40), this, menu_selector(ObjectOptionsLayer::onPassable), togglesMenu, parent->_untouchableToggled(), true); // Passable
-        createToggleButton("Hide", CCPoint(60, 0), this, menu_selector(ObjectOptionsLayer::onHide), togglesMenu, parent->_hideToggled(), true); // Hide
-        createToggleButton("NonStick", CCPoint(60, -40), this, menu_selector(ObjectOptionsLayer::onNonStick), togglesMenu, parent->_nonStickToggled(), true); // NonStick
-        createToggleButton("IceBlock", CCPoint(60, -80), this, menu_selector(ObjectOptionsLayer::onIceBlock), togglesMenu, parent->_iceBlockToggled(), true); // IceBlock
+        createToggleButton("Untouchable", CCPoint(50, 90), this, menu_selector(ObjectOptionsLayer::onUntouchable), togglesMenu, parent->_untouchableToggled(), true); // Untouchable
+        createToggleButton("Passable", CCPoint(50, 50), this, menu_selector(ObjectOptionsLayer::onPassable), togglesMenu, parent->_untouchableToggled(), true); // Passable
+        createToggleButton("Hide", CCPoint(50, 10), this, menu_selector(ObjectOptionsLayer::onHide), togglesMenu, parent->_hideToggled(), true); // Hide
+        createToggleButton("NonStick", CCPoint(50, -30), this, menu_selector(ObjectOptionsLayer::onNonStick), togglesMenu, parent->_nonStickToggled(), true); // NonStick
+        createToggleButton("IceBlock", CCPoint(50, -70), this, menu_selector(ObjectOptionsLayer::onIceBlock), togglesMenu, parent->_iceBlockToggled(), true); // IceBlock
 
         this->m_pLayer->addChild(togglesMenu, 5);
 
@@ -301,11 +301,11 @@ void ObjectOptionsLayer::createToggleButton(const char* text, CCPoint position, 
     toggle->toggle(!toggled);
 
     auto label = CCLabelBMFont::create(text, "bigFont.fnt");
-    label->limitLabelWidth(80, 0.3, 0);
+    label->limitLabelWidth(80, 0.35, 0);
     label->setAlignment(cocos2d::CCTextAlignment::kCCTextAlignmentLeft);
 
     toggle->setPosition(position);
-    label->setPosition(toggle->getPositionX() + 20 + label->getScaledContentSize().width / 2, toggle->getPositionY());
+    label->setPosition(toggle->getPositionX() + 17.5 + label->getScaledContentSize().width / 2, toggle->getPositionY());
 
     menu->addChild(toggle);
     menu->addChild(label);

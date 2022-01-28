@@ -5,4 +5,6 @@ pre.*
 src/platformer.cpp
 .vscode
 android-ndk-r16b-linux-x86_64/
-.bat
+.bat*
+Build.bat
+Build2.bat
