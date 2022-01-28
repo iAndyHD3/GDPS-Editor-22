@@ -10,5 +10,4 @@ public:
     void setValue(float);
     void setBarVisibility(bool);
     float getValue();
-
 };

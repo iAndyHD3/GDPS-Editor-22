@@ -877,32 +877,24 @@ bool SetGroupIDLayer_initH(SetGroupIDLayer* self, GameObject* object, CCArray* i
 	return true;
 }
 
-	  void* (*SetupCameraRotatePopupO)(SetupCameraRotatePopup*, EffectGameObject*, cocos2d::CCArray*);
- void* SetupCameraRotatePopupH(SetupCameraRotatePopup* self, EffectGameObject* a2, cocos2d::CCArray* a3) {
+void* (*SetupCameraRotatePopupO)(SetupCameraRotatePopup*, EffectGameObject*, cocos2d::CCArray*);
+void* SetupCameraRotatePopupH(SetupCameraRotatePopup* self, EffectGameObject* object, cocos2d::CCArray* objects) {
+	auto ret = SetupCameraRotatePopupO(self, object, objects);
 
-        auto ret = SetupCameraRotatePopupO(self, a2, a3);
-		
-        auto dir = CCDirector::sharedDirector();
-		auto winSize = CCDirector::sharedDirector()->getWinSize();
-		
-		auto moveTimeInput = self->_moveTimeInput();
-		moveTimeInput->setPositionX(moveTimeInput->getPositionX() + 200);
-		
-		auto slider = self->_slider();
-		slider->setPositionX(slider->getPositionX() + 200);
-		
-	auto moveInputBG = extension::CCScale9Sprite::create("square02_small.png", { 0, 0, 40, 40 });
-	moveInputBG->setPosition(moveTimeInput->getPosition());
+	auto dir = CCDirector::sharedDirector();
+	auto winSize = CCDirector::sharedDirector()->getWinSize();
+
+	self->_degreesInputSlider()->setPosition(CCPoint(winSize.width / 2, winSize.height / 2 + 70));
+	self->_degreesInput()->setPosition(CCPoint(winSize.width / 2 + 45, winSize.height / 2 + 105));
+
+	auto moveInputBG = extension::CCScale9Sprite::create("square02_small.png", {0, 0, 40, 40});
+	moveInputBG->setPosition(self->_degreesInput()->getPosition());
 	moveInputBG->setOpacity(100);
 	moveInputBG->setContentSize(CCSize(50, 30));
 
-	self->addChild(moveInputBG);
-		
-	self->registerWithTouchDispatcher();
-	CCDirector::sharedDirector()->getTouchDispatcher()->incrementForcePrio(2);
-	self->setTouchEnabled(true);
+	self->_m_pLayer()->addChild(moveInputBG, -1);
 
-        return ret;
+	return ret;
 }
     
 
@@ -1030,7 +1022,8 @@ void loader()
 			
 ************************************
 */
-
+	// SetupCameraRotatePopup degrees input bg
+	tmp->addPatch("libcocos2dcpp.so", 0x3FAA5E, "00 21");
 
 	//patch refresh
 
@@ -1112,6 +1105,13 @@ void loader()
 	groupIDLayerPatches->addPatch("libcocos2dcpp.so", 0x3E2494, "00 21"); // Order input bg
 
 	groupIDLayerPatches->Modify();
+
+	// moving stuff in SetupCameraRotatePopup
+	auto cameraRotatePopupPatches = new patch();
+	cameraRotatePopupPatches->addPatch("libcocos2dcpp.so", 0x3FA672, "27 EE 88 9A"); // VNMLS.F32  S18, S15, S16 -> VMUL.F32 S18, S15, S16 
+	cameraRotatePopupPatches->addPatch("libcocos2dcpp.so", 0x3FA348, "27 EE 88 7A"); //	VNMLS.F32  S14, S15, S16 -> VMUL.F32 S14, S15, S16 
+
+	cameraRotatePopupPatches->Modify();
 }
 
    JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved)
