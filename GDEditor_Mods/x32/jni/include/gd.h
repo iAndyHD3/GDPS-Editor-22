@@ -4,7 +4,6 @@
 
 #include <cocos2d.h>
 
-
 #include "GJUserScore.h"
 #include "GJEffectManager.h"
 #include "GJGroundLayer.h"

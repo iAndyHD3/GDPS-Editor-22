@@ -26,7 +26,9 @@
 #include "../ZLIB/zlib.h"
 #include <string>
 #include <iostream>
+#include <cocos2dx/extensions/CCScale9Sprite.h>
 
+#include "SetGroupIDLayer.h"
 
 using namespace std;
 
@@ -36,6 +38,7 @@ using namespace std;
 
 patch *playTest = new patch();
 patch *pauseBtn = new patch();
+patch *groupIDLayerPatches = new patch();
 
 template < class T>
 	void *getPointer(T value)
@@ -840,6 +843,40 @@ bool SelectArtLayer_initH(SelectArtLayer* self, SelectArtType type) {
 	return true;
 }
 
+
+bool (*SetGroupIDLayer_initO)(SetGroupIDLayer*, GameObject*, CCArray*);
+bool SetGroupIDLayer_initH(SetGroupIDLayer* self, GameObject* object, CCArray* idk) {
+	if(!SetGroupIDLayer_initO(self, object, idk)) return false;
+
+	auto winSize = CCDirector::sharedDirector()->getWinSize();
+
+	// moving the order input
+	auto orderInput = self->_orderInput();
+	orderInput->setPosition(winSize.width / 2 - 160, winSize.height / 2 - 130);
+
+	auto orderInputBG = extension::CCScale9Sprite::create("square02_small.png", { 0, 0, 40, 40 });
+	orderInputBG->setPosition(orderInput->getPosition());
+	orderInputBG->setOpacity(100);
+	orderInputBG->setContentSize(CCSize(50, 30));
+
+	self->_m_pLayer()->addChild(orderInputBG, -1);
+
+	auto menu = CCMenu::create();
+	self->addChild(menu, 14);
+	
+	auto extraBtnSpr = ButtonSprite::create("Extra", 20, 0, .5, true, "goldFont.fnt", "GJ_button_04.png", 25);
+	auto extraBtn = CCMenuItemSpriteExtra::create(extraBtnSpr, extraBtnSpr, self, menu_selector(SetGroupIDLayer::onExtra));
+	extraBtn->setPosition(217.5, 80);
+
+	menu->addChild(extraBtn);
+
+	self->registerWithTouchDispatcher();
+	CCDirector::sharedDirector()->getTouchDispatcher()->incrementForcePrio(2);
+	self->setTouchEnabled(true);
+
+	return true;
+}
+
 extern void lib_entry();
 
 void loader()
@@ -853,6 +890,7 @@ void loader()
 
 	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN7cocos2d18CCSpriteFrameCache17spriteFrameByNameEPKc"), (void*) sprite_hk, (void **) &old5);
 
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN15SetGroupIDLayer4initEP10GameObjectPN7cocos2d7CCArrayE"), (void*) getPointer(&SetGroupIDLayer_initH), (void **) &SetGroupIDLayer_initO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN14SelectArtLayer4initE13SelectArtType"), (void*) getPointer(&SelectArtLayer_initH), (void **) &SelectArtLayer_initO);
 
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11GameManager11colorForIdxEi"), (void*) getPointer(&GameManager_colorForIdx_hook), (void **) &GameManager_colorForIdx_trp);
@@ -884,9 +922,7 @@ void loader()
 	
 	//HookManager::do_hook((void*) &clippingRect_hk, (void*) v_hk, (void **) &v_trp);
 	
-	//HookManager::do_hook((void*) &menu_hk, getPointer(&MenuLayerExt::init_hk), (void **) &MenuLayerExt::init_trp);
-		HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN9MenuLayer4initEv"), (void*) getPointer(&MenuLayerExt::init_hk), (void **) &MenuLayerExt::init_trp);
-
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN9MenuLayer4initEv"), (void*) getPointer(&MenuLayerExt::init_hk), (void **) &MenuLayerExt::init_trp);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN9MenuLayer23updateUserProfileButtonEv"), (void*)MenuLayer_updateUserProfileButtonH, (void**)&MenuLayer_updateUserProfileButtonO);
 	
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16MultiplayerLayer4initEv"), (void*) getPointer(&MultiplayerLayerExt::init_hk), (void **) &MultiplayerLayerExt::init_trp);
@@ -1031,9 +1067,21 @@ void loader()
 	tmp->addPatch("libcocos2dcpp.so", 0x7896A9, "31");
 	pauseBtn->addPatch("libcocos2dcpp.so", 0x7896A9, "32");
 
+	// removing the toggles from SetGroupIDLayer
+	groupIDLayerPatches->addPatch("libcocos2dcpp.so", 0x3E1D90, "00 bf 00 bf"); // Dont Fade
+	groupIDLayerPatches->addPatch("libcocos2dcpp.so", 0x3E1E34, "00 bf 00 bf"); // Dont Enter
+	groupIDLayerPatches->addPatch("libcocos2dcpp.so", 0x3E1F3E, "00 bf 00 bf"); // No Effects
+	groupIDLayerPatches->addPatch("libcocos2dcpp.so", 0x3E20EC, "00 bf 00 bf"); // Group Parent
+	groupIDLayerPatches->addPatch("libcocos2dcpp.so", 0x3E216E, "00 bf 00 bf"); // High Detail
+	groupIDLayerPatches->addPatch("libcocos2dcpp.so", 0x3E21EC, "00 bf 00 bf"); // Untouchable
+	groupIDLayerPatches->addPatch("libcocos2dcpp.so", 0x3E226A, "00 bf 00 bf"); // Passable
+	groupIDLayerPatches->addPatch("libcocos2dcpp.so", 0x3E22EC, "00 bf 00 bf"); // Hide
+	groupIDLayerPatches->addPatch("libcocos2dcpp.so", 0x3E2374, "00 bf 00 bf"); // NonStick
+	groupIDLayerPatches->addPatch("libcocos2dcpp.so", 0x3E2458, "00 bf 00 bf"); // IceBlock
 
-        //pthread_exit(reinterpret_cast<void*> (0));
+	groupIDLayerPatches->addPatch("libcocos2dcpp.so", 0x3E2494, "00 21"); // Order input bg
 
+	groupIDLayerPatches->Modify();
 }
 
    JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved)

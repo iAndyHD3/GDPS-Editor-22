@@ -63,6 +63,7 @@ LOCAL_SRC_FILES := 	src/main.cpp \
 					src/layers/CreditsLayer.cpp \
 					include/Encryption/Base64/base64.cpp \
 					src/GDPSManager.cpp \
+					src/layers/ObjectOptionsLayer.cpp \
 					src/layers/GDPSSettings.cpp \
 					src/layers/ColoursPalette.cpp \
 					src/layers/AdvancedIconSelect.cpp \
@@ -83,7 +84,7 @@ LOCAL_SRC_FILES := 	src/main.cpp \
 					src/hooks/onFacebookExt.cpp \
 					src/hooks/onRobtopExt.cpp \
 					src/hooks/MenuLayerExt.cpp \
-					include/Encryption/Encryption.cpp 
+					include/Encryption/Encryption.cpp \
 
 LOCAL_LDLIBS := -llog \
 				-frtti \
