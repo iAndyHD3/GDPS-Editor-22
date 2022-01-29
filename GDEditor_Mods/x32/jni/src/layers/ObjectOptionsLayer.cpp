@@ -73,7 +73,7 @@ bool ObjectOptionsLayer::init(SetGroupIDLayer* parent, GameObject* object, CCArr
 
         // - right
         createToggleButton("Untouchable", CCPoint(50, 90), this, menu_selector(ObjectOptionsLayer::onUntouchable), togglesMenu, parent->_untouchableToggled(), true); // Untouchable
-        createToggleButton("Passable", CCPoint(50, 50), this, menu_selector(ObjectOptionsLayer::onPassable), togglesMenu, parent->_untouchableToggled(), true); // Passable
+        createToggleButton("Passable", CCPoint(50, 50), this, menu_selector(ObjectOptionsLayer::onPassable), togglesMenu, parent->_passableToggled(), true); // Passable
         createToggleButton("Hide", CCPoint(50, 10), this, menu_selector(ObjectOptionsLayer::onHide), togglesMenu, parent->_hideToggled(), true); // Hide
         createToggleButton("NonStick", CCPoint(50, -30), this, menu_selector(ObjectOptionsLayer::onNonStick), togglesMenu, parent->_nonStickToggled(), true); // NonStick
         createToggleButton("IceBlock", CCPoint(50, -70), this, menu_selector(ObjectOptionsLayer::onIceBlock), togglesMenu, parent->_iceBlockToggled(), true); // IceBlock
@@ -193,6 +193,8 @@ void ObjectOptionsLayer::onUntouchable(CCObject* pSender) {
     // single object
     if(this->m_pGameObj != nullptr) {
         this->m_pGameObj->_untouchableToggled() = this->parent->_untouchableToggled();
+
+        this->m_pGameObj->saveActiveColors();
     }
     // multiple objects
     else {
@@ -201,11 +203,11 @@ void ObjectOptionsLayer::onUntouchable(CCObject* pSender) {
             auto object = (GameObject*)this->m_pGameObjects->objectAtIndex(i);
             object->_untouchableToggled() = this->parent->_untouchableToggled();
 
+            object->saveActiveColors();
+
             i++;
         }
     }
-
-    this->m_pGameObj->saveActiveColors();
 }
 
 void ObjectOptionsLayer::onPassable(CCObject* pSender) {
