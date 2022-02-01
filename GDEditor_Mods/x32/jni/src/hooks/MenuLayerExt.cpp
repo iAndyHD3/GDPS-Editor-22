@@ -8,7 +8,7 @@
 #include "rapidjson/document.h"
 #include "patch.h"
 #include "KittyMemory.h"
-#define version2 2207
+#define version2 2209
 #include "../Encryption/Encryption.h"
 #include "../ZLIB/zlib.h"
 #include "../GDPSManager.h"
@@ -200,7 +200,7 @@ const char * level = decodeZLib.c_str();
 */
 
 		 //auto label22 = CCLabelBMFont::create("Version 2.2.0.8 Beta 3 V1", "chatFont.fnt");
-		auto label22 = CCLabelBMFont::create("Version 2.2.0.8", "chatFont.fnt");
+		auto label22 = CCLabelBMFont::create("Version 2.2.0.9", "chatFont.fnt");
 		if(GM->getGameVariable("100004")) {
 			
 	label22->setPosition(CCPoint(dir->getScreenRight() - 80, dir->getScreenTop() - 10));
@@ -213,7 +213,7 @@ const char * level = decodeZLib.c_str();
     label22->setAnchorPoint({ 0, 0 });
     label22->setScale(.5);
 	
-	auto label33 = CCLabelBMFont::create("Beta 9", "chatFont.fnt");
+	auto label33 = CCLabelBMFont::create("Beta 4", "chatFont.fnt");
 		if(GM->getGameVariable("100004")) {
 			
 	label33->setPosition(CCPoint(dir->getScreenRight() - 80, dir->getScreenTop() - 20));
@@ -272,7 +272,7 @@ const char * level = decodeZLib.c_str();
 		        this->addChild(bottomMenu3, 100);
 				this->addChild(bottomMenu4);
 				this->addChild(label22);
-				this->addChild(label33);
+				//this->addChild(label33);
 
 	}
         {
@@ -424,9 +424,11 @@ const char* server_b64 = AY_OBFUSCATE("aHR0cDovL2dhbWUuZ2Rwc2VkaXRvci5jb20vc2Vyd
 				       // auto url = AY_OBFUSCATE("https://www.youtube.com/channel/UCcfPtuop90e_JzxPkiZ6Q5Q");
 
 
-
         return ret;
     };
+	
+	
+	
 
 
 

@@ -165,6 +165,16 @@ bool CreditsLayer::init()
     Mnext1->setPosition({CCLEFT + 25, CCTOP / 2});
     layer2->addChild(Mnext1, 100);
 	
+	
+	auto next3 = CCSprite::createWithSpriteFrameName("GJ_arrow_01_001.png");
+	next3->setFlipX(true);
+	
+	auto Mnext3 = CCMenu::create();
+	auto next3Btn = CCMenuItemSpriteExtra::create(next3, next3, this, menu_selector(CreditsLayer::on3));
+	Mnext3->setPosition({CCRIGHT - 25, CCTOP / 2});
+    Mnext3->addChild(next3Btn);
+    layer2->addChild(Mnext3, 100);
+	
 	auto eitan = CCSprite::create("eitan.png");
 	eitan->setScale(.65);
 	eitan->setPosition({CCMIDX - 120, CCTOP - 125});
@@ -257,11 +267,46 @@ bool CreditsLayer::init()
 
 	//layer 2 done
 	
+	
+	//layer 3
+	
+	layer3 = CCLayer::create();
+	
+			auto Mnext4 = CCMenu::create();
+	
+	auto next4 = CCSprite::createWithSpriteFrameName("GJ_arrow_01_001.png");
+    auto next4Btn = CCMenuItemSpriteExtra::create(next4, next4, this, menu_selector(CreditsLayer::on2));
+    Mnext4->addChild(next4Btn);
+    Mnext4->setPosition({CCLEFT + 25, CCTOP / 2});
+    layer3->addChild(Mnext4, 100);
+	
+	
+	
+	auto catto = CCSprite::create("catto.png");
+	catto->setScale(.65);
+	catto->setPosition({CCMIDX - 120, CCTOP - 125});
+	layer3->addChild(catto);
+	
+	auto MCatto = CCMenu::create();
+	auto CattoYT = CCSprite::createWithSpriteFrameName("gj_ytIcon_001.png");
+	
+    auto CattoYTBtn = CCMenuItemSpriteExtra::create(CattoYT, CattoYT, this, menu_selector(CreditsLayer::onCattoYT));
+	
+    MCatto->addChild(CattoYTBtn);
+	
+    MCatto->setPosition({andy->getPositionX(), andy->getPositionY()});
+	
+	CattoYTBtn->setPosition(-75, -32);
+	
+	layer3->addChild(MCatto, 100);
+	
 	layer2->setVisible(false);
+	layer3->setVisible(false);
 	
     this->addChild(layer);
     this->addChild(layer1);
     this->addChild(layer2);
+    this->addChild(layer3);
 
     
 

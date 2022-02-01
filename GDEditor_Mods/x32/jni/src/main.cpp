@@ -169,44 +169,79 @@ char const* loading_hook(LoadingLayer *layer)
 	return loading_trp(layer);
 }
 
-void (*dict)( CCDictionary*, CCObject*, int);
-void dict_hk( cocos2d::CCDictionary* d, CCObject* obj, int key )
+void (*dict1)( CCDictionary*, CCObject*, int);
+void dict_hk1( cocos2d::CCDictionary* d, CCObject* obj, int key )
 {
 	
 	//LOGD("%s", obj, key);
 	
     switch(key)
     {
+
     case 0x7DF: // add if statement for string check
-        return dict( d, CCString::create( "edit_eRotateBtn_001.png" ), key );
+        return dict1( d, CCString::create( "edit_eRotateBtn_001.png" ), key );
         break;
 
     case 0x778:
-        return dict( d, CCString::create( "edit_eAdvRandomBtn_001.png" ), key );
+        return dict1( d, CCString::create( "edit_eAdvRandomBtn_001.png" ), key );
         break;
 
     case 0x7E0:
-        return dict( d, CCString::create( "edit_eGuideBtn_001.png" ), key );
+        return dict1( d, CCString::create( "edit_eGuideBtn_001.png" ), key );
         break;
 
     case 0xA8D:
-        return dict( d, CCString::create( "edit_ePauseMoverBtn_001.png" ), key );
+        return dict1( d, CCString::create( "edit_ePauseMoverBtn_001.png" ), key );
         break;
 		
 	case 0xA8E:
-        return dict( d, CCString::create( "edit_eResumeComBtn_001.png" ), key );
+        return dict1( d, CCString::create( "edit_eResumeComBtn_001.png" ), key );
         break;
 
     case 0x80E:
-        return dict( d, CCString::create( "edit_eEdgeBtn_001.png" ), key );
+        return dict1( d, CCString::create( "edit_eEdgeBtn_001.png" ), key );
         break;
 
     default:
 
-        dict( d, obj, key );
+        dict1( d, obj, key );
         break;
     }
 
+}
+
+GameObject* create_hk( int key )
+{
+    auto tb = ObjectToolbox::sharedState( )->intKeyToFrame( key );
+    
+    // LOGD("GAMEOBJECT: %s", tb);
+    if( strstr(tb, "pixelart") != NULL && strstr(tb, "b_001") == NULL )
+    {
+        auto pixelKey = mid_num( tb );
+        // LOGD("ART: %i", pixelKey);
+
+        return old4( pixelKey > 140 ? 1 : key );
+    }
+
+    if( !strcmp( tb, "pixelb_03_01_001.png" ) )
+        return old4( 1 );
+
+    if ( !strcmp( tb, "pixelb_03_02_001.png" ) )
+        return old4( 1 );
+
+
+    if( strstr( tb, "gdh" ) != NULL 
+    || strstr( tb, "secretCoin" ) != NULL 
+    || strstr( tb, "fireball" ) != NULL 
+    || strstr( tb, "fire_b" ) != NULL 
+    || strstr( tb, "gj22_anim" ) != NULL 
+    || strstr( tb, "pixel" ) != NULL 
+    || strstr( tb, "gjHand2" ) != NULL )
+        return old4( 1 );
+
+    auto o = old4( key );
+    
+    return o;
 }
 
 bool isGauntlet = false;
@@ -624,24 +659,31 @@ cocos2d::_ccColor3B GameManager_colorForIdx_hook(GameManager *pthis, int value)
 	}
 }
 
-void *(*CreatorLayer_init_trp)(LevelSettingsLayer *pthis, LevelSettingsObject *a2, LevelEditorLayer *a3);
-void *CreatorLayer_init_hook(LevelSettingsLayer *pthis, LevelSettingsObject *a2, LevelEditorLayer *a3)
-{
-	auto ret = CreatorLayer_init_trp(pthis, a2, a3);
+bool(*levelsettings)(LevelSettingsLayer*, LevelSettingsObject*, LevelEditorLayer*);
+bool levelsettings_hk(LevelSettingsLayer* ptr, LevelSettingsObject* a2, LevelEditorLayer* a3) {
+	
+	    auto ret = levelsettings(ptr, a2, a3);
+		
+		extern bool inEditor;
+		inEditor = false;
+
+     auto winsize = cocos2d::CCDirector::sharedDirector()->getWinSize();
+	
+	
+	auto dpad = CCSprite::createWithSpriteFrameName("Dpad_Btn.png");
+	dpad->setPosition({winsize.width / 2 - 90, winsize.height - 290});
+	dpad->setScale(.5);
+	ptr->addChild(dpad);
+	
+	auto menu = CCMenu::create();
+
+	ptr->addChild(menu);
 	
 
 	return ret;
-}
+};
 
 
-void *(*SetupRotatePopupLayer_trp)(CCLayerColor* self, CCObject* object1, CCObject* object2);
-void *SetupRotatePopupLayer_hook(CCLayerColor* self, CCObject* object1, CCObject* object2)
-{
-	auto ret = SetupRotatePopupLayer_trp(self, object1, object2);
-	
-
-	return ret;
-}
 
 	
 bool(*GaragLayer_init_trp)(CCLayer *pthis);
@@ -706,37 +748,6 @@ bool GaragLayer_init_hook(CCLayer *pthis)
 	return res;
 }
 
-
-/* CCSpriteFrame* (*old5)(CCSpriteFrameCache*, const char*) = nullptr;
-CCSpriteFrame* sprite_hk( CCSpriteFrameCache* ptr, const char* s )
-{
-    // LOGD("SPRITE: %s", s);
-
-
-    if( !strcmp( s, "GJ_fullBtn_001.png" )  )
-        return old5( ptr, "GJ_creatorBtn_001.png" );
-    
-    if( !strcmp( s, "GJ_freeStuffBtn_001.png" )  )
-        return old5( ptr, "GJ_dailyRewardBtn_001.png" );
-
-    if( !strcmp( s, "GJ_freeLevelsBtn_001.png" )  )
-        return old5( ptr, "GJ_moreGamesBtn_001.png" );
-
-    if ( !strcmp( s, "GJ_gauntletsBtn_001.png" ) )
-    {
-        if( !isGauntlet )
-        {
-            isGauntlet = true;
-            return old5( ptr, "GJ_versusBtn_001.png" );
-        }
-        {
-            isGauntlet = false;
-            return old5( ptr, "GJ_gauntletsBtn_001.png" );
-        }
-    }
-
-    return old5( ptr, s );
-} */
 
 // fix profile btn
 void (*MenuLayer_updateUserProfileButtonO)(MenuLayer*);
@@ -858,7 +869,12 @@ bool SetGroupIDLayer_initH(SetGroupIDLayer* self, GameObject* object, CCArray* i
 	orderInputBG->setPosition(orderInput->getPosition());
 	orderInputBG->setOpacity(100);
 	orderInputBG->setContentSize(CCSize(50, 30));
-
+	
+	auto label = CCLabelBMFont::create("Reverse\nOrder", "bigFont.fnt");
+	label->setPosition(orderInput->getPositionX() + 60, orderInput->getPositionY());	
+	label->setScale(.4);
+	self->addChild(label);
+			
 	self->_m_pLayer()->addChild(orderInputBG, -1);
 
 	auto menu = CCMenu::create();
@@ -896,89 +912,92 @@ void* SetupCameraRotatePopupH(SetupCameraRotatePopup* self, EffectGameObject* ob
 
 	return ret;
 }
+
+bool (*levelinfoinit)( LevelInfoLayer*, GJGameLevel*, bool );
+bool levelinfoinit_hk( LevelInfoLayer* ptr, GJGameLevel* level, bool a3 )
+{
+    auto r = levelinfoinit( ptr, level, a3 );
+
+     auto dir = cocos2d::CCDirector::sharedDirector();
+	 if(dir->getScheduler()->_fTimeScale != 1) {
+    dir->getScheduler()->_fTimeScale = 1;
+	 }
+    return r;
+}
+
+bool(*setUpLevelInfo)(EditLevelLayer*, GJGameLevel*);
+bool setUpLevelInfo_hk(EditLevelLayer* ptr, GJGameLevel* level) {
+	
+	    auto ret = setUpLevelInfo(ptr, level);
+		
+				extern bool inEditor;
+		inEditor = false;
+
+     auto dir = cocos2d::CCDirector::sharedDirector();
+	 if(dir->getScheduler()->_fTimeScale != 1) {
+    dir->getScheduler()->_fTimeScale = 1;
+	 }
+	
+	
+	return ret;
+};
+
+
+void (*clippingRect)( GLint, GLint, GLsizei, GLsizei );
+void clippingRect_hk( GLint x, GLint y, GLsizei width, GLsizei height )
+{
+    // LOGD( "SIZE: (%i, %i, %i, %i)", x, y, width, height );
+	extern bool inEditor;
+	if(inEditor) {
+    clippingRect( x, y, 1000, 1000 );
+	} else {
+		clippingRect(x,y,width,height);
+	}
+}
+
     
 
 extern void lib_entry();
 
 void loader()
 {
+	
 	auto cocos2d = dlopen(targetLibName != "" ? targetLibName : NULL, RTLD_LAZY);
-	//auto libShira = dlopen("libgdkit.so", RTLD_LAZY);
-
-	//color doesnt update but well there it is
-	//HookManager::do_hook(getPointerFromSymbol(cocos2d,"_ZN12PlayerObject15updateGlowColorEv"), (void*) PlayerObject_updateGlowColorhook,(void **)&PlayerObject_updateGlowColortrp);
-
-
-	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN7cocos2d18CCSpriteFrameCache17spriteFrameByNameEPKc"), (void*) sprite_hk, (void **) &old5);
-
+	auto libShira = dlopen("libgdkit.so", RTLD_LAZY);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "glScissor"), (void*) clippingRect_hk, (void **) &clippingRect);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN18LevelSettingsLayer4initEP19LevelSettingsObjectP16LevelEditorLayer"), (void*) levelsettings_hk, (void **) &levelsettings);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN14LevelInfoLayer4initEP11GJGameLevelb"), (void*) levelinfoinit_hk, (void **) &levelinfoinit);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN7cocos2d18CCSpriteFrameCache17spriteFrameByNameEPKc"), (void*) sprite_hk, (void **) &old5);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN14EditLevelLayer4initEP11GJGameLevel"), (void*) setUpLevelInfo_hk, (void **) &setUpLevelInfo); 
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN15SetGroupIDLayer4initEP10GameObjectPN7cocos2d7CCArrayE"), (void*) getPointer(&SetGroupIDLayer_initH), (void **) &SetGroupIDLayer_initO); 
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN22SetupCameraRotatePopup4initEP16EffectGameObjectPN7cocos2d7CCArrayE"), (void*) getPointer(&SetupCameraRotatePopupH), (void **) &SetupCameraRotatePopupO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN14SelectArtLayer4initE13SelectArtType"), (void*) getPointer(&SelectArtLayer_initH), (void **) &SelectArtLayer_initO);
-
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11GameManager11colorForIdxEi"), (void*) getPointer(&GameManager_colorForIdx_hook), (void **) &GameManager_colorForIdx_trp);
-
-	//this hooks didnt really work well, here to test other things faster, having hooks ready
-	//HookManager::do_hook(getPointerFromSymbol(cocos2d,"_ZN18LevelSettingsLayer4initEP19LevelSettingsObjectP16LevelEditorLayer"), (void*) getPointer(&onFacebookExt::init_hk), (void **) &onFacebookExt::init_trp);
-	
-	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN14LevelInfoLayer4initEP11GJGameLevelb"), (void*) getPointer(&onRobtopExt::init_hk), (void **) &onRobtopExt::init_trp);
-	
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN13GJGarageLayer4initEv"), (void*) getPointer(&GJGarageLayerExt::init_hk), (void **) &GJGarageLayerExt::init_trp);
-	//crash? ._.
-	
-	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN22SetupCameraRotatePopup4initEP16EffectGameObjectPN7cocos2d7CCArrayE"), (void**) &SetupRotatePopupLayer_trp, (void *) &SetupRotatePopupLayer_trp);
-	
-	
-	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11ProfilePage20loadPageFromUserInfoEP11GJUserScore"), (void*)ProfilePage_loadPageFromUserInfoH, (void**)&ProfilePage_loadPageFromUserInfoO);
-	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11CommentCell15loadFromCommentEP9GJComment"), (void*)CommentCell_loadFromCommentH, (void**)&CommentCell_loadFromCommentO);
-
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN20AccountRegisterLayer4initEv"), (void*) getPointer(&AccountRegisterLayerExt::init_hk), (void **) &AccountRegisterLayerExt::init_trp);
-
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN7cocos2d11CCFileUtils13addSearchPathEPKc"), (void*) CCFileUtils_addSearchPath_hk, (void **) &CCFileUtils_addSearchPath_trp);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11GameManager10dataLoadedEP13DS_Dictionary"), (void*) &GameManager_dataLoaded_hk, (void **) &dataLoaded_trp);
-
-	//_ZN12LoadingLayer4initEb this is real loading layer, _ZN12LoadingLayer15loadingFinishedEv seems like its actually when you transition into menu layer
-	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN12LoadingLayer15loadingFinishedEv"), (void*) loading_hook, (void **) &loading_trp);
-	
-	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN7cocos2d12CCDictionary9setObjectEPNS_8CCObjectEi"), (void*) dict_hk, (void **) &dict);
-	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN7cocos2d18CCSpriteFrameCache17spriteFrameByNameEPKc"), (void*) sprite_hk, (void **) &old5);
-	
-	//HookManager::do_hook((void*) &clippingRect_hk, (void*) v_hk, (void **) &v_trp);
-	
-	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN9MenuLayer4initEv"), (void*) getPointer(&MenuLayerExt::init_hk), (void **) &MenuLayerExt::init_trp);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN12LoadingLayer15loadingFinishedEv"), (void*) loading_hook , (void **) &loading_trp);
+	HookManager::do_hook((void*)&dict_hk , (void*) dict_hk1, (void **) &dict1);
+	HookManager::do_hook((void*) &menu_hk, getPointer(&MenuLayerExt::init_hk), (void **) &MenuLayerExt::init_trp);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN9MenuLayer23updateUserProfileButtonEv"), (void*)MenuLayer_updateUserProfileButtonH, (void**)&MenuLayer_updateUserProfileButtonO);
-	
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16MultiplayerLayer4initEv"), (void*) getPointer(&MultiplayerLayerExt::init_hk), (void **) &MultiplayerLayerExt::init_trp);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN10PauseLayer11customSetupEv"), (void*) getPointer(&PauseLayerExt::init_hk), (void **) &PauseLayerExt::init_trp);
-
-
-	
-	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN8EditorUIC2Ev"), (void*) getPointer(&EditorUIExt::EditorUI_hk), (void **) &EditorUIExt::EditorUI_trp);
-	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16LevelEditorLayer4initEP11GJGameLevel"), (void*) getPointer(&LevelEditorLayerExt::init_hk), (void **) &LevelEditorLayerExt::init_trp);
-	
-	
-        //HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN10GameObject13createWithKeyEi"), (void*) getPointer(&creata_hk), (void **) &old4);
-
-	
-	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN14EditLevelLayer6onBackEPN7cocos2d8CCObjectE"), (void*) getPointer(&EditLevelLayerExt::onBack_hk), (void **) &EditLevelLayerExt::onBack_trp);
-
-	//HookManager::do_hook((void*) &pause1_hk, getPointer(&PauseLayerExt::init_hk), (void **) &PauseLayerExt::init_trp);
-
-	
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN8EditorUIC2Ev"), (void*) getPointer(&EditorUIExt::EditorUI_hk), (void **) &EditorUIExt::EditorUI_trp);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN9PlayLayer6updateEf"), getPointer(&PlayLayerExt::update_hk), (void **) &PlayLayerExt::update_trp);
-	
-	
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11AppDelegate11trySaveGameEb"), (void*) save_hook, (void **) &save_trp);
-
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN10GameObject13createWithKeyEi"), (void*) create_hk, (void **) &old4);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN12OptionsLayer11customSetupEv"), (void*) OptionsLayer_customSetup_hk, (void **) &ol_customSetup_trp);
-
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16MoreOptionsLayer9addToggleEPKcS1_S1_"), getPointer(&MoreOptionsLayerExt::addToggle_hk), (void **) &MoreOptionsLayerExt::addToggle_trp);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11GameManager18toggleGameVariableEPKc"), (void*) hook_onToggle, (void **) &onToggleTrampoline);
-	
-	
 	HookManager::do_hook(
 	getPointerFromSymbol(cocos2d, "_ZN12PlayerObject13releaseButtonE12PlayerButton"), (void*) release_hk, (void **) &release_trp, true);
 
-	//239A60
+		//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN9MenuLayer4initEv"), (void*) getPointer(&MenuLayerExt::init_hk), (void **) &MenuLayerExt::init_trp);
+	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11ProfilePage20loadPageFromUserInfoEP11GJUserScore"), (void*)ProfilePage_loadPageFromUserInfoH, (void**)&ProfilePage_loadPageFromUserInfoO);
+	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11CommentCell15loadFromCommentEP9GJComment"), (void*)CommentCell_loadFromCommentH, (void**)&CommentCell_loadFromCommentO);
+	//HookManager::do_hook(getPointerFromSymbol(cocos2d,"_ZN12PlayerObject15updateGlowColorEv"), (void*) PlayerObject_updateGlowColorhook,(void **)&PlayerObject_updateGlowColortrp);
+
 
 	patch *tmp = new patch();
 
@@ -1000,28 +1019,10 @@ void loader()
 	//tmp->addPatch("libcocos2dcpp.so", 0x2B1F92, "00 bf");
 	
 	
-	//tmp->addPatch("libcocos2dcpp.so", 0x007A617F, "47 4a 5f 63 72 65 61 74 65 42 74 6e 5f 30 30 32"); //GJ_createBtn_001.png -> GJ_createBtn_002.png
-	/*
-	//hide editor button in pause
-		tmp->addPatch("libcocos2dcpp.so", 0x2AF71A, "00 bf 00 bf");
-		tmp->addPatch("libcocos2dcpp.so", 0x2AF72A, "00 bf 00 bf");
-		tmp->addPatch("libcocos2dcpp.so", 0x2AF73A, "00 bf 00 bf");
-*/
-			
-/*
-************************************
-	this patch fixes all the editor crashes, however levels like expurgation with a lot of triggers crash
-	tmp->addPatch("libcocos2dcpp.so", 0x44D2AE, "00 bf 00 bf");
-	*/
+	
+		//editor fix
         tmp->addPatch("libcocos2dcpp.so", 0x44D2AE, "00 bf 00 bf");
-	/*
-	
-	
-	//this patch restores the bytes to the original values, breaking the editor but fixing the levels crash
-	tmp->addPatch("libcocos2dcpp.so", 0x44D2AE, "D7 F7 B5 FF"); // editor fix, breaks levels
-			
-************************************
-*/
+
 	// SetupCameraRotatePopup degrees input bg
 	tmp->addPatch("libcocos2dcpp.so", 0x3FAA5E, "00 21");
 
@@ -1049,33 +1050,10 @@ void loader()
 	//10 stars limit bypass
 	tmp->addPatch("libcocos2dcpp.so", 0x2F8E5A, "04 e0");
 
-	//tmp->addPatch("libgdkit.so", 0xDC02, "00 bf");
-	//tmp->addPatch("libgdkit.so", 0xD284, "00 bf");
-	
-	
-	//fps, levl info nop, applied patch to lib directly
-	//tmp->addPatch("libgdkit.so", 0x00E2C8, "30 30 30 30");
-	//tmp->addPatch("libgdkit.so", 0x00E2D0, "30 30 30 30");
-
-	//  remove pause change speed	//
-	//tmp->addPatch("libgdkit.so", 0xE5DA, "00 bf");
-	//tmp->addPatch("libgdkit.so", 0xE618, "00 bf");
-	//tmp->addPatch("libgdkit.so", 0xE65C, "00 bf");
-	
-	
 
 	tmp->addPatch("libcocos2dcpp.so",0x2EA824,"00 bf");
 
-        /*	
-	//cube
-        tmp->addPatch("libcocos2dcpp.so", 0x2EB1B8, "96 29");
-        tmp->addPatch("libcocos2dcpp.so", 0x2EBC4C, "4F F0 96 09"); 
-        tmp->addPatch("libcocos2dcpp.so", 0x2EACC4, "96 27");
-        tmp->addPatch("libcocos2dcpp.so", 0x26B53E, "96 29");
-        tmp->addPatch("libcocos2dcpp.so", 0x2653E4, "96 29");
-         */
-	
-	
+		//swing texture names
 	tmp->addPatch("libcocos2dcpp.so", 0x7A402E, "73 77 6e 31 31");
 	tmp->addPatch("libcocos2dcpp.so", 0x7A4041, "73 77 6e 31 31");
 	tmp->addPatch("libcocos2dcpp.so", 0x7A406E, "73 77 6e 31 31");
@@ -1083,14 +1061,41 @@ void loader()
 
 	// probably fix platformer kick
 	tmp->addPatch("libcocos2dcpp.so", 0x247EC4, "00 BF 00 BF");
+	tmp->addPatch("libcocos2dcpp.so", 0x24168E, "00 BF 00 BF");
 
 	//package for save
-	tmp->addPatch("libcocos2dcpp.so", 0x785011, "67 65 6f 6d 65 74 72 79 6a 75 6d 70 6c 69 74 61");
+	tmp->addPatch("libcocos2dcpp.so", 0x785011, "67 65 6f 6d 65 74 72 79 6a 75 6d 70 6c 69 74 65");
+	
+	
+	tmp->addPatch("libgdkit.so", 0xDC02, "00 bf");
+	tmp->addPatch("libgdkit.so", 0xD284, "00 bf");
+	
+	
+	//fps, levl info nop, applied patch to lib directly
+	tmp->addPatch("libgdkit.so", 0x00E2C8, "30 30 30 30");
+	tmp->addPatch("libgdkit.so", 0x00E2D0, "30 30 30 30");
+
+	//  remove pause change speed	//
+	tmp->addPatch("libgdkit.so", 0xE5DA, "00 bf");
+	tmp->addPatch("libgdkit.so", 0xE618, "00 bf");
+	tmp->addPatch("libgdkit.so", 0xE65C, "00 bf");
+
+	//tmp->addPatch("libcocos2dcpp.so",002EA824,"00 bf");
+
+	tmp->addPatch("libgdkit.so", 0xE7EE, "00 bf");
+	
+	//patching the hooks here doesnt work, so these are already applied into the lib itself
+	//tmp->addPatch("libgdkit.so", 0xF6CC, "00 bf 00 bf"); //clippingRect_hk
+	//tmp->addPatch("libgdkit.so", 0xF0C2, "00 bf 00 bf"); //sprite_hk
+	//tmp->addPatch("libgdkit.so", 0xF016, "00 bf 00 bf"); //create_hk
+	//tmp->addPatch("libgdkit.so", 0xF15E, "00 bf 00 bf"); //pause_hk
+	//tmp->addPatch("libgdkit.so", 0xF1FE, "00 bf 00 bf"); //levelinfoinit_hk
+	
+	
 
 	tmp->Modify();
 
 	playTest->addPatch("libcocos2dcpp.so", 0x2ABFF6, "00 bf");
-	tmp->addPatch("libcocos2dcpp.so", 0x7896A9, "31");
 	pauseBtn->addPatch("libcocos2dcpp.so", 0x7896A9, "32");
 
 	// removing the toggles from SetGroupIDLayer
@@ -1115,6 +1120,9 @@ void loader()
 	cameraRotatePopupPatches->addPatch("libcocos2dcpp.so", 0x3FA348, "27 EE 88 7A"); //	VNMLS.F32  S14, S15, S16 -> VMUL.F32 S14, S15, S16 
 
 	cameraRotatePopupPatches->Modify();
+	
+		tmp->Modify();
+
 }
 
    JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved)

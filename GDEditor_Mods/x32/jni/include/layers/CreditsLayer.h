@@ -11,6 +11,7 @@ class CreditsLayer : public CCLayer {
 		CCLayer* layer;
 		CCLayer* layer1;
 		CCLayer* layer2;
+		CCLayer* layer3;
 	
 public:
     bool init();
@@ -33,12 +34,21 @@ public:
 	
 	layer1->setVisible(true);
 	layer2->setVisible(false);
+	layer3->setVisible(false);
 }
 
 void on2(CCObject*){
 	
 	layer1->setVisible(false);
 	layer2->setVisible(true);
+	layer3->setVisible(false);
+}
+
+void on3(CCObject*){
+	
+	layer1->setVisible(false);
+	layer2->setVisible(false);
+	layer3->setVisible(true);
 }
 
 void onAndyTW(CCObject*){
@@ -79,6 +89,9 @@ cocos2d::CCApplication::sharedApplication()->openURL("https://www.youtube.com/ch
 }
 void onRetroTW(CCObject*){
 cocos2d::CCApplication::sharedApplication()->openURL("https://twitter.com/RetroAdvance64");
+}
+void onCattoYT(CCObject*){
+cocos2d::CCApplication::sharedApplication()->openURL("https://www.youtube.com/channel/UCukOZuEy9mZZPq_hnFgAUjw");
 }
 		
 		

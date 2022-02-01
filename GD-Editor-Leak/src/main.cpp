@@ -1,3 +1,4 @@
+
 #include <vector>
 #include "DrawGridLayer.h"
 #include "LevelEditorLayer.h"
@@ -20,9 +21,8 @@
 #include "CCMenuItemSpriteExtra.h"
 #include "ButtonSprite.h"
 #include "LevelInfoLayer.h"
-#include "ParticlePreviewLayer.h"
 #include <iostream>
-#include "hooking.h"
+
 #include "obfuscate.h"
 
 using namespace cocos2d;
@@ -30,7 +30,6 @@ using namespace cocos2d;
 bool (*old3)(LevelEditorLayer*, GJGameLevel*) = nullptr;
 void (*old)(EditLevelLayer*, cocos2d::CCObject*) = nullptr;
 void (*old2)(LevelEditorLayer*) = nullptr;
-bool insideEditor = false;
 
 GameObject* (*old4)(int) = nullptr;
 
@@ -42,8 +41,6 @@ void onEdit_hk( EditLevelLayer* ptr, cocos2d::CCObject* sender )
         // ptr->setKeypadEnabled( false ); 0x20C not 0x204
 
         ptr->inEditorLayer_ = true;
-		extern bool insideEditor;
-		insideEditor = true;
         GM->editorScene_ = 3;
 
         ptr->verifyLevelName();
@@ -59,8 +56,39 @@ void onEdit_hk( EditLevelLayer* ptr, cocos2d::CCObject* sender )
     }
 }
 
+class MenuLayerExt : public cocos2d::CCLayer 
+{
+public:
+    void OnBlaze( cocos2d::CCObject* selector) 
+    {
+        auto app = cocos2d::CCApplication::sharedApplication( );
+        auto url = AY_OBFUSCATE("https://www.youtube.com/channel/UCcfPtuop90e_JzxPkiZ6Q5Q");
 
+        app->openURL(url);
+    }
+};
 
+bool (*menu)(CCLayer*);
+bool menu_hk(CCLayer* ptr)
+{
+    auto m = menu( ptr );
+
+    auto pos = CCDirector::sharedDirector()->getWinSize( );
+
+    auto menu = CCMenu::create( );
+    auto btn = CCMenuItemSpriteExtra::create(
+        ButtonSprite::create( AY_OBFUSCATE("Support Blaze!"), 0.35 ),
+        nullptr,
+        ptr,
+        menu_selector(MenuLayerExt::OnBlaze)
+    );
+    menu->addChild( btn );
+    menu->setPosition( (pos.width / 2) - 220, (pos.height / 2) - 72.5 );
+
+    ptr->addChild( menu, 1000 );
+
+    return m;
+}
 
 bool (*cctouch)(UILayer*, cocos2d::CCTouch*, cocos2d::CCEvent*);
 bool cctouch_hk(UILayer* ptr, cocos2d::CCTouch* pTouch, cocos2d::CCEvent* pEvent)
@@ -100,7 +128,7 @@ void exitEdit_hk( PauseLayer* ptr )
 {
     auto pl = GM->playLayer;
 
-    // pl->stopRecording( );
+    pl->stopRecording( );
     pl->stopAllActions();
     pl->unscheduleAllSelectors();
     GSM->stopBackgroundMusic();
@@ -122,8 +150,7 @@ bool init_hk( LevelEditorLayer* ptr, GJGameLevel* level )
 
     auto gm = GameManager::sharedState( );
     gm->inEditor_ = true;
-		extern bool insideEditor;
-		insideEditor = true;
+
     ptr->smoothFix = gm->getGameVariable( "0102" );
 
     ptr->ignoreDamage = gm->getGameVariable( "0009" );
@@ -284,11 +311,11 @@ bool init_hk( LevelEditorLayer* ptr, GJGameLevel* level )
     ptr->p1->setColor( prim_color );
     ptr->p1->setSecondColor( secondary_color );
     ptr->p1->updateGlowColor( );
+    ptr->p1->retain( );
 
     ptr->batchNodePlayer_->addChild( ptr->p1, 10 );
-    ptr->p1->field304 = 1;
-
     ptr->p1->setVisible( false );
+    ptr->p1->field304 = 1;
 
     ptr->p2 = PlayerObject::create(
         gm->playerFrame2 - gm->playerFrame1,
@@ -300,9 +327,9 @@ bool init_hk( LevelEditorLayer* ptr, GJGameLevel* level )
     ptr->p2->updateGlowColor( );
     ptr->p2->retain();
 
-    ptr->p2->field6f8 = 1;
-    ptr->p2->field304 = 2;
     ptr->p2->setOpacity( 0 );
+    ptr->p2->field304 = 1;
+    ptr->p2->field6f8 = 2;
 
     ptr->dCross = CCSprite::createWithSpriteFrameName( "d_cross_01_001.png" );
 
@@ -359,6 +386,8 @@ bool init_hk( LevelEditorLayer* ptr, GJGameLevel* level )
 
     ptr->firstThing2 = 0;
 
+  
+
     return true;
 }
 
@@ -378,7 +407,7 @@ GameObject* create_hk( int key )
         auto pixelKey = mid_num( tb );
         // LOGD("ART: %i", pixelKey);
 
-        return old4( pixelKey > 140 ? 1 : key );
+        return old4( pixelKey > 38 ? 1 : key );
     }
 
     if( !strcmp( tb, "pixelb_03_01_001.png" ) )
@@ -389,6 +418,7 @@ GameObject* create_hk( int key )
 
 
     if( strstr( tb, "gdh" ) != NULL 
+    || strstr( tb, "secretCoin" ) != NULL 
     || strstr( tb, "fireball" ) != NULL 
     || strstr( tb, "fire_b" ) != NULL 
     || strstr( tb, "gj22_anim" ) != NULL 
@@ -459,19 +489,21 @@ bool unlocked_hk(void* ptr, int a1, int a2)
 const char* (*loading)(cocos2d::CCLayer*);
 const char* loading_hk( CCLayer* ptr )
 {
+
+    
     return AY_OBFUSCATE("Mod developed by Blaze");
 }
 
 void (*dict)( CCDictionary*, CCObject*, int);
 void dict_hk( cocos2d::CCDictionary* d, CCObject* obj, int key )
 {
-      switch(key)
+    switch( key )
     {
     case 0x7DF: // add if statement for string check
         return dict( d, CCString::create( "edit_eRotateBtn_001.png" ), key );
         break;
 
-    case 0x778:
+    case 0x814:
         return dict( d, CCString::create( "edit_eAdvRandomBtn_001.png" ), key );
         break;
 
@@ -481,10 +513,6 @@ void dict_hk( cocos2d::CCDictionary* d, CCObject* obj, int key )
 
     case 0xA8D:
         return dict( d, CCString::create( "edit_ePauseMoverBtn_001.png" ), key );
-        break;
-		
-	case 0xA8E:
-        return dict( d, CCString::create( "edit_eResumeComBtn_001.png" ), key );
         break;
 
     case 0x80E:
@@ -498,22 +526,88 @@ void dict_hk( cocos2d::CCDictionary* d, CCObject* obj, int key )
     }
 }
 
+void (*pause)(PauseLayer*);
+void pause_hk( PauseLayer* ptr )
+{
+    pause( ptr );
+    
+    auto menu = CCMenu::create( );
+
+    auto size = CCDirector::sharedDirector()->getWinSize();
+    auto bottom = CCDirector::sharedDirector()->getScreenBottom();
+
+    ptr->createToggleButton(
+        std::string("%"), 
+        menu_selector(PauseLayer::onProgressBar), 
+        false, menu, 
+        CCPoint( (size.width / 2) + 160, bottom + 25. ) );
+    ptr->addChild( menu );
+
+    auto top = CCDirector::sharedDirector()->getScreenTop();
+    auto right = CCDirector::sharedDirector()->getScreenRight();
+
+    auto timeBtns = CCArray::create();
+
+    auto slowBtn = CCMenuItemSpriteExtra::create(
+        ButtonSprite::create( "Slow", 0, 0, 0.65, false, "goldFont.fnt", "GJ_button_01.png", 30. ), nullptr,
+        ptr,
+        menu_selector(PauseLayerExt::onSlow) );
+    menu->addChild( slowBtn );
+
+    auto normBtn = CCMenuItemSpriteExtra::create(
+        ButtonSprite::create( "Normal", 0, 0, 0.45, false, "goldFont.fnt", "GJ_button_01.png", 30. ), nullptr,
+        ptr,
+        menu_selector(PauseLayerExt::onNorm) );
+    menu->addChild( normBtn );
+
+    auto fastBtn = CCMenuItemSpriteExtra::create(
+        ButtonSprite::create( "Fast", 0, 0, 0.65, false, "goldFont.fnt", "GJ_button_01.png", 30. ), nullptr,
+        ptr,
+        menu_selector(PauseLayerExt::onFast) );
+    menu->addChild( fastBtn );
+
+    timeBtns->addObject( fastBtn );
+    timeBtns->addObject( normBtn );
+    timeBtns->addObject( slowBtn );
+
+    GameToolbox::alignItemsVertically( 
+        timeBtns, 
+        10, 
+        menu->convertToNodeSpace( CCPoint( size.width - 75, size.height - 80 ) ) );
+}
+
+
+void (*clippingRect)( GLint, GLint, GLsizei, GLsizei );
+void clippingRect_hk( GLint x, GLint y, GLsizei width, GLsizei height )
+{
+    // LOGD( "SIZE: (%i, %i, %i, %i)", x, y, width, height );
+    clippingRect( x, y, 1000, 1000 );
+}
+
+/*
 bool (*levelinfoinit)( LevelInfoLayer*, GJGameLevel*, bool );
 bool levelinfoinit_hk( LevelInfoLayer* ptr, GJGameLevel* level, bool a3 )
 {
     auto r = levelinfoinit( ptr, level, a3 );
 
-        auto dir = cocos2d::CCDirector::sharedDirector();
-     auto winSize = cocos2d::CCDirector::sharedDirector()->getWinSize();
-	 auto gameSpeed = dir->getScheduler()->_fTimeScale;
-	 
-	 if(gameSpeed != 1) {
-		gameSpeed = 1;
-	 }
-	
+    auto menu = CCMenu::create();
+    ptr->addChild( menu, 100 );
+
+    auto play = cocos2d::CCSprite::createWithSpriteFrameName("GJ_playBtn2_001.png");
+    play->setScale( 0.7 );
+
+    auto replayBtn = CCMenuItemSpriteExtra::create(
+        play, nullptr,
+        ptr,
+        menu_selector(LevelInfoLayer::onPlayReplay) );
+    menu->addChild( replayBtn );
+
+    auto size = CCDirector::sharedDirector()->getWinSize();
+    menu->setPosition( ( size.width / 2 ) + 100, ( size.height / 2 ) + 51 );
 
     return r;
 }
+*/
 
 #include "CreatorLayer.h"
 
@@ -580,215 +674,30 @@ void updateOptions_hk( EditorPauseLayer* self, CCObject* ref )
     self->removeFromParentAndCleanup( true );
 }
 
-#include <map>
+#include "CCFileUtils.h"
 
-static const std::map<const char*, int> btnMapping = {
-    { "edit_eShaderBtn_001.png", 2864 },
-    { "edit_eShockWaveBtn_001.png", 2865 },
-    { "edit_eShockLineBtn_001.png", 2866 },
-    { "edit_eGlitchBtn_001.png", 2867 },
-    { "edit_eChromaticBtn_001.png", 2868 },
-    { "edit_eChromaticGlitchBtn_001.png", 2869 },
-    { "edit_ePixelateBtn_001.png", 2870 },
-    { "edit_eLensCircleBtn_001.png", 2871 },
-    { "edit_eRadialBlurBtn_001.png", 2872 },
-    { "edit_eMotionBlurBtn_001.png", 2873 },
-    { "edit_eBulgeBtn_001.png", 2874 },
-    { "edit_eGrayScaleBtn_001.png", 2875 },
-    { "edit_eSepiaBtn_001.png", 2876 },
-    { "edit_eInvertColorBtn_001.png", 2877 }
-};
-
-#include "ObjectToolbox.h"
-#include "EditButtonBar.h"
-#include "CreateMenuItem.h"
-
-ObjectToolbox* (*toolbox)( );
-ObjectToolbox* toolbox_hk( )
+/*
+std::string (*filepath)(cocos2d::CCFileUtils*, const char*, bool);
+std::string filepath_hk( cocos2d::CCFileUtils* ptr, const char* path, bool a1 )
 {
-    // LOGD("HOW2");
-
-    auto tb = toolbox( );
-
-    for ( const auto [ texture, objectID ] : btnMapping )
-    {
-        tb->objectFrameNameDict_->setObject( CCString::create( texture ), std::string( texture ) );
-        tb->objectIDFrameDict_->setObject( CCString::create( texture ), objectID );
-    } 
-
-    return tb;
+    // LOGD("FILEPATH: %s", path);
+    return filepath( ptr, path, a1 );
 }
 
-CreateMenuItem* (*buttonBar)( EditorUI*, int, cocos2d::CCArray* );
-CreateMenuItem* buttonBar_hk( EditorUI* editor, int id, cocos2d::CCArray* objectArray )
+void (*descText)(EditLevelLayer*, const char*);
+void descText_hk(EditLevelLayer* ptr, const char* data)
 {
-    for ( const auto [ texture, objectID ] : btnMapping )
-        objectArray->addObject( editor->getCreateBtn( objectID, 4 ) );
-
-    return editor->getCreateBtn( id, 4 );
+    // TODO:
+    
 }
-
-void (*clippingRect)( GLint, GLint, GLsizei, GLsizei );
-void clippingRect_hk( GLint x, GLint y, GLsizei width, GLsizei height )
-{
-	
-    // LOGD( "SIZE: (%i, %i, %i, %i)", x, y, width, height );
-	extern bool insideEditor;
-	if(insideEditor) {
-    clippingRect( x, y, 1000, 1000 );
-	} else {
-	clippingRect(x, y, width, height);	
-	}
-	
-}
-
-void*(*ui)(EditorUI*);
-void* ui_hk(EditorUI*ptr){
-  auto gm = GameManager::sharedState();
-  gm->inEditor_ = true;
-  extern bool insideEditor;
-   insideEditor = true;
-
-  return ui(ptr);
-}
-
-void*(*edit)(EditLevelLayer* , CCObject*);
-void* edit_hk(EditLevelLayer* se, CCObject* self ){
-    auto uis = edit(se, self);
-    auto gm = GameManager::sharedState();
-		extern bool insideEditor;
-        gm->inEditor_ = false;
-		insideEditor = false;
-
-    return uis;
-}
-
-bool(*levelsettings)(LevelSettingsLayer*, LevelSettingsObject*, LevelEditorLayer*);
-bool levelsettings_hk(LevelSettingsLayer* ptr, LevelSettingsObject* a2, LevelEditorLayer* a3) {
-	
-	    auto ret = levelsettings(ptr, a2, a3);
-		
-		extern bool insideEditor;
-		insideEditor = false;
-
-     auto winsize = cocos2d::CCDirector::sharedDirector()->getWinSize();
-	
-	
-	auto dpad = CCSprite::createWithSpriteFrameName("Dpad_Btn.png");
-	dpad->setPosition({winsize.width / 2 - 90, winsize.height - 290});
-	dpad->setScale(.5);
-	ptr->addChild(dpad);
-	
-	auto menu = CCMenu::create();
-
-	ptr->addChild(menu);
-	
-
-	return ret;
-};
-
-bool(*setUpLevelInfo)(EditLevelLayer*, GJGameLevel*);
-bool setUpLevelInfo_hk(EditLevelLayer* ptr, GJGameLevel* level) {
-	
-	    auto ret = setUpLevelInfo(ptr, level);
-
-     auto dir = cocos2d::CCDirector::sharedDirector();
-	 if(dir->getScheduler()->_fTimeScale != 1) {
-    dir->getScheduler()->_fTimeScale = 1;
-	 }
-	
-	
-	return ret;
-};
-
-
-
-#include <signal.h>
-#include <stdio.h>
-#include <malloc.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <sys/mman.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <string.h>
-#include <dirent.h>
-#include <signal.h>
-#include <sys/mman.h>
-// #include <asm/ptrace.h>
-#include <sys/ptrace.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <sys/user.h>
-#include <unistd.h>
+*/
 
 #define OB(c) AY_OBFUSCATE(c)
-
-static void handler(int sig, siginfo_t *si, void *vcontext)
-{
-    const auto ctx = reinterpret_cast< ucontext_t* >( vcontext );
-    LOGD("GOT SIGILL AT ADDR: 0x%lx (PC: %lx; R0: %lx)", (long)si->si_addr, (long)ctx->uc_mcontext.arm_pc, (long)ctx->uc_mcontext.arm_r0);
-
-    exit(EXIT_FAILURE);
-}
-
-void *getPointerFromSymbol(void *handle, const char *symbol)
-{
-	return reinterpret_cast<void*> (dlsym(handle, symbol));
-}
-
-#include "inlineHook.h"
-#include "relocate.h"
-
-#ifndef PAGE_SIZE
-#define PAGE_SIZE 4096
-#endif
-
-#define PAGE_START(addr)	(~(PAGE_SIZE - 1) & (addr))
-#define SET_BIT0(addr)		(addr | 1)
-#define CLEAR_BIT0(addr)	(addr & 0xFFFFFFFE)
-#define TEST_BIT0(addr)		(addr & 1)
-
-#define ACTION_ENABLE	0
-#define ACTION_DISABLE	1
 
 void __attribute__(( constructor )) lib_entry( );
 void lib_entry( )
 {
     isGauntlet = false;
-
-    struct sigaction sa;
-    sa.sa_flags = SA_SIGINFO;
-    sigemptyset(&sa.sa_mask);
-    sa.sa_sigaction = handler;
-
-    sigaction(SIGILL, &sa, NULL);
-	
-	#define targetLibName ("libcocos2dcpp.so")
-	auto cocos2d = dlopen(targetLibName != "" ? targetLibName : NULL, RTLD_LAZY);
-	
-	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16EditorPauseLayer8onResumeEPN7cocos2d8CCObjectE"), (void*) updateOptions_hk, (void **) &updateOptions); 
-	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN14EditLevelLayer4initEP11GJGameLevel"), (void*) setUpLevelInfo_hk, (void **) &setUpLevelInfo); 
-	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN14LevelInfoLayer4initEP11GJGameLevelb"), (void*) levelinfoinit_hk, (void **) &levelinfoinit);
-	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN12LoadingLayer16getLoadingStringEv"), (void*) loading_hk, (void **) &loading);
-	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN14EditLevelLayer6onEditEPN7cocos2d8CCObjectE"), (void*) onEdit_hk, (void **) &old);
-	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16LevelEditorLayer4initEP11GJGameLevel"), (void*) init_hk, (void **) &old3);
-	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN10GameObject13createWithKeyEi"), (void*) create_hk, (void **) &old4);
-	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN7cocos2d18CCSpriteFrameCache17spriteFrameByNameEPKc"), (void*) sprite_hk, (void **) &old5);
-	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN7cocos2d12CCDictionary9setObjectEPNS_8CCObjectEi"), (void*) dict_hk, (void **) &dict);
-	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN12CreatorLayer4initEv"), (void*) world_hk, (void **) &world );
-	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN10PauseLayer6onEditEPN7cocos2d8CCObjectE"), (void*) exitEdit_hk, (void **) &exitEdit);
-	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN7UILayer12ccTouchBeganEPN7cocos2d7CCTouchEPNS0_7CCEventE"), (void*) cctouch_hk, (void **) &cctouch);
-	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN7UILayer12ccTouchEndedEPN7cocos2d7CCTouchEPNS0_7CCEventE"), (void*) touchend_hk, (void **) &touchend); //end touch
-	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN8EditorUIC2Ev"), (void*) ui_hk, (void **) &ui);
-	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN14EditLevelLayer6onBackEPN7cocos2d8CCObjectE"), (void*) edit_hk, (void **) &edit);
-	HookManager::do_hook(getPointerFromSymbol(cocos2d, "glScissor"), (void*) clippingRect_hk, (void **) &clippingRect);
-	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN18LevelSettingsLayer4initEP19LevelSettingsObjectP16LevelEditorLayer"), (void*) levelsettings_hk, (void **) &levelsettings);
-	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16GameStatsManager14isItemUnlockedE10UnlockTypei"), (void*) unlocked_hk, (void **) &unlocked);
-
-
-	
-	/*
 
     const auto [ addr14, err14 ] = gdmk::get_proc_addr(OB("_ZN16GameStatsManager14isItemUnlockedE10UnlockTypei"));
     gdmk::do_inline_hook( addr14, unlocked_hk, &unlocked);
@@ -809,13 +718,14 @@ void lib_entry( )
     gdmk::do_inline_hook( addr4, create_hk, &old4 );
 
     const auto [ addr5, _5 ] = gdmk::get_proc_addr( OB("_ZN7cocos2d18CCSpriteFrameCache17spriteFrameByNameEPKc") );
+
     gdmk::do_inline_hook( addr5, sprite_hk, &old5 );
 
     const auto [ addr10, _10 ] = gdmk::get_proc_addr( OB("_ZN10PauseLayer11customSetupEv") );
-   // gdmk::do_inline_hook( addr10, pauseSetup_hk, &pauseSetup );
+    gdmk::do_inline_hook( addr10, pause_hk, &pause );
 
-    const auto [ addr12, _11 ] = gdmk::get_proc_addr( OB("_ZN14LevelInfoLayer4initEP11GJGameLevelb") );
-    gdmk::do_inline_hook( addr12, levelinfoinit_hk, &levelinfoinit );
+    // const auto [ addr12, _11 ] = gdmk::get_proc_addr( OB("_ZN14LevelInfoLayer4initEP11GJGameLevelb") );
+    // gdmk::do_inline_hook( addr12, levelinfoinit_hk, &levelinfoinit );
 
     const auto [ addr13, _13 ] = gdmk::get_proc_addr( OB("_ZN7cocos2d12CCDictionary9setObjectEPNS_8CCObjectEi") );
     gdmk::do_inline_hook( addr13, dict_hk, &dict );
@@ -827,23 +737,15 @@ void lib_entry( )
     gdmk::do_inline_hook( addr19, exitEdit_hk, &exitEdit );
 
     const auto addr17 = std::get<0>( gdmk::get_proc_addr(OB("_ZN9MenuLayer4initEv")));
-     gdmk::do_inline_hook( addr17, menu_hk, &menu);
+    gdmk::do_inline_hook( addr17, menu_hk, &menu);
 
     const auto addr18 = std::get<0>( gdmk::get_proc_addr(OB("_ZN7UILayer12ccTouchBeganEPN7cocos2d7CCTouchEPNS0_7CCEventE")) );
     gdmk::do_inline_hook( addr18, cctouch_hk, &cctouch );
 
     const auto addr20 = std::get<0>( gdmk::get_proc_addr(OB("_ZN7UILayer12ccTouchEndedEPN7cocos2d7CCTouchEPNS0_7CCEventE")));
     gdmk::do_inline_hook( addr20, touchend_hk, &touchend);
-
-    const auto addr21 = std::get<0>( gdmk::get_proc_addr( OB( "_ZN13ObjectToolbox11sharedStateEv" ) ) );
-    gdmk::do_inline_hook( addr21, toolbox_hk, &toolbox );
-    
-    const auto addr23 = std::get<0>( gdmk::get_proc_addr( OB( "glScissor" ) ) );
-    gdmk::do_inline_hook( addr23, clippingRect_hk, &clippingRect );
-
-    // const auto addr22 = std::get<0>( gdmk::get_proc_addr( "_ZN9MenuLayer12onGameCenterEPN7cocos2d8CCObjectE" ) );
-    // gdmk::do_inline_hook( addr22, buttonBar_hk, &buttonBar );
 	
-	*/
+	    const auto addr23 = std::get<0>( gdmk::get_proc_addr( OB( "glScissor" ) ) );
+    gdmk::do_inline_hook( addr23, clippingRect_hk, &clippingRect );
+	
 }
-

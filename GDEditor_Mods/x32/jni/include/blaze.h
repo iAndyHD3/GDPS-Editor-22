@@ -30,7 +30,7 @@ extern void (*clippingRect)(int,int,int,int);
 //void touchend_hk(UILayer *,cocos2d::CCTouch *,cocos2d::CCEvent *);
 void exitEdit_hk(PauseLayer *);
 bool init_hk(LevelEditorLayer *,GJGameLevel *);
-void create_hk(int);
+//void create_hk(int);
 extern bool (*unlocked)(void *,int,int);
 //void unlocked_hk(void *,int,int);
 
@@ -40,8 +40,8 @@ extern void (*dict)(cocos2d::CCDictionary *,cocos2d::CCObject *,int);
 extern void (*exitEdit)(PauseLayer *);
 void dict_hk(cocos2d::CCDictionary *,cocos2d::CCObject *,int);
 void pause1_hk(PauseLayer *);
-extern bool (*levelinfoinit)(LevelInfoLayer *,GJGameLevel *,bool);
-void levelinfoinit_hk(LevelInfoLayer *,GJGameLevel *,bool);
+//extern bool (*levelinfoinit)(LevelInfoLayer *,GJGameLevel *,bool);
+//void levelinfoinit_hk(LevelInfoLayer *,GJGameLevel *,bool);
 
 extern bool (*world)(CreatorLayer *);
 bool world_hk(CreatorLayer *);

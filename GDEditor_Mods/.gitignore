@@ -8,3 +8,6 @@ out
 x32/libs
 x32/obj
 backup/
+GD-Editor-Leak/
+GD-Editor-Leak
+/GD-Editor-Leak/
