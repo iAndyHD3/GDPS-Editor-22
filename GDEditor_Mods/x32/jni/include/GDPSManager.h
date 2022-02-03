@@ -29,6 +29,8 @@ public:
 
     void save();
 	void changeServers(const char* server, const char* server_b64); //server needs to be 33 characters, server base 64 needs to be 44 characters
+	void setPlayerSwing(int id);
+	void setPlayerJetpack(int id);
 
 protected:
     CCDictionary * dictionary = nullptr;

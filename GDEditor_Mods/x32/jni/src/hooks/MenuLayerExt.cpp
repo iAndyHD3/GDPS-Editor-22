@@ -278,76 +278,14 @@ const char * level = decodeZLib.c_str();
         {
             auto gm = GameManager::sharedState();
 
-            auto tag = gm->getIntGameVariable("6969");
-			auto tag2 = gm->getIntGameVariable("7001");
+          
+			auto m_nPlayerJetpack = gm->getIntGameVariable("7001");
 			
-		if (tag < 1) {
-		
+			GDPS->setPlayerSwing(gm->m_nPlayerSwing);
+			GDPS->setPlayerJetpack(m_nPlayerJetpack);
 			
-			gm->setIntGameVariable("6969", 1);
-		}
-		
-				if (tag2 < 1) {
-		
-			
-			gm->setIntGameVariable("7001", 1);
-		}
-
-            auto v = CCString::createWithFormat("%02d",tag)->getCString();
-            patch *tmp = new patch();
-            std::stringstream stream;
-            stream << std::hex << int(v[0]) << " " << std::hex << int(v[1]);
-            std::string result( stream.str() );
-			
-			
-			auto v2 = CCString::createWithFormat("%02d",tag2)->getCString();
-            std::stringstream stream2;
-            stream2 << std::hex << int(v2[0]) << " " << std::hex << int(v2[1]);
-            std::string result2( stream2.str() );
-
-            if(tag <= 1){         //swing_01_001 -> swn01_01_001
-                patch *tmp = new patch();
-                tmp->addPatch("libcocos2dcpp.so", 0x7A402E, "73 77 6e 30 31");
-                tmp->addPatch("libcocos2dcpp.so", 0x7A4041, "73 77 6e 30 31"); 
-				tmp->addPatch("libcocos2dcpp.so", 0x7A406E, "73 77 6e 30 31"); 
-                tmp->addPatch("libcocos2dcpp.so", 0x7A4056, "73 77 6e 30 31"); 
-               // tmp->Modify();
-            }else{                          //swn01_01_2_001 --  swn01_01_2_001 --  swn01_01_glow_001
-                tmp->addPatch("libcocos2dcpp.so", 0x7A402E, "73 77 6e "+result);
-                tmp->addPatch("libcocos2dcpp.so", 0x7A4041, "73 77 6e "+result);
-                tmp->addPatch("libcocos2dcpp.so", 0x7A406E, "73 77 6e "+result);
-				tmp->addPatch("libcocos2dcpp.so", 0x7A4056, "73 77 6e "+result);
-               // tmp->Modify();
-            }
-			
-			if(tag2 <= 1) {
-			
-		tmp->addPatch("libcocos2dcpp.so", 0x7A4131, "70 61 63 6B");
-        tmp->addPatch("libcocos2dcpp.so", 0x7A4143, "70 61 63 6B");
-        tmp->addPatch("libcocos2dcpp.so", 0x7A4157, "70 61 63 6B");
-		tmp->addPatch("libcocos2dcpp.so", 0x7A416E, "70 61 63 6B");
-      //  tmp->Modify();
-			
-			}else{ 
-			
-		tmp->addPatch("libcocos2dcpp.so", 0x7A4131, "6a 70 "+result2);
-        tmp->addPatch("libcocos2dcpp.so", 0x7A4143, "6a 70 "+result2);
-        tmp->addPatch("libcocos2dcpp.so", 0x7A4157, "6a 70 "+result2);
-		tmp->addPatch("libcocos2dcpp.so", 0x7A416E, "6a 70 "+result2);
-      //  tmp->Modify();
-
-        }
-		
-		}				//this->addChild(CCParticleSnow::create());
 
 
-      /*
-        auto sl = Slider::create(this,menu_selector(MenuLayerExt::onProgressChanged),1);
-        sl->setPosition(ccp(250 ,50));
-        sl->setValue(1);
-		
-  this->addChild(sl);
-*/
 			auto numReq = gm->getGameVariable("11000");
 			
 			
@@ -422,14 +360,12 @@ const char* server = AY_OBFUSCATE("http://game.gdpseditor.com/server");
 const char* server_b64 = AY_OBFUSCATE("aHR0cDovL2dhbWUuZ2Rwc2VkaXRvci5jb20vc2VydmVy");
 
 		GDPS->changeServers(server, server_b64);
-		
-
-
-				       // auto url = AY_OBFUSCATE("https://www.youtube.com/channel/UCcfPtuop90e_JzxPkiZ6Q5Q");
 
 
         return ret;
     };
+	
+}
 	
 	
 	

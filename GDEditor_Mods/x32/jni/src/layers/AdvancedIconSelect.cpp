@@ -7,6 +7,7 @@
 #include "patch.h"
 #include "AdvancedIconSelect.h"
 #include "SimplePlayer.h"
+#include "GDPSManager.h"
 
 #define version 0
 
@@ -406,7 +407,10 @@ void AdvancedIconSelect::onSwingClick(CCObject * sender){
 	
     auto gm = GameManager::sharedState();
     gm->setIntGameVariable("6969", tag);
-    gm->m_nPlayerSwing = tag;
+	gm->m_nPlayerSwing = tag;
+	GDPS->setPlayerSwing(tag);
+
+	
 	
 
     auto v = CCString::createWithFormat("%02d",tag)->getCString();
@@ -421,24 +425,13 @@ void AdvancedIconSelect::onSwingClick(CCObject * sender){
 
 
 
-    if(tag == 1){         //swing_01_001 -> swn01_01_001
-        patch *tmp = new patch();
-                tmp->addPatch("libcocos2dcpp.so", 0x7A402E, "73 77 6e 30 31");
-                tmp->addPatch("libcocos2dcpp.so", 0x7A4041, "73 77 6e 30 31"); 
-				tmp->addPatch("libcocos2dcpp.so", 0x7A406E, "73 77 6e 30 31"); 
-                tmp->addPatch("libcocos2dcpp.so", 0x7A4056, "73 77 6e 30 31");
-       // tmp->Modify();
+    if(tag == 1){
+ 
+		deleteAll();
+		robtopBtn->setPosition(initX + 420, initY + 40);
 		
-			deleteAll();
-robtopBtn->setPosition(initX + 420, initY + 40);
-//robtop->setPosition(initX + 420, initY + 40);  			
-    }else{                          //swn01_01_2_001 --  swn01_01_2_001 --  swn01_01_glow_001
-                tmp->addPatch("libcocos2dcpp.so", 0x7A402E, "73 77 6e "+result);
-                tmp->addPatch("libcocos2dcpp.so", 0x7A4041, "73 77 6e "+result);
-                tmp->addPatch("libcocos2dcpp.so", 0x7A406E, "73 77 6e "+result);
-				tmp->addPatch("libcocos2dcpp.so", 0x7A4056, "73 77 6e "+result);
-       // tmp->Modify();
-		
+    }else{                
+
 		deleteAll();
 		
 		switch(tag) {
@@ -491,9 +484,9 @@ robtopBtn->setPosition(initX + 420, initY + 40);
 			plus->setPosition(initX + 442, initY + 40);
 			IghbyBtn->setPosition(initX + 480, initY + 40);
 		
-    }
+		}
 		
-}
+	}
 }
 	void AdvancedIconSelect::onJetPackClick(CCObject * sender){
     CCMenuItemSpriteExtra * obj = (CCMenuItemSpriteExtra *)sender;
@@ -508,33 +501,16 @@ robtopBtn->setPosition(initX + 420, initY + 40);
 
     auto gm = GameManager::sharedState();
     gm->setIntGameVariable("7001", tag);
-	
+	GDPS->setPlayerJetpack(tag);
 	
 					auto winSize = CCDirector::sharedDirector()->getWinSize();
 		    float initX = -winSize.width/2 + 50,initY = winSize.height/2 - 80;
 
-
     if(tag == 1){
-
-				patch *tmp = new patch();
-		tmp->addPatch("libcocos2dcpp.so", 0x7A4131, "70 61 63 6B");
-        tmp->addPatch("libcocos2dcpp.so", 0x7A4143, "70 61 63 6B");
-        tmp->addPatch("libcocos2dcpp.so", 0x7A4157, "70 61 63 6B");
-		tmp->addPatch("libcocos2dcpp.so", 0x7A416E, "70 61 63 6B");
-        tmp->Modify();
 
 			deleteAll();
 			robtopBtn->setPosition(initX + 420, initY + 40);		
-
-
     }else{
-		
-		tmp->addPatch("libcocos2dcpp.so", 0x7A4131, "6a 70"+result);
-        tmp->addPatch("libcocos2dcpp.so", 0x7A4143, "6a 70"+result);
-        tmp->addPatch("libcocos2dcpp.so", 0x7A4157, "6a 70"+result);
-		tmp->addPatch("libcocos2dcpp.so", 0x7A416E, "6a 70"+result);
-        tmp->Modify();
-		
 		
 		deleteAll();
 		
@@ -549,7 +525,7 @@ robtopBtn->setPosition(initX + 420, initY + 40);
 			RetroAdvance64Btn->setPosition(initX + 440,initY+40);
 			break;
 		
-    }
+		}
 	}
 
 }

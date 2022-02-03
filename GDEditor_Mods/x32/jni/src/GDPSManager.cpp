@@ -3,6 +3,7 @@
 #include <gd.h>
 #include <CCFileUtils.h>
 #include "GDPSManager.h"
+#include <sstream>
 
 
 
@@ -74,6 +75,61 @@ void GDPSManager::load() {
     auto dict = CCDictionary::createWithContentsOfFile(path.c_str());
     dataLoaded(dict);
 }
+
+void GDPSManager::setPlayerSwing(int id) {
+	
+	auto v = CCString::createWithFormat("%02d",id)->getCString();
+    patch *tmp = new patch();
+    std::stringstream stream;
+    stream << std::hex << int(v[0]) << " " << std::hex << int(v[1]);
+    std::string result( stream.str() );
+	
+	  if(id == 1 || id == 0){         //swing_01_001 -> swn01_01_001
+        patch *tmp = new patch();
+                tmp->addPatch("libcocos2dcpp.so", 0x7A402E, "73 77 6e 30 31");
+                tmp->addPatch("libcocos2dcpp.so", 0x7A4041, "73 77 6e 30 31"); 
+				tmp->addPatch("libcocos2dcpp.so", 0x7A406E, "73 77 6e 30 31"); 
+                tmp->addPatch("libcocos2dcpp.so", 0x7A4056, "73 77 6e 30 31");
+        tmp->Modify();
+		
+			
+    }else{                          //swn01_01_2_001 --  swn01_01_2_001 --  swn01_01_glow_001
+                tmp->addPatch("libcocos2dcpp.so", 0x7A402E, "73 77 6e "+result);
+                tmp->addPatch("libcocos2dcpp.so", 0x7A4041, "73 77 6e "+result);
+                tmp->addPatch("libcocos2dcpp.so", 0x7A406E, "73 77 6e "+result);
+				tmp->addPatch("libcocos2dcpp.so", 0x7A4056, "73 77 6e "+result);
+       tmp->Modify();
+	}
+	
+}
+
+void GDPSManager::setPlayerJetpack(int id) {
+	
+	auto v = CCString::createWithFormat("%02d",id)->getCString();
+    patch *tmp = new patch();
+    std::stringstream stream;
+    stream << std::hex << int(v[0]) << " " << std::hex << int(v[1]);
+    std::string result( stream.str() );
+	
+	  if(id == 1 || id == 0){        
+        tmp->addPatch("libcocos2dcpp.so", 0x7A4131, "70 61 63 6B");
+        tmp->addPatch("libcocos2dcpp.so", 0x7A4143, "70 61 63 6B");
+        tmp->addPatch("libcocos2dcpp.so", 0x7A4157, "70 61 63 6B");
+		tmp->addPatch("libcocos2dcpp.so", 0x7A416E, "70 61 63 6B");
+        tmp->Modify();
+		
+			
+    }else{            
+        tmp->addPatch("libcocos2dcpp.so", 0x7A4131, "6a 70"+result);
+        tmp->addPatch("libcocos2dcpp.so", 0x7A4143, "6a 70"+result);
+        tmp->addPatch("libcocos2dcpp.so", 0x7A4157, "6a 70"+result);
+		tmp->addPatch("libcocos2dcpp.so", 0x7A416E, "6a 70"+result);
+       tmp->Modify();
+	}
+	
+}
+	
+	
 void GDPSManager::changeServers(const char* server, const char* server_b64) {
 	
 	          unsigned char* server1;

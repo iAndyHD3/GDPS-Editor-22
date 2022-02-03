@@ -7,6 +7,7 @@
 #include "GJBaseGameLayer.h"
 #include "LevelEditorLayer.h"
 #include "PlayLayer.h"
+#include "GDAPI_Macros.h"
 
 class LevelSelectLayer;
 class GJShopLayer;
@@ -147,6 +148,7 @@ public:
     int secondaryColorID_2; // 0x224
     int secondaryColorID_1; // 0x228
 
+
 public:
     GameManager();
     virtual ~GameManager();
@@ -169,6 +171,8 @@ int getIntGameVariable(const char* variable);
     void reloadAll(bool ,bool,bool );
     void setPlayerColor(int);
     void setPlayerColor2(int);
+	void setPlayerShip(int);
+	void setPlayerJetpack(int);
 };
 
 #define GM GameManager::sharedState()

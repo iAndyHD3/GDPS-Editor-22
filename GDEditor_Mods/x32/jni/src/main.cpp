@@ -733,13 +733,15 @@ void MenuLayer_updateUserProfileButtonH(MenuLayer *self) {
 void (*ProfilePage_loadPageFromUserInfoO)(ProfilePage*, GJUserScore*);
 void ProfilePage_loadPageFromUserInfoH(ProfilePage* self, GJUserScore* userData) {
 	ProfilePage_loadPageFromUserInfoO(self, userData);
-
 	// custom mod badges
+	
 	auto winsize = CCDirector::sharedDirector()->getWinSize();
 	auto dpad = CCSprite::createWithSpriteFrameName("Dpad_Btn.png");
 	dpad->setPosition({winsize.width / 2 - 90, winsize.height - 290});
 	dpad->setScale(.5);
-	self->addChild(dpad);
+	self->_someArray()->addObject(dpad);
+	//:nice_argument:
+	
 	
 	
 	int modBadgeLevel = userData->_modBadge();
@@ -1057,8 +1059,11 @@ void loader()
 	tmp->addPatch("libcocos2dcpp.so", 0x247EC4, "00 BF 00 BF");
 	tmp->addPatch("libcocos2dcpp.so", 0x24168E, "00 BF 00 BF");
 
-	//package for save
-	tmp->addPatch("libcocos2dcpp.so", 0x785011, "67 65 6f 6d 65 74 72 79 6a 75 6d 70 6c 69 74 65");
+	//package for save release
+	//tmp->addPatch("libcocos2dcpp.so", 0x785011, "67 65 6f 6d 65 74 72 79 6a 75 6d 70 6c 69 74 65");
+	
+	//package for save beta 
+	tmp->addPatch("libcocos2dcpp.so", 0x785011, "67 65 6f 6d 65 74 72 79 6a 75 6d 70 6c 69 74 61");
 	
 	
 	tmp->addPatch("libgdkit.so", 0xDC02, "00 bf");
