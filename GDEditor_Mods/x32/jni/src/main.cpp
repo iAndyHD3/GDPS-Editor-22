@@ -733,17 +733,10 @@ void MenuLayer_updateUserProfileButtonH(MenuLayer *self) {
 void (*ProfilePage_loadPageFromUserInfoO)(ProfilePage*, GJUserScore*);
 void ProfilePage_loadPageFromUserInfoH(ProfilePage* self, GJUserScore* userData) {
 	ProfilePage_loadPageFromUserInfoO(self, userData);
+	
+	auto winSize = CCDirector::sharedDirector()->getWinSize();
+
 	// custom mod badges
-	
-	auto winsize = CCDirector::sharedDirector()->getWinSize();
-	auto dpad = CCSprite::createWithSpriteFrameName("Dpad_Btn.png");
-	dpad->setPosition({winsize.width / 2 - 90, winsize.height - 290});
-	dpad->setScale(.5);
-	self->_someArray()->addObject(dpad);
-	//:nice_argument:
-	
-	
-	
 	int modBadgeLevel = userData->_modBadge();
 
 	if(modBadgeLevel > 2) {
@@ -761,6 +754,26 @@ void ProfilePage_loadPageFromUserInfoH(ProfilePage* self, GJUserScore* userData)
 
 				break;
 			}
+		}
+	}
+
+	// show swing
+	int iconIterator = 1;
+	for(int i = 0; i < self->_someArray()->count(); i++) {
+		auto thang = (CCNode*)self->_someArray()->objectAtIndex(i);
+
+		// pos Y = 200
+		if(thang->getPositionY() < 201 && thang->getPositionY() > 199) {
+			thang->setPositionX(winSize.width / 2 + 41 * iconIterator - 184);
+
+			// change swing icon
+			if(iconIterator == 8) {
+				auto icon = (SimplePlayer*)thang;
+
+				icon->updatePlayerFrame(reinterpret_cast<GJUserScoreExt*>(userData)->playerSwing_, IconType::Swing);
+			}
+
+			iconIterator++;
 		}
 	}
 }
@@ -946,7 +959,35 @@ void swing_hk( PlayerObject* player, int tag)
 	return swing(player, GM->m_nPlayerSwing);
 }
 	
-    
+// make GJUserScore store the acc swing
+GJUserScore* (*GJUserScore_createO)(CCDictionary*);
+GJUserScore* GJUserScore_createH(CCDictionary* userData) {
+	auto userScore = GJUserScore_createO(userData);
+
+	int accSwing = userData->valueForKey("69")->intValue();
+
+	reinterpret_cast<GJUserScoreExt*>(userScore)->playerSwing_ = accSwing;
+
+	return userScore;
+}
+
+const char* (*CCString_getCStringO)(CCString*);
+const char* CCString_getCStringH(CCString* self) {
+	auto ret = CCString_getCStringO(self);
+
+	if(strstr(ret, "accSpider=") != NULL) {
+		auto toAdd = CCString::createWithFormat("&accSwing=%i", GM->m_nPlayerSwing)->getCString();
+		//ret += CCString::createWithFormat("&accSwing=%i", GM->m_nPlayerSwing)->getCString();
+
+		char *s = new char[strlen(ret)+strlen(toAdd)+1];
+        strcpy(s, ret);
+       	strcat(s, toAdd);
+
+		ret = s;
+	}
+
+	return ret;
+}
 
 extern void lib_entry();
 
@@ -955,8 +996,9 @@ void loader()
 	
 	auto cocos2d = dlopen(targetLibName != "" ? targetLibName : NULL, RTLD_LAZY);
 	auto libShira = dlopen("libgdkit.so", RTLD_LAZY);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZNK7cocos2d8CCString10getCStringEv"), (void*)CCString_getCStringH, (void**)&CCString_getCStringO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "glScissor"), (void*) clippingRect_hk, (void **) &clippingRect);
-	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN12PlayerObject22updatePlayerSwingFrameEi"), (void*) swing_hk, (void **) &swing);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11GJUserScore6createEPN7cocos2d12CCDictionaryE"), (void*)GJUserScore_createH, (void**)&GJUserScore_createO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN18LevelSettingsLayer4initEP19LevelSettingsObjectP16LevelEditorLayer"), (void*) levelsettings_hk, (void **) &levelsettings);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN18LevelSettingsLayer7onCloseEPN7cocos2d8CCObjectE"), (void*) lvlsettings_close_hk, (void **) &lvlsettings_close);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN14LevelInfoLayer4initEP11GJGameLevelb"), (void*) levelinfoinit_hk, (void **) &levelinfoinit);
@@ -987,7 +1029,7 @@ void loader()
 	getPointerFromSymbol(cocos2d, "_ZN12PlayerObject13releaseButtonE12PlayerButton"), (void*) release_hk, (void **) &release_trp, true);
 
 		//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN9MenuLayer4initEv"), (void*) getPointer(&MenuLayerExt::init_hk), (void **) &MenuLayerExt::init_trp);
-	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11ProfilePage20loadPageFromUserInfoEP11GJUserScore"), (void*)ProfilePage_loadPageFromUserInfoH, (void**)&ProfilePage_loadPageFromUserInfoO);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11ProfilePage20loadPageFromUserInfoEP11GJUserScore"), (void*)ProfilePage_loadPageFromUserInfoH, (void**)&ProfilePage_loadPageFromUserInfoO);
 	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11CommentCell15loadFromCommentEP9GJComment"), (void*)CommentCell_loadFromCommentH, (void**)&CommentCell_loadFromCommentO);
 	//HookManager::do_hook(getPointerFromSymbol(cocos2d,"_ZN12PlayerObject15updateGlowColorEv"), (void*) PlayerObject_updateGlowColorhook,(void **)&PlayerObject_updateGlowColortrp);
 
@@ -997,8 +1039,6 @@ void loader()
  	//EC34
 	//patch *shiraPTH = new patch();
 	//shiraPTH->addPatch("libgdkit.so", 0xEC34, "F0 B5 03 AF 2D E9");
-
-
 
 	//shiraPTH->Modify();
 	//HookManager::do_hook(getPointer(&gdmk::get_proc_addr), (void*) t, (void **) &t_trp);
@@ -1090,7 +1130,8 @@ void loader()
 	//tmp->addPatch("libgdkit.so", 0xF15E, "00 bf 00 bf"); //pause_hk
 	//tmp->addPatch("libgdkit.so", 0xF1FE, "00 bf 00 bf"); //levelinfoinit_hk
 	
-	
+	// add 1 more icon to ProfilePage
+	tmp->addPatch("libcocos2dcpp.so", 0x397C6C, "BB F1 08 0F");
 
 	tmp->Modify();
 

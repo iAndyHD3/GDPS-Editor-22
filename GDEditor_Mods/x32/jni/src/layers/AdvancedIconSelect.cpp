@@ -27,8 +27,7 @@ bool AdvancedIconSelect::init()
 
    	auto page = CCString::createWithFormat("%i", gm->getIntGameVariable("7000"))->intValue();
 	
-	auto swn = CCString::createWithFormat("%i", gm->getIntGameVariable("6969"))->intValue();
-
+	auto swn = gm->m_nPlayerSwing;
 
 	select = CCSprite::createWithSpriteFrameName("GJ_select_001.png");
     select->setScale(1.1);
@@ -406,8 +405,9 @@ void AdvancedIconSelect::onSwingClick(CCObject * sender){
 	
 	
     auto gm = GameManager::sharedState();
-    gm->setIntGameVariable("6969", tag);
-	gm->m_nPlayerSwing = tag;
+    //gm->setIntGameVariable("6969", tag);
+	//gm->m_nPlayerSwing = tag;
+	gm->setPlayerSwing(tag);
 	GDPS->setPlayerSwing(tag);
 
 	

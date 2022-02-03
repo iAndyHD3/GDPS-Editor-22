@@ -357,7 +357,9 @@ const char* server = AY_OBFUSCATE("http://gmdpseditor.7m.pl/database");
 const char* server_b64 = AY_OBFUSCATE("aHR0cDovL2dtZHBzZWRpdG9yLjdtLnBsL2RhdGFiYXNlCg==");
 */
 const char* server = AY_OBFUSCATE("http://game.gdpseditor.com/server");
+//const char* server = AY_OBFUSCATE("http://gmdpseditor.7m.pl/database"); // testing on old server
 const char* server_b64 = AY_OBFUSCATE("aHR0cDovL2dhbWUuZ2Rwc2VkaXRvci5jb20vc2VydmVy");
+//const char* server_b64 = AY_OBFUSCATE("aHR0cDovL2dtZHBzZWRpdG9yLjdtLnBsL2RhdGFiYXNl"); // testing on old server
 
 		GDPS->changeServers(server, server_b64);
 

@@ -9,6 +9,8 @@
 #include "PlayLayer.h"
 #include "GDAPI_Macros.h"
 
+#include <stdlib.h>
+
 class LevelSelectLayer;
 class GJShopLayer;
 class DailyLevelPage;
@@ -148,6 +150,18 @@ public:
     int secondaryColorID_2; // 0x224
     int secondaryColorID_1; // 0x228
 
+public:
+    CLASS_MEMBER(int, playerSwingSeed, 0x20C);
+    CLASS_MEMBER(int, playerSwingRand, 0x210);
+    CLASS_MEMBER(int, playerSwing, 0x214);
+
+// missing funcs
+public:
+    void setPlayerSwing(int ID) {
+        _playerSwing() = ID;
+        
+        // not sure how rand is calculated
+    }
 
 public:
     GameManager();

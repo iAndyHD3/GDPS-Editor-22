@@ -60,4 +60,9 @@ public:
     CLASS_MEMBER(int, modBadge, 0x17C);
 };
 
+class GJUserScoreExt : public GJUserScore {
+public:
+    int playerSwing_;
+};
+
 #endif
