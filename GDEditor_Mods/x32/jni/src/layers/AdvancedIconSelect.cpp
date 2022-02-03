@@ -6,6 +6,7 @@
 #include "rapidjson/rapidjson.h"
 #include "patch.h"
 #include "AdvancedIconSelect.h"
+#include "SimplePlayer.h"
 
 #define version 0
 
@@ -401,6 +402,12 @@ void AdvancedIconSelect::onSwingClick(CCObject * sender){
     CCMenuItemSpriteExtra * obj = (CCMenuItemSpriteExtra *)sender;
     select->setPosition(ccp(obj->getPositionX(),obj->getPositionY()));
     auto tag = obj->getTag();
+	
+	
+    auto gm = GameManager::sharedState();
+    gm->setIntGameVariable("6969", tag);
+    gm->m_nPlayerSwing = tag;
+	
 
     auto v = CCString::createWithFormat("%02d",tag)->getCString();
     patch *tmp = new patch();
@@ -412,8 +419,7 @@ void AdvancedIconSelect::onSwingClick(CCObject * sender){
 	    float initX = -winSize.width/2 + 50,initY = winSize.height/2 - 80;
 
 
-    auto gm = GameManager::sharedState();
-    gm->setIntGameVariable("6969", tag);
+
 
     if(tag == 1){         //swing_01_001 -> swn01_01_001
         patch *tmp = new patch();
@@ -421,7 +427,7 @@ void AdvancedIconSelect::onSwingClick(CCObject * sender){
                 tmp->addPatch("libcocos2dcpp.so", 0x7A4041, "73 77 6e 30 31"); 
 				tmp->addPatch("libcocos2dcpp.so", 0x7A406E, "73 77 6e 30 31"); 
                 tmp->addPatch("libcocos2dcpp.so", 0x7A4056, "73 77 6e 30 31");
-        tmp->Modify();
+       // tmp->Modify();
 		
 			deleteAll();
 robtopBtn->setPosition(initX + 420, initY + 40);
@@ -431,7 +437,7 @@ robtopBtn->setPosition(initX + 420, initY + 40);
                 tmp->addPatch("libcocos2dcpp.so", 0x7A4041, "73 77 6e "+result);
                 tmp->addPatch("libcocos2dcpp.so", 0x7A406E, "73 77 6e "+result);
 				tmp->addPatch("libcocos2dcpp.so", 0x7A4056, "73 77 6e "+result);
-        tmp->Modify();
+       // tmp->Modify();
 		
 		deleteAll();
 		

@@ -9,7 +9,8 @@
 class AdvancedIconSelect : public CCLayer {
 	
 	//swings
-	
+	    SimplePlayer * swingIcon;
+
     CCSprite* select;
 	// CCLabelBMFont* robtop;
 	// CCLabelBMFont* RetroAdvance64;

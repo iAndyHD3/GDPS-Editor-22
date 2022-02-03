@@ -238,6 +238,7 @@ bool ColoursPalette::init(GJGarageLayer * garageLayer) {
         int dartId = gm->m_nPlayerDart;
         int robotId = gm->m_nPlayerRobot;
         int spiderId = gm->m_nPlayerSpider;
+		int swingId = gm->m_nPlayerSwing;
 		
         int hasGlow = gm->m_bPlayerGlow;
 
@@ -374,8 +375,8 @@ bool ColoursPalette::init(GJGarageLayer * garageLayer) {
             player_node->addChild(this->spiderIcon);
         }
         {
-            this->swingIcon = SimplePlayer::create(0);
-            this->swingIcon->updatePlayerFrame(0, IconType::Swing);
+            this->swingIcon = SimplePlayer::create(swingId);
+            this->swingIcon->updatePlayerFrame(swingId, IconType::Swing);
             this->swingIcon->setPositionX(current_icon_position);
             this->swingIcon->setPositionY(0.0f);
             this->swingIcon->setSecondColor(GameManager::sharedState()->colorForIdx(color2));

@@ -4,16 +4,13 @@
 #include "EditorUIExt.h"
 
 
-bool inEditor = false;
+
 
 
 EditorUI *EditorUIExt::EditorUI_hk() {
+	extern bool inEditor;
     inEditor = true;
     return EditorUI_trp(this);
 }
 
-void EditorUIExt::EditorUIDest_hk() {
-    inEditor = false;
-    return EditorUIDest_trp(this);
-}
 

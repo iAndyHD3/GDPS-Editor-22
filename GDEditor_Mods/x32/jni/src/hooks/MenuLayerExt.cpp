@@ -311,13 +311,13 @@ const char * level = decodeZLib.c_str();
                 tmp->addPatch("libcocos2dcpp.so", 0x7A4041, "73 77 6e 30 31"); 
 				tmp->addPatch("libcocos2dcpp.so", 0x7A406E, "73 77 6e 30 31"); 
                 tmp->addPatch("libcocos2dcpp.so", 0x7A4056, "73 77 6e 30 31"); 
-                tmp->Modify();
+               // tmp->Modify();
             }else{                          //swn01_01_2_001 --  swn01_01_2_001 --  swn01_01_glow_001
                 tmp->addPatch("libcocos2dcpp.so", 0x7A402E, "73 77 6e "+result);
                 tmp->addPatch("libcocos2dcpp.so", 0x7A4041, "73 77 6e "+result);
                 tmp->addPatch("libcocos2dcpp.so", 0x7A406E, "73 77 6e "+result);
 				tmp->addPatch("libcocos2dcpp.so", 0x7A4056, "73 77 6e "+result);
-                tmp->Modify();
+               // tmp->Modify();
             }
 			
 			if(tag2 <= 1) {
@@ -326,7 +326,7 @@ const char * level = decodeZLib.c_str();
         tmp->addPatch("libcocos2dcpp.so", 0x7A4143, "70 61 63 6B");
         tmp->addPatch("libcocos2dcpp.so", 0x7A4157, "70 61 63 6B");
 		tmp->addPatch("libcocos2dcpp.so", 0x7A416E, "70 61 63 6B");
-        tmp->Modify();
+      //  tmp->Modify();
 			
 			}else{ 
 			
@@ -334,7 +334,7 @@ const char * level = decodeZLib.c_str();
         tmp->addPatch("libcocos2dcpp.so", 0x7A4143, "6a 70 "+result2);
         tmp->addPatch("libcocos2dcpp.so", 0x7A4157, "6a 70 "+result2);
 		tmp->addPatch("libcocos2dcpp.so", 0x7A416E, "6a 70 "+result2);
-        tmp->Modify();
+      //  tmp->Modify();
 
         }
 		
@@ -413,9 +413,13 @@ const char * level = decodeZLib.c_str();
 		 
 			}
 
+
+/*
+const char* server = AY_OBFUSCATE("http://gmdpseditor.7m.pl/database");
+const char* server_b64 = AY_OBFUSCATE("aHR0cDovL2dtZHBzZWRpdG9yLjdtLnBsL2RhdGFiYXNlCg==");
+*/
 const char* server = AY_OBFUSCATE("http://game.gdpseditor.com/server");
 const char* server_b64 = AY_OBFUSCATE("aHR0cDovL2dhbWUuZ2Rwc2VkaXRvci5jb20vc2VydmVy");
-
 
 		GDPS->changeServers(server, server_b64);
 		

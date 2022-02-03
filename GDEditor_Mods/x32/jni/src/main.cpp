@@ -39,6 +39,7 @@ using namespace std;
 patch *playTest = new patch();
 patch *pauseBtn = new patch();
 patch *groupIDLayerPatches = new patch();
+bool inEditor;
 
 template < class T>
 	void *getPointer(T value)
@@ -54,20 +55,6 @@ void *getPointerFromSymbol(void *handle, const char *symbol)
 
 extern bool inEditor;
 
-void(*v_trp)(int a1, int a2, int a3, int a4);
-void v_hk(int a1, int a2, int a3, int a4)
-{
-	LOGD("Enter!");
-	if (inEditor)
-	{
-		clippingRect(a1, a2, 1000, 1000);
-	}
-	else
-	{
-		clippingRect(a1, a2, a3, a4);
-	}
-}
-
 
 #include <cstdlib>
 
@@ -75,39 +62,6 @@ inline long mid_num(const std::string& s) {
     return std::strtol(&s[s.find('_') + 1], nullptr, 10);
 }
 
-GameObject* creata_hk( int key )
-{
-    auto tb = ObjectToolbox::sharedState( )->intKeyToFrame( key );
-    
-    // LOGD("GAMEOBJECT: %s", tb);
-    if( strstr(tb, "pixelart") != NULL && strstr(tb, "b_001") == NULL )
-    {
-        auto pixelKey = mid_num( tb );
-        // LOGD("ART: %i", pixelKey);
-
-        return old4( pixelKey > 38 ? 1 : key );
-    }
-
-    if( !strcmp( tb, "pixelb_03_01_001.png" ) )
-        return old4( 1 );
-
-    if ( !strcmp( tb, "pixelb_03_02_001.png" ) )
-        return old4( 1 );
-
-
-    if( strstr( tb, "gdh" ) != NULL 
-    || strstr( tb, "secretCoin" ) != NULL 
-    || strstr( tb, "fireball" ) != NULL 
-    || strstr( tb, "fire_b" ) != NULL 
-    || strstr( tb, "gj22_anim" ) != NULL 
-    || strstr( tb, "pixel" ) != NULL 
-    || strstr( tb, "gjHand2" ) != NULL )
-        return old4( 1 );
-
-    auto o = old4( key );
-    
-    return o;
-}
 
 int prevRelease = -1;
 void(*release_trp)(PlayerObject *self, int button);
@@ -231,7 +185,7 @@ GameObject* create_hk( int key )
 
 
     if( strstr( tb, "gdh" ) != NULL 
-    || strstr( tb, "secretCoin" ) != NULL 
+  //  || strstr( tb, "secretCoin" ) != NULL 
     || strstr( tb, "fireball" ) != NULL 
     || strstr( tb, "fire_b" ) != NULL 
     || strstr( tb, "gj22_anim" ) != NULL 
@@ -683,6 +637,18 @@ bool levelsettings_hk(LevelSettingsLayer* ptr, LevelSettingsObject* a2, LevelEdi
 	return ret;
 };
 
+bool(*lvlsettings_close)(LevelSettingsLayer*, CCObject*);
+bool lvlsettings_close_hk(LevelSettingsLayer* ptr, CCObject* a2) {
+	
+	    auto ret = lvlsettings_close(ptr, a2);
+		
+		extern bool inEditor;
+		inEditor = true;
+
+	return ret;
+};
+
+
 
 
 	
@@ -769,6 +735,13 @@ void ProfilePage_loadPageFromUserInfoH(ProfilePage* self, GJUserScore* userData)
 	ProfilePage_loadPageFromUserInfoO(self, userData);
 
 	// custom mod badges
+	auto winsize = CCDirector::sharedDirector()->getWinSize();
+	auto dpad = CCSprite::createWithSpriteFrameName("Dpad_Btn.png");
+	dpad->setPosition({winsize.width / 2 - 90, winsize.height - 290});
+	dpad->setScale(.5);
+	self->addChild(dpad);
+	
+	
 	int modBadgeLevel = userData->_modBadge();
 
 	if(modBadgeLevel > 2) {
@@ -930,7 +903,7 @@ bool setUpLevelInfo_hk(EditLevelLayer* ptr, GJGameLevel* level) {
 	
 	    auto ret = setUpLevelInfo(ptr, level);
 		
-				extern bool inEditor;
+		extern bool inEditor;
 		inEditor = false;
 
      auto dir = cocos2d::CCDirector::sharedDirector();
@@ -954,7 +927,23 @@ void clippingRect_hk( GLint x, GLint y, GLsizei width, GLsizei height )
 		clippingRect(x,y,width,height);
 	}
 }
+	
+	void*(*ui)(EditorUI*);
+void* ui_hk(EditorUI*ptr){
+	
+		extern bool inEditor;
+		inEditor = true;
 
+  return ui(ptr);
+
+}
+//failed attempt to make it work lol
+void (*swing)( PlayerObject*, int);
+void swing_hk( PlayerObject* player, int tag)
+{
+	return swing(player, GM->m_nPlayerSwing);
+}
+	
     
 
 extern void lib_entry();
@@ -965,7 +954,9 @@ void loader()
 	auto cocos2d = dlopen(targetLibName != "" ? targetLibName : NULL, RTLD_LAZY);
 	auto libShira = dlopen("libgdkit.so", RTLD_LAZY);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "glScissor"), (void*) clippingRect_hk, (void **) &clippingRect);
+	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN12PlayerObject22updatePlayerSwingFrameEi"), (void*) swing_hk, (void **) &swing);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN18LevelSettingsLayer4initEP19LevelSettingsObjectP16LevelEditorLayer"), (void*) levelsettings_hk, (void **) &levelsettings);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN18LevelSettingsLayer7onCloseEPN7cocos2d8CCObjectE"), (void*) lvlsettings_close_hk, (void **) &lvlsettings_close);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN14LevelInfoLayer4initEP11GJGameLevelb"), (void*) levelinfoinit_hk, (void **) &levelinfoinit);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN7cocos2d18CCSpriteFrameCache17spriteFrameByNameEPKc"), (void*) sprite_hk, (void **) &old5);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN14EditLevelLayer4initEP11GJGameLevel"), (void*) setUpLevelInfo_hk, (void **) &setUpLevelInfo); 
@@ -983,7 +974,7 @@ void loader()
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN9MenuLayer23updateUserProfileButtonEv"), (void*)MenuLayer_updateUserProfileButtonH, (void**)&MenuLayer_updateUserProfileButtonO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16MultiplayerLayer4initEv"), (void*) getPointer(&MultiplayerLayerExt::init_hk), (void **) &MultiplayerLayerExt::init_trp);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN10PauseLayer11customSetupEv"), (void*) getPointer(&PauseLayerExt::init_hk), (void **) &PauseLayerExt::init_trp);
-	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN8EditorUIC2Ev"), (void*) getPointer(&EditorUIExt::EditorUI_hk), (void **) &EditorUIExt::EditorUI_trp);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN8EditorUIC2Ev"), (void*) ui_hk, (void **) &ui);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN9PlayLayer6updateEf"), getPointer(&PlayLayerExt::update_hk), (void **) &PlayLayerExt::update_trp);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11AppDelegate11trySaveGameEb"), (void*) save_hook, (void **) &save_trp);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN10GameObject13createWithKeyEi"), (void*) create_hk, (void **) &old4);
@@ -1049,16 +1040,18 @@ void loader()
 
 	//10 stars limit bypass
 	tmp->addPatch("libcocos2dcpp.so", 0x2F8E5A, "04 e0");
+	
+	tmp->addPatch("libcocos2dcpp.so", 0x2EACB8, "23");
 
 
 	tmp->addPatch("libcocos2dcpp.so",0x2EA824,"00 bf");
-
+/*
 		//swing texture names
 	tmp->addPatch("libcocos2dcpp.so", 0x7A402E, "73 77 6e 31 31");
 	tmp->addPatch("libcocos2dcpp.so", 0x7A4041, "73 77 6e 31 31");
 	tmp->addPatch("libcocos2dcpp.so", 0x7A406E, "73 77 6e 31 31");
 	tmp->addPatch("libcocos2dcpp.so", 0x7A4056, "73 77 6e 31 31");
-
+*/
 	// probably fix platformer kick
 	tmp->addPatch("libcocos2dcpp.so", 0x247EC4, "00 BF 00 BF");
 	tmp->addPatch("libcocos2dcpp.so", 0x24168E, "00 BF 00 BF");

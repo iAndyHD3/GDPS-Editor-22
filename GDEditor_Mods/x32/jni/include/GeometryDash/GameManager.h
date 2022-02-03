@@ -88,9 +88,9 @@ public:
     int m_nPlayerSpiderRand1;
     int m_nPlayerSpiderRand2;
     int m_nPlayerSpider;
-    int unk_130;
-    int unk_131;
-    int unk_132;
+    int m_nPlayerSwingRand1;
+    int m_nPlayerSwingRand2;
+    int m_nPlayerSwing;
     int m_nPlayerColorRand1;
     int m_nPlayerColorRand2;
     int m_nPlayerColor;
