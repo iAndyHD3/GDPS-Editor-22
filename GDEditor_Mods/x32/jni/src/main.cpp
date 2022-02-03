@@ -1041,6 +1041,7 @@ void loader()
 	//10 stars limit bypass
 	tmp->addPatch("libcocos2dcpp.so", 0x2F8E5A, "04 e0");
 	
+	//patch for the swing limit 
 	tmp->addPatch("libcocos2dcpp.so", 0x2EACB8, "23");
 
 
@@ -1051,7 +1052,7 @@ void loader()
 	tmp->addPatch("libcocos2dcpp.so", 0x7A4041, "73 77 6e 31 31");
 	tmp->addPatch("libcocos2dcpp.so", 0x7A406E, "73 77 6e 31 31");
 	tmp->addPatch("libcocos2dcpp.so", 0x7A4056, "73 77 6e 31 31");
-*/
+	*/
 	// probably fix platformer kick
 	tmp->addPatch("libcocos2dcpp.so", 0x247EC4, "00 BF 00 BF");
 	tmp->addPatch("libcocos2dcpp.so", 0x24168E, "00 BF 00 BF");
