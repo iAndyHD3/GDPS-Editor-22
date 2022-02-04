@@ -15,3 +15,13 @@ public:
 	void onMyLevels(CCObject*);
 
 };
+
+class CreatorLayerExt : public CreatorLayer 
+{
+public:
+    void onWorld( cocos2d::CCObject* ref )
+    {
+        auto dir = CCDirector::sharedDirector();
+        dir->pushScene( cocos2d::CCTransitionFade::create(0.5, WorldSelectLayer::scene( 0 ) ) );
+    }
+};

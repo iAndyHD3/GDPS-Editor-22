@@ -733,29 +733,8 @@ void MenuLayer_updateUserProfileButtonH(MenuLayer *self) {
 void (*ProfilePage_loadPageFromUserInfoO)(ProfilePage*, GJUserScore*);
 void ProfilePage_loadPageFromUserInfoH(ProfilePage* self, GJUserScore* userData) {
 	ProfilePage_loadPageFromUserInfoO(self, userData);
-	
+
 	auto winSize = CCDirector::sharedDirector()->getWinSize();
-
-	// custom mod badges
-	int modBadgeLevel = userData->_modBadge();
-
-	if(modBadgeLevel > 2) {
-		for(int i = 0; i < self->_someArray()->count(); i++) {
-			auto thing = (CCSprite*)self->_someArray()->objectAtIndex(i);
-
-			if(thing->getChildrenCount() == 0 && thing->getPositionX() > 226 && thing->getPositionY() > 283) {
-				auto customSprStr = CCString::createWithFormat("modBadge_%02d_001.png", modBadgeLevel);
-
-				auto customModBadgeSpr = CCSpriteFrameCache::sharedSpriteFrameCache()->spriteFrameByName(customSprStr->getCString());
-
-				if(customModBadgeSpr != nullptr) {
-					thing->setDisplayFrame(customModBadgeSpr);
-				}
-
-				break;
-			}
-		}
-	}
 
 	// show swing
 	int iconIterator = 1;
@@ -776,7 +755,11 @@ void ProfilePage_loadPageFromUserInfoH(ProfilePage* self, GJUserScore* userData)
 			iconIterator++;
 		}
 	}
+
+	
 }
+
+
 
 // gotta do this when the comments actually work
 void (*CommentCell_loadFromCommentO)(CommentCell*, GJComment*);
@@ -952,12 +935,7 @@ void* ui_hk(EditorUI*ptr){
   return ui(ptr);
 
 }
-//failed attempt to make it work lol
-void (*swing)( PlayerObject*, int);
-void swing_hk( PlayerObject* player, int tag)
-{
-	return swing(player, GM->m_nPlayerSwing);
-}
+
 	
 // make GJUserScore store the acc swing
 GJUserScore* (*GJUserScore_createO)(CCDictionary*);
@@ -989,6 +967,55 @@ const char* CCString_getCStringH(CCString* self) {
 	return ret;
 }
 
+bool (*world)( CreatorLayer* );
+bool world_hk( CreatorLayer* ptr ) 
+{
+    auto r = world( ptr );
+	
+	auto winsize = CCDirector::sharedDirector()->getWinSize();
+	
+
+    auto right = winsize.width;
+    auto top = winsize.height;
+
+    auto arr = CCSprite::createWithSpriteFrameName( "GJ_arrow_01_001.png" );
+    arr->setFlipX(true);
+
+    auto menz = CCMenu::create();
+    auto worldBtn = CCMenuItemSpriteExtra::create(
+        arr, nullptr,
+        ptr,
+        menu_selector(CreatorLayerExt::onWorld)
+    );
+
+    ptr->addChild( menz, 100 );
+    menz->addChild( worldBtn );
+
+    menz->setPosition( right - 50, top / 2 );
+	
+	auto menu = CCMenu::create();
+	
+	auto create = CCSprite::createWithSpriteFrameName("GJ_createBtn_001.png");
+	create->setScale(.75);
+    auto createBtn = CCMenuItemSpriteExtra::create(
+    create,
+    create,
+    ptr,
+    menu_selector(CreatorLayer::onMyLevels));
+	
+	
+	createBtn->setPosition(right / 2 - 470, top / 2 - 70);
+	menu->addChild(createBtn);
+	
+	
+	menu->setPosition(right / 2, top / 2);
+	ptr->addChild(menu);
+	
+	
+	
+    return r;
+}
+
 extern void lib_entry();
 
 void loader()
@@ -998,6 +1025,7 @@ void loader()
 	auto libShira = dlopen("libgdkit.so", RTLD_LAZY);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZNK7cocos2d8CCString10getCStringEv"), (void*)CCString_getCStringH, (void**)&CCString_getCStringO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "glScissor"), (void*) clippingRect_hk, (void **) &clippingRect);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN12CreatorLayer4initEv"), (void*) world_hk, (void **) &world);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11GJUserScore6createEPN7cocos2d12CCDictionaryE"), (void*)GJUserScore_createH, (void**)&GJUserScore_createO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN18LevelSettingsLayer4initEP19LevelSettingsObjectP16LevelEditorLayer"), (void*) levelsettings_hk, (void **) &levelsettings);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN18LevelSettingsLayer7onCloseEPN7cocos2d8CCObjectE"), (void*) lvlsettings_close_hk, (void **) &lvlsettings_close);
@@ -1083,8 +1111,15 @@ void loader()
 	//10 stars limit bypass
 	tmp->addPatch("libcocos2dcpp.so", 0x2F8E5A, "04 e0");
 	
+	//creator layer sprites
+	tmp->addPatch("libcocos2dcpp.so", 0x2B1F92, "00 bf");
+	
 	//patch for the swing limit 
 	tmp->addPatch("libcocos2dcpp.so", 0x2EACB8, "23");
+	
+	
+	//add 1 more icon to profile
+	//tmp->addPatch("libcocos2dcpp.so", 0x397C6C, "BB F1 08 0F");
 
 
 	tmp->addPatch("libcocos2dcpp.so",0x2EA824,"00 bf");
