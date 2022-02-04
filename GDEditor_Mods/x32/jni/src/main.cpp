@@ -215,6 +215,7 @@ CCSpriteFrame* sprite_hk( CCSpriteFrameCache* ptr, const char* s )
     if( !strcmp( s, "GJ_freeLevelsBtn_001.png" )  )
         return old5( ptr, "GJ_moreGamesBtn_001.png" );
 
+	/*
     if ( !strcmp( s, "GJ_gauntletsBtn_001.png" ) )
     {
         if( !isGauntlet )
@@ -227,6 +228,7 @@ CCSpriteFrame* sprite_hk( CCSpriteFrameCache* ptr, const char* s )
             return old5( ptr, "GJ_gauntletsBtn_001.png" );
         }
     }
+	*/
 
     return old5( ptr, s );
 }
@@ -970,50 +972,122 @@ const char* CCString_getCStringH(CCString* self) {
 bool (*world)( CreatorLayer* );
 bool world_hk( CreatorLayer* ptr ) 
 {
-    auto r = world( ptr );
+    if(!world( ptr )) return false;
 	
-	auto winsize = CCDirector::sharedDirector()->getWinSize();
-	
+	auto winSize = CCDirector::sharedDirector()->getWinSize();
 
-    auto right = winsize.width;
-    auto top = winsize.height;
-
-    auto arr = CCSprite::createWithSpriteFrameName( "GJ_arrow_01_001.png" );
-    arr->setFlipX(true);
-
-    auto menz = CCMenu::create();
-    auto worldBtn = CCMenuItemSpriteExtra::create(
-        arr, nullptr,
-        ptr,
-        menu_selector(CreatorLayerExt::onWorld)
-    );
-
-    ptr->addChild( menz, 100 );
-    menz->addChild( worldBtn );
-
-    menz->setPosition( right - 50, top / 2 );
-	
 	auto menu = CCMenu::create();
+	menu->setPosition(0, 0);
+	ptr->addChild(menu, 200);
 	
-	auto create = CCSprite::createWithSpriteFrameName("GJ_createBtn_001.png");
-	create->setScale(.75);
-    auto createBtn = CCMenuItemSpriteExtra::create(
-    create,
-    create,
-    ptr,
-    menu_selector(CreatorLayer::onMyLevels));
+	// creating buttons
+	int iterator = 0;
+
+	const char* spriteFrameName;
+	SEL_MenuHandler buttonCallback;
+
+	while(iterator < 15) {
+		switch(iterator) {
+			case 1:
+				spriteFrameName = "GJ_safeBtn_001.png";
+				buttonCallback = nullptr;
+				break;
+
+			case 2:
+				spriteFrameName = "GJ_listsBtn_001.png";
+				buttonCallback = nullptr;
+				break;
+
+			case 3:
+				spriteFrameName = "GJ_mapPacksBtn_001.png";
+				buttonCallback = menu_selector(CreatorLayer::onMapPacks);
+				break;
+
+			case 4:
+				spriteFrameName = "GJ_searchBtn_001.png";
+				buttonCallback = menu_selector(CreatorLayer::onOnlineLevels);
+				break;
+
+			case 5:
+				spriteFrameName = "GJ_mapBtn_001.png";
+				buttonCallback = menu_selector(CreatorLayerExt::onWorld);
+				break;
+
+			case 6:
+				spriteFrameName = "GJ_dailyBtn_001.png";
+				buttonCallback = menu_selector(CreatorLayer::onDailyLevel);
+				break;
+
+			case 7:
+				spriteFrameName = "GJ_weeklyBtn_001.png";
+				buttonCallback = menu_selector(CreatorLayer::onWeeklyLevel);
+				break;
+
+			case 8:
+				spriteFrameName = "GJ_eventBtn_001.png";
+				buttonCallback = nullptr;
+				break;
+
+			case 9:
+				spriteFrameName = "GJ_gauntletsBtn_001.png";
+				buttonCallback = menu_selector(CreatorLayer::onGauntlets);
+				break;
+
+			case 10:
+				spriteFrameName = "GJ_createBtn_001.png";
+				buttonCallback = menu_selector(CreatorLayer::onMyLevels);
+				break;
+
+			case 11:
+				spriteFrameName = "GJ_savedBtn_001.png";
+				buttonCallback = menu_selector(CreatorLayer::onSavedLevels);
+				break;
+
+			case 12:
+				spriteFrameName = "GJ_highscoreBtn_001.png";
+				buttonCallback = menu_selector(CreatorLayer::onLeaderboards);
+				break;
+
+			case 13:
+				spriteFrameName = "GJ_challengeBtn_001.png";
+				buttonCallback = menu_selector(CreatorLayer::onChallenge);
+				break;
+
+			case 14:
+				spriteFrameName = "GJ_versusBtn_001.png";
+				buttonCallback = menu_selector(CreatorLayer::onMultiplayer);
+				break;
+
+			default:
+				spriteFrameName = "GJ_featuredBtn_001.png";
+				buttonCallback = menu_selector(CreatorLayer::onFeaturedLevels);
+				break;
+		};
+
+		auto btnSpr = CCSprite::createWithSpriteFrameName(spriteFrameName);
+		btnSpr->setScale(.85);
+		auto btn = CCMenuItemSpriteExtra::create(btnSpr, btnSpr, ptr, buttonCallback);
+
+		menu->addChild(btn);
+
+		auto middleScreen = CCPoint(winSize.width / 2, winSize.height / 2);
+
+		auto btnPos = CCPoint((((iterator % 5) - 1) * 100 - 100), ((floorf(iterator / 5) - 1) * 97));
+
+		auto realBtnPos = middleScreen + btnPos; // didnt know this was possible
+
+		btn->setPosition(realBtnPos);
+
+		// quest btn
+		if(iterator == 13) {
+			ptr->_questBtnSpr() = btnSpr;
+			ptr->checkQuestsStatus();
+		}
+
+		iterator++;
+	}
 	
-	
-	createBtn->setPosition(right / 2 - 470, top / 2 - 70);
-	menu->addChild(createBtn);
-	
-	
-	menu->setPosition(right / 2, top / 2);
-	ptr->addChild(menu);
-	
-	
-	
-    return r;
+    return true;
 }
 
 extern void lib_entry();
@@ -1111,7 +1185,7 @@ void loader()
 	//10 stars limit bypass
 	tmp->addPatch("libcocos2dcpp.so", 0x2F8E5A, "04 e0");
 	
-	//creator layer sprites
+	//creator layer original buttons
 	tmp->addPatch("libcocos2dcpp.so", 0x2B1F92, "00 bf");
 	
 	//patch for the swing limit 
