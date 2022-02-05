@@ -187,6 +187,8 @@ int getIntGameVariable(const char* variable);
     void setPlayerColor2(int);
 	void setPlayerShip(int);
 	void setPlayerJetpack(int);
+	void setPlayerFrame(int);
+	void resetAllIcons();
 };
 
 #define GM GameManager::sharedState()

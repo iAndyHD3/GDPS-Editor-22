@@ -102,7 +102,7 @@ bool AdvancedIconSelect::init()
 
     
 	
-    int pos = gm->getIntGameVariable("6969");
+    int pos = gm->m_nPlayerSwing;
 	int pos2 = gm->getIntGameVariable("7001");
 	
 
@@ -403,12 +403,12 @@ void AdvancedIconSelect::onSwingClick(CCObject * sender){
     select->setPosition(ccp(obj->getPositionX(),obj->getPositionY()));
     auto tag = obj->getTag();
 	
-	
     auto gm = GameManager::sharedState();
-    //gm->setIntGameVariable("6969", tag);
+    gm->setIntGameVariable("6969", tag);
 	//gm->m_nPlayerSwing = tag;
 	gm->setPlayerSwing(tag);
 	GDPS->setPlayerSwing(tag);
+	
 
 	
 	

@@ -8,7 +8,7 @@
 #include "rapidjson/document.h"
 #include "patch.h"
 #include "KittyMemory.h"
-#define version2 2209
+#define version2 2210
 #include "../Encryption/Encryption.h"
 #include "../ZLIB/zlib.h"
 #include "../GDPSManager.h"
@@ -200,7 +200,7 @@ const char * level = decodeZLib.c_str();
 */
 
 		 //auto label22 = CCLabelBMFont::create("Version 2.2.0.8 Beta 3 V1", "chatFont.fnt");
-		auto label22 = CCLabelBMFont::create("Version 2.2.0.9", "chatFont.fnt");
+		auto label22 = CCLabelBMFont::create("Version 2.2.1.0", "chatFont.fnt");
 		if(GM->getGameVariable("100004")) {
 			
 	label22->setPosition(CCPoint(dir->getScreenRight() - 80, dir->getScreenTop() - 10));
@@ -213,7 +213,7 @@ const char * level = decodeZLib.c_str();
     label22->setAnchorPoint({ 0, 0 });
     label22->setScale(.5);
 	
-	auto label33 = CCLabelBMFont::create("Beta 4", "chatFont.fnt");
+	auto label33 = CCLabelBMFont::create("Beta 1", "chatFont.fnt");
 		if(GM->getGameVariable("100004")) {
 			
 	label33->setPosition(CCPoint(dir->getScreenRight() - 80, dir->getScreenTop() - 20));
@@ -272,7 +272,7 @@ const char * level = decodeZLib.c_str();
 		        this->addChild(bottomMenu3, 100);
 				this->addChild(bottomMenu4);
 				this->addChild(label22);
-				//this->addChild(label33);
+				this->addChild(label33);
 
 	}
         {
@@ -280,7 +280,15 @@ const char * level = decodeZLib.c_str();
 
           
 			auto m_nPlayerJetpack = gm->getIntGameVariable("7001");
+			gm->m_nPlayerSwing = gm->getIntGameVariable("6969");
 			
+			
+			if(m_nPlayerJetpack == 0){
+				gm->setIntGameVariable("7001", 1);
+			}
+		if(gm->m_nPlayerSwing == 0) {
+			gm->m_nPlayerSwing = 1;
+		}
 			GDPS->setPlayerSwing(gm->m_nPlayerSwing);
 			GDPS->setPlayerJetpack(m_nPlayerJetpack);
 			

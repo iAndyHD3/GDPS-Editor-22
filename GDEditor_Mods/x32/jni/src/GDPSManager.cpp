@@ -76,6 +76,20 @@ void GDPSManager::load() {
     dataLoaded(dict);
 }
 
+void GDPSManager::setWorldIsland(int id) {
+	
+	auto v = CCString::createWithFormat("%02d",id)->getCString();
+    patch *tmp = new patch();
+    std::stringstream stream;
+    stream << std::hex << int(v[0]) << " " << std::hex << int(v[1]);
+    std::string result( stream.str() );
+	
+	tmp->addPatch("libcocos2dcpp.so", 0x7BFD68, result);
+
+    tmp->Modify();
+	}
+
+
 void GDPSManager::setPlayerSwing(int id) {
 	
 	auto v = CCString::createWithFormat("%02d",id)->getCString();

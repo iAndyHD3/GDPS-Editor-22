@@ -43,8 +43,8 @@ void pause1_hk(PauseLayer *);
 //extern bool (*levelinfoinit)(LevelInfoLayer *,GJGameLevel *,bool);
 //void levelinfoinit_hk(LevelInfoLayer *,GJGameLevel *,bool);
 
-extern bool (*world)(CreatorLayer *);
-bool world_hk(CreatorLayer *);
+//extern bool (*world)(CreatorLayer *);
+//bool world_hk(CreatorLayer *);
 
 extern void (*updateOptions)(EditorPauseLayer *,cocos2d::CCObject *);
 void updateOptions_hk(EditorPauseLayer *,cocos2d::CCObject *);

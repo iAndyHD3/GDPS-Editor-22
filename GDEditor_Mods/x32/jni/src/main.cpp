@@ -32,6 +32,8 @@
 
 using namespace std;
 
+//it wont work if I put it in the header ._.
+
 
 #define null NULL
 #define targetLibName ("libcocos2dcpp.so")
@@ -969,10 +971,10 @@ const char* CCString_getCStringH(CCString* self) {
 	return ret;
 }
 
-bool (*world)( CreatorLayer* );
-bool world_hk( CreatorLayer* ptr ) 
+bool (*creatorLayer)( CreatorLayer* );
+bool creatorLayer_hk( CreatorLayer* ptr ) 
 {
-    if(!world( ptr )) return false;
+    if(!creatorLayer( ptr )) return false;
 	
 	auto winSize = CCDirector::sharedDirector()->getWinSize();
 
@@ -990,12 +992,12 @@ bool world_hk( CreatorLayer* ptr )
 		switch(iterator) {
 			case 1:
 				spriteFrameName = "GJ_safeBtn_001.png";
-				buttonCallback = nullptr;
+				buttonCallback = menu_selector(CreatorLayerExt::onSafe);
 				break;
 
 			case 2:
 				spriteFrameName = "GJ_listsBtn_001.png";
-				buttonCallback = nullptr;
+				buttonCallback = menu_selector(CreatorLayerExt::onLists);
 				break;
 
 			case 3:
@@ -1025,7 +1027,7 @@ bool world_hk( CreatorLayer* ptr )
 
 			case 8:
 				spriteFrameName = "GJ_eventBtn_001.png";
-				buttonCallback = nullptr;
+				buttonCallback = menu_selector(CreatorLayerExt::onEvent);
 				break;
 
 			case 9:
@@ -1090,6 +1092,26 @@ bool world_hk( CreatorLayer* ptr )
     return true;
 }
 
+
+
+bool (*world)( WorldSelectLayer*, int );
+bool world_hk( WorldSelectLayer* ptr, int a2) 
+{
+	 auto menu = CCMenu::create();
+	auto dir = CCDirector::sharedDirector();
+
+    auto back = CCSprite::createWithSpriteFrameName("GJ_arrow_01_001.png");
+    auto backBtn = CCMenuItemSpriteExtra::create(back, back, ptr, menu_selector(WorldSelectLayerExt::onGo));
+    menu->addChild(backBtn);
+    menu->setPosition({ dir->getScreenLeft() + 25, dir->getScreenTop() - 25 });
+	ptr->addChild(menu);
+	
+return world(ptr, a2);
+
+}
+	
+
+
 extern void lib_entry();
 
 void loader()
@@ -1099,7 +1121,8 @@ void loader()
 	auto libShira = dlopen("libgdkit.so", RTLD_LAZY);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZNK7cocos2d8CCString10getCStringEv"), (void*)CCString_getCStringH, (void**)&CCString_getCStringO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "glScissor"), (void*) clippingRect_hk, (void **) &clippingRect);
-	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN12CreatorLayer4initEv"), (void*) world_hk, (void **) &world);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16WorldSelectLayer4initEi"), (void*) world_hk, (void **) &world);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN12CreatorLayer4initEv"), (void*) creatorLayer_hk, (void **) &creatorLayer);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11GJUserScore6createEPN7cocos2d12CCDictionaryE"), (void*)GJUserScore_createH, (void**)&GJUserScore_createO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN18LevelSettingsLayer4initEP19LevelSettingsObjectP16LevelEditorLayer"), (void*) levelsettings_hk, (void **) &levelsettings);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN18LevelSettingsLayer7onCloseEPN7cocos2d8CCObjectE"), (void*) lvlsettings_close_hk, (void **) &lvlsettings_close);
@@ -1188,8 +1211,16 @@ void loader()
 	//creator layer original buttons
 	tmp->addPatch("libcocos2dcpp.so", 0x2B1F92, "00 bf");
 	
+	//world layer arrow
+	tmp->addPatch("libcocos2dcpp.so", 0x3D2D8E, "00 bf");
+	
+	
 	//patch for the swing limit 
 	tmp->addPatch("libcocos2dcpp.so", 0x2EACB8, "23");
+	
+	
+	//world island tests
+	tmp->addPatch("libcocos2dcpp.so", 0x7BFD68, "30 33");
 	
 	
 	//add 1 more icon to profile
