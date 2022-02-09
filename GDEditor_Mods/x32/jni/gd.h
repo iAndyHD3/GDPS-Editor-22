@@ -7,6 +7,8 @@
 
 #include "GJEffectManager.h"
 #include "GJGroundLayer.h"
+#include "GJSearchObject.h"
+#include "LevelBrowserLayer.h"
 #include "CCTextInputNode.h"
 #include "ButtonSprite.h"
 #include "FLAlertLayer.h"

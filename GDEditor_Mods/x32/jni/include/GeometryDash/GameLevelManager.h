@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CCLayer.h"
+#define GLM GameLevelManager::sharedState()
 
 USING_NS_CC;
 
@@ -79,7 +80,8 @@ public:
 	static GameLevelManager* sharedState( );
 
 	void ProcessHttpRequest( std::string url, std::string requestData, std::string dlKey, GJHttpType type );
-
+	void updateUserScore();
+	void resetStoredUserInfo(int);
 	virtual bool init( );
 	bool getBoolForKey(const char*);
 	void  setBoolForKey(bool,const char*);

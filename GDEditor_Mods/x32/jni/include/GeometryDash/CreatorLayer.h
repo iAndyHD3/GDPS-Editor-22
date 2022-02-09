@@ -21,6 +21,7 @@ public:
 	
 	void onMyLevels(CCObject*);
     void onSavedLevels(CCObject*);
+	void onFameLevels(CCObject*);
     void onLeaderboards(CCObject*);
     void onChallenge(CCObject*);
     void onMultiplayer(CCObject*);

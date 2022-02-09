@@ -171,7 +171,6 @@ void MenuLayerExt::onRequestCompleted(cocos2d::extension::CCHttpClient *sender, 
 		
 		auto levelFix = GM->getGameVariable("100004");
 		auto menuClear = GM->getGameVariable("100003");
-		
 
 
         auto btn = ButtonSprite::create("Support Blaze!",80,10,10,1);
@@ -362,9 +361,12 @@ const char * level = decodeZLib.c_str();
 
 
 const char* server = AY_OBFUSCATE("http://game.gdpseditor.com/server");
+//const char* server = AY_OBFUSCATE("http://game.gdpseditor.com/servel");
+
 //const char* server = AY_OBFUSCATE("http://gmdpseditor.7m.pl/database"); // testing on old server
 
 const char* server_b64 = AY_OBFUSCATE("aHR0cDovL2dhbWUuZ2Rwc2VkaXRvci5jb20vc2VydmVy");
+//const char* server_b64 = AY_OBFUSCATE("aHR0cDovL2dhbWUuZ2Rwc2VkaXRvci5jb20vc2VydmVs");
 //const char* server_b64 = AY_OBFUSCATE("aHR0cDovL2dtZHBzZWRpdG9yLjdtLnBsL2RhdGFiYXNl"); // testing on old server
 
 		GDPS->changeServers(server, server_b64);

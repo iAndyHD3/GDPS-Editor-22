@@ -27,6 +27,8 @@
 #include <string>
 #include <iostream>
 #include <cocos2dx/extensions/CCScale9Sprite.h>
+#include "LevelBrowserLayer.h"
+#include "GJSearchObject.h"
 
 #include "SetGroupIDLayer.h"
 
@@ -42,6 +44,8 @@ patch *playTest = new patch();
 patch *pauseBtn = new patch();
 patch *groupIDLayerPatches = new patch();
 bool inEditor;
+bool userDataChanged;
+bool legendaryChanged;
 
 template < class T>
 	void *getPointer(T value)
@@ -967,7 +971,19 @@ const char* CCString_getCStringH(CCString* self) {
 
 		ret = s;
 	}
+	
+		if(strstr(ret, "diff=") != NULL) {
+			
+		auto glm = GameLevelManager::sharedState();
+		auto toAdd = CCString::createWithFormat("&legendary=%i", glm->getBoolForKey("legendary_filter_custom"))->getCString();
+		
+		char *s = new char[strlen(ret)+strlen(toAdd)+1];
+        strcpy(s, ret);
+       	strcat(s, toAdd);
 
+		ret = s;
+	}
+	
 	return ret;
 }
 
@@ -997,7 +1013,7 @@ bool creatorLayer_hk( CreatorLayer* ptr )
 
 			case 2:
 				spriteFrameName = "GJ_listsBtn_001.png";
-				buttonCallback = menu_selector(CreatorLayerExt::onLists);
+				buttonCallback = menu_selector(CreatorLayer::onFameLevels);
 				break;
 
 			case 3:
@@ -1109,6 +1125,33 @@ bool world_hk( WorldSelectLayer* ptr, int a2)
 return world(ptr, a2);
 
 }
+
+bool (*profile)(ProfilePage*, int, bool);
+bool profile_hk(ProfilePage* self, int accountID, bool inMenu) {
+	
+	extern bool userDataChanged;
+	
+	if(userDataChanged && inMenu) {
+	auto glm = GameLevelManager::sharedState();
+	glm->updateUserScore();
+	glm->resetStoredUserInfo(accountID);
+	userDataChanged = false;
+	}
+	return profile(self, accountID, inMenu);
+}
+
+bool (*lvlbrowser)(LevelBrowserLayer*, GJSearchObject*);
+bool lvlbrowser_hk(LevelBrowserLayer* self, GJSearchObject* a2) {
+	
+	extern bool legendaryChanged;
+	if(legendaryChanged) {
+	self->runAction(CCCallFuncO::create(self, callfuncO_selector(LevelBrowserLayer::onRefresh), self));
+	legendaryChanged = false;
+	}
+
+	return lvlbrowser(self, a2);
+}
+
 	
 
 
@@ -1120,6 +1163,8 @@ void loader()
 	auto cocos2d = dlopen(targetLibName != "" ? targetLibName : NULL, RTLD_LAZY);
 	auto libShira = dlopen("libgdkit.so", RTLD_LAZY);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZNK7cocos2d8CCString10getCStringEv"), (void*)CCString_getCStringH, (void**)&CCString_getCStringO);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11ProfilePage4initEib"), (void*)profile_hk, (void**)&profile);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN17LevelBrowserLayer4initEP14GJSearchObject"), (void*)lvlbrowser_hk, (void**)&lvlbrowser);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "glScissor"), (void*) clippingRect_hk, (void **) &clippingRect);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16WorldSelectLayer4initEi"), (void*) world_hk, (void **) &world);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN12CreatorLayer4initEv"), (void*) creatorLayer_hk, (void **) &creatorLayer);
@@ -1142,6 +1187,7 @@ void loader()
 	HookManager::do_hook((void*) &menu_hk, getPointer(&MenuLayerExt::init_hk), (void **) &MenuLayerExt::init_trp);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN9MenuLayer23updateUserProfileButtonEv"), (void*)MenuLayer_updateUserProfileButtonH, (void**)&MenuLayer_updateUserProfileButtonO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16MultiplayerLayer4initEv"), (void*) getPointer(&MultiplayerLayerExt::init_hk), (void **) &MultiplayerLayerExt::init_trp);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN15MoreSearchLayer4initEv"), (void*) getPointer(&MoreSearchLayerExt::init_hk), (void **) &MoreSearchLayerExt::init_trp);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN10PauseLayer11customSetupEv"), (void*) getPointer(&PauseLayerExt::init_hk), (void **) &PauseLayerExt::init_trp);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN8EditorUIC2Ev"), (void*) ui_hk, (void **) &ui);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN9PlayLayer6updateEf"), getPointer(&PlayLayerExt::update_hk), (void **) &PlayLayerExt::update_trp);

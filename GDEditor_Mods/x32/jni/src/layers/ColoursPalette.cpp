@@ -12,7 +12,10 @@
 
 
 void ColoursPalette::onColorClick(CCObject * sender){
-
+	
+	extern bool userDataChanged;
+	userDataChanged = true;
+	
     CCMenuItemSpriteExtra * obj = (CCMenuItemSpriteExtra *)sender;
     if(colorType == 1){
         GameManager::sharedState()->setPlayerColor2(obj->getTag());
@@ -42,9 +45,8 @@ void ColoursPalette::onColorClick(CCObject * sender){
 
 void ColoursPalette::onColor1Click(CCObject * sender){
     CCMenuItemSpriteExtra * obj = (CCMenuItemSpriteExtra *)sender;
-
+	
     this->colorType = 0;
-
 
 
     this->clr1Btn->setNormalImage(
@@ -70,6 +72,7 @@ void ColoursPalette::onColor1Click(CCObject * sender){
 }  
 void ColoursPalette::onColor2Click(CCObject * sender){
     CCMenuItemSpriteExtra * obj = (CCMenuItemSpriteExtra *)sender;
+	
 
     this->colorType = 1;
 
@@ -99,6 +102,9 @@ void ColoursPalette::onGlow(CCObject * sender){
     auto gm = GameManager::sharedState();
     gm->m_bPlayerGlow = this->glow;
 
+	extern bool userDataChanged;
+userDataChanged = true;
+	
     if(this->glow){
         obj->setNormalImage(
                 ButtonSprite::create("Glow",30,10,10,1,"bigFont.fnt","GJ_button_01.png",20)

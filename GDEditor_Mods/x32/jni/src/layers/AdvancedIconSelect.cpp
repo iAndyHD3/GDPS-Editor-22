@@ -409,15 +409,10 @@ void AdvancedIconSelect::onSwingClick(CCObject * sender){
 	gm->setPlayerSwing(tag);
 	GDPS->setPlayerSwing(tag);
 	
+	extern bool userDataChanged;
+	userDataChanged = true;
 
 	
-	
-
-    auto v = CCString::createWithFormat("%02d",tag)->getCString();
-    patch *tmp = new patch();
-    std::stringstream stream;
-    stream << std::hex << int(v[0]) << " " << std::hex << int(v[1]);
-    std::string result( stream.str() );
 	
 		auto winSize = CCDirector::sharedDirector()->getWinSize();
 	    float initX = -winSize.width/2 + 50,initY = winSize.height/2 - 80;
@@ -493,15 +488,10 @@ void AdvancedIconSelect::onSwingClick(CCObject * sender){
     select->setPosition(ccp(obj->getPositionX(),obj->getPositionY()));
     auto tag = obj->getTag();
 
-    auto v = CCString::createWithFormat("%02d",tag)->getCString();
-    patch *tmp = new patch();
-    std::stringstream stream;
-    stream << std::hex << int(v[0]) << " " << std::hex << int(v[1]);
-    std::string result( stream.str() );
-
     auto gm = GameManager::sharedState();
     gm->setIntGameVariable("7001", tag);
 	GDPS->setPlayerJetpack(tag);
+
 	
 					auto winSize = CCDirector::sharedDirector()->getWinSize();
 		    float initX = -winSize.width/2 + 50,initY = winSize.height/2 - 80;

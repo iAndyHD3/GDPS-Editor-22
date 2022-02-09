@@ -14,16 +14,24 @@ void MoreSearchLayerExt::addLayerToggle(int row,int column,std::string name,SEL_
 
 bool MoreSearchLayerExt::init_hk() {
     auto ret =  init_trp(this);
-    auto glm = GameLevelManager::sharedState();
-    bool selected = glm->getBoolForKey("platform_filter_custom") ^ 1;
-    this->addLayerToggle(3,0,"Platform",menu_selector(MoreSearchLayerExt::onPlatformToggle),selected);
+    bool selected = GLM->getBoolForKey("platform_filter_custom") ^ 1;
+    bool selected2 = GLM->getBoolForKey("legendary_filter_custom") ^ 1;
+    //this->addLayerToggle(3,2,"Platformer",menu_selector(MoreSearchLayerExt::onPlatformToggle),selected);
+    this->addLayerToggle(3,0,"Legendary",menu_selector(MoreSearchLayerExt::onLegendaryToggle),selected2);
     return ret;
 }
 
 void MoreSearchLayerExt::onPlatformToggle(CCObject *sender) {
-    auto glm = GameLevelManager::sharedState();
-    bool selected = glm->getBoolForKey("platform_filter_custom") ^ 1 ;
-    glm->setBoolForKey(selected,"platform_filter_custom");
+    bool selected = GLM->getBoolForKey("platform_filter_custom") ^ 1 ;
+    GLM->setBoolForKey(selected,"platform_filter_custom");
 }
+
+void MoreSearchLayerExt::onLegendaryToggle(CCObject *sender) {
+	extern bool legendaryChanged;
+	legendaryChanged = true;
+    bool selected = GLM->getBoolForKey("legendary_filter_custom") ^ 1 ;
+    GLM->setBoolForKey(selected,"legendary_filter_custom");
+}
+
 
 
