@@ -6,7 +6,10 @@
 #include "UploadPopupDelegate.h"
 #include "SetIDPopupDelegate.h"
 #include "UploadActionPopup.h"
+#include "GameManager.h"
+#include "GameSoundManager.h"
 
+#include "GDAPI_Macros.h"
 
 // size 0x15C
 class EditLevelLayer : public cocos2d::CCLayer, TextInputDelegate, FLAlertLayerProtocol, UploadActionDelegate, UploadPopupDelegate, SetIDPopupDelegate
@@ -28,6 +31,9 @@ public:
     cocos2d::CCArray* a2; // 0x148
 
 public:
+    CLASS_MEMBER(cocos2d::CCMenu*, btnMenu, 0x13C);
+
+public:
     EditLevelLayer();
     virtual ~EditLevelLayer();
 
@@ -37,4 +43,25 @@ public:
     void verifyLevelName( );
 
     virtual void keyBackClicked( void );
+
+public:
+    void onEditCustom(cocos2d::CCObject*) {
+        if(!this->isPlaying_) {
+            closeTextInputs();
+
+            this->isPlaying_ = true;
+
+            GM->_lastScene() = LastGameScene::MyLevels;
+
+            verifyLevelName();
+
+            GSM->playBackgroundMusic( this->gameLevel_->getAudioFileName(), false, true, false );
+            auto dir = cocos2d::CCDirector::sharedDirector( );
+            auto scene = cocos2d::CCTransitionFade::create( 
+                0.5, 
+                LevelEditorLayer::scene( this->gameLevel_ ) );
+
+            dir->pushScene( scene );
+        }
+    }
 };

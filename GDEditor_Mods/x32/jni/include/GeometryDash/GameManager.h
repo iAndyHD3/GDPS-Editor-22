@@ -155,6 +155,8 @@ public:
     CLASS_MEMBER(int, playerSwingRand, 0x210);
     CLASS_MEMBER(int, playerSwing, 0x214);
 
+    CLASS_MEMBER(LastGameScene, lastScene, 0x1AC);
+
 // missing funcs
 public:
     void setPlayerSwing(int ID) {

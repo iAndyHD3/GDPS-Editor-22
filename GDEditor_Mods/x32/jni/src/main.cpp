@@ -98,7 +98,7 @@ char const* loading_hook(LoadingLayer *layer)
 
 	if (!gdpsmanager->playTest)
 	{
-		playTest->Modify();
+		//playTest->Modify();
 	}
 	
 		if (gdpsmanager->pauseBtn)
@@ -303,7 +303,7 @@ void hook_onToggle(void *pthis, const char *val)
 			GDPS->playTest = !GDPS->playTest;
 			if (!GDPS->playTest)
 			{
-				playTest->Modify();
+				//playTest->Modify();
 			}
 			else
 			{
@@ -917,6 +917,17 @@ bool setUpLevelInfo_hk(EditLevelLayer* ptr, GJGameLevel* level) {
     dir->getScheduler()->_fTimeScale = 1;
 	 }
 	
+	// creator btn
+	auto menu = ptr->_btnMenu();
+
+	auto editBtn = (CCMenuItemSpriteExtra*)menu->getChildren()->objectAtIndex(0);
+
+	auto editBtnCustom = CCMenuItemSpriteExtra::create(CCSprite::createWithSpriteFrameName("GJ_editBtn_001.png"), nullptr, ptr, menu_selector(EditLevelLayer::onEditCustom));
+	menu->addChild(editBtnCustom);
+	editBtnCustom->setPosition(editBtn->getPosition());
+
+	editBtn->removeFromParent();
+	editBtn->cleanup();
 	
 	return ret;
 };
@@ -1113,6 +1124,8 @@ bool creatorLayer_hk( CreatorLayer* ptr )
 bool (*world)( WorldSelectLayer*, int );
 bool world_hk( WorldSelectLayer* ptr, int a2) 
 {
+	auto ret = world(ptr, a2);
+
 	 auto menu = CCMenu::create();
 	auto dir = CCDirector::sharedDirector();
 
@@ -1122,8 +1135,7 @@ bool world_hk( WorldSelectLayer* ptr, int a2)
     menu->setPosition({ dir->getScreenLeft() + 25, dir->getScreenTop() - 25 });
 	ptr->addChild(menu);
 	
-return world(ptr, a2);
-
+	return ret;
 }
 
 bool (*profile)(ProfilePage*, int, bool);
@@ -1152,16 +1164,19 @@ bool lvlbrowser_hk(LevelBrowserLayer* self, GJSearchObject* a2) {
 	return lvlbrowser(self, a2);
 }
 
-	
+// no
+void (*LevelEditorLayer_sortStickyGroupsO)(LevelEditorLayer*);
+void LevelEditorLayer_sortStickyGroupsH(LevelEditorLayer* self) {
 
+}
 
 extern void lib_entry();
 
 void loader()
 {
-	
 	auto cocos2d = dlopen(targetLibName != "" ? targetLibName : NULL, RTLD_LAZY);
 	auto libShira = dlopen("libgdkit.so", RTLD_LAZY);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16LevelEditorLayer16sortStickyGroupsEv"), (void*)LevelEditorLayer_sortStickyGroupsH, (void**)&LevelEditorLayer_sortStickyGroupsO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZNK7cocos2d8CCString10getCStringEv"), (void*)CCString_getCStringH, (void**)&CCString_getCStringO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11ProfilePage4initEib"), (void*)profile_hk, (void**)&profile);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN17LevelBrowserLayer4initEP14GJSearchObject"), (void*)lvlbrowser_hk, (void**)&lvlbrowser);
@@ -1224,19 +1239,17 @@ void loader()
 	
 	
 	
-		//editor fix
-        tmp->addPatch("libcocos2dcpp.so", 0x44D2AE, "00 bf 00 bf");
+	//overflow crash spark
+    //tmp->addPatch("libcocos2dcpp.so", 0x44D2AE, "00 bf 00 bf");
 
 	// SetupCameraRotatePopup degrees input bg
 	tmp->addPatch("libcocos2dcpp.so", 0x3FAA5E, "00 21");
-
+	
 	//patch refresh
-
 	tmp->addPatch("libcocos2dcpp.so", 0x2388EE, "00 20");
 	tmp->addPatch("libcocos2dcpp.so", 0x2388DC, "00 20");
 
 	//playtest try
-	
 	tmp->addPatch("libcocos2dcpp.so", 0x288A3E, "00 bf"); 
 	tmp->addPatch("libcocos2dcpp.so", 0x28EB70, "00 bf 00 bf");
 	
@@ -1347,8 +1360,7 @@ void loader()
 
 	cameraRotatePopupPatches->Modify();
 	
-		tmp->Modify();
-
+	tmp->Modify();
 }
 
    JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved)

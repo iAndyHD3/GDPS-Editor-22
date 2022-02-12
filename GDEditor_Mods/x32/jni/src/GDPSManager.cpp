@@ -76,6 +76,8 @@ void GDPSManager::load() {
     dataLoaded(dict);
 }
 
+// what the fuck
+/*
 void GDPSManager::setWorldIsland(int id) {
 	
 	auto v = CCString::createWithFormat("%02d",id)->getCString();
@@ -88,7 +90,7 @@ void GDPSManager::setWorldIsland(int id) {
 
     tmp->Modify();
 	}
-
+*/
 
 void GDPSManager::setPlayerSwing(int id) {
 	
