@@ -31,6 +31,7 @@ public:
     void onFeaturedLevels(CCObject*);
     void onMapPacks(CCObject*);
     void onOnlineLevels(CCObject*);
+    void onOnlyFullVersion(CCObject*);
 
     void checkQuestsStatus();
 };
@@ -41,37 +42,5 @@ public:
     void onGo(cocos2d::CCObject*) {
         auto dir = CCDirector::sharedDirector();
         dir->pushScene(cocos2d::CCTransitionFade::create(0.5, CreatorLayer::scene()));
-    }
-};
-
-
-
-class CreatorLayerExt : public CCLayer
-{
-public:
-
-	virtual void keyBackClicked() { this->onBack(nullptr); }
-		
-	void onBack(cocos2d::CCObject*) {
-        auto dir = CCDirector::sharedDirector();
-        dir->pushScene(cocos2d::CCTransitionFade::create(0.5, CreatorLayer::scene()));
-    }
-
-
-    void onWorld(cocos2d::CCObject*) {
-        auto dir = CCDirector::sharedDirector();
-        dir->pushScene(cocos2d::CCTransitionFade::create(0.5, WorldSelectLayer::scene(0)));
-    }
-	
-	void onEvent(cocos2d::CCObject*) {
-    }
-	
-	void onLists(cocos2d::CCObject*) {
-		
-    }
-	
-	 void onSafe(CCObject*)
-    {
-		
     }
 };

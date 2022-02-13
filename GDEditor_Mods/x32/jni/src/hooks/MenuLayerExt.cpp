@@ -212,7 +212,7 @@ const char * level = decodeZLib.c_str();
     label22->setAnchorPoint({ 0, 0 });
     label22->setScale(.5);
 	
-	auto label33 = CCLabelBMFont::create("Beta 1", "chatFont.fnt");
+	auto label33 = CCLabelBMFont::create("Beta 2", "chatFont.fnt");
 		if(GM->getGameVariable("100004")) {
 			
 	label33->setPosition(CCPoint(dir->getScreenRight() - 80, dir->getScreenTop() - 20));
@@ -237,7 +237,7 @@ const char * level = decodeZLib.c_str();
 		btn2->setScale(.7);
         auto bottomMenu2 =  CCMenu::create();
 		bottomMenu2->addChild(myButton2);
-        reinterpret_cast<CCSprite*>(bottomMenu2)->setPosition({winSize.width / 2 + 240, winSize.height - 280 });
+        reinterpret_cast<CCSprite*>(bottomMenu2)->setPosition({CCRIGHT - 50, CCBOTTOM + 40 });
 		
 		
 		auto btn4 = CCSprite::createWithSpriteFrameName("communityCreditsBtn_001.png");
@@ -250,7 +250,7 @@ const char * level = decodeZLib.c_str();
                 menu_selector(CreditsLayer::create)
         );
         auto bottomMenu4 =  CCMenu::create();
-        reinterpret_cast<CCSprite*>(bottomMenu4)->setPosition({winSize.width / 2 + 110, winSize.height - 275});
+        reinterpret_cast<CCSprite*>(bottomMenu4)->setPosition({CCRIGHT - 177, CCBOTTOM + 45 });
 		btn4->setScale(1.4);
         bottomMenu4->addChild(myButton4);
 			auto btn3 = CCSprite::createWithSpriteFrameName("GJ_optionsBtn02_001.png");

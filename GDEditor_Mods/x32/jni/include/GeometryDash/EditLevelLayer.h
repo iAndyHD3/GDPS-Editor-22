@@ -51,7 +51,7 @@ public:
 
             this->isPlaying_ = true;
 
-            GM->_lastScene() = LastGameScene::MyLevels;
+           GM->_lastScene() = LastGameScene::Info;
 
             verifyLevelName();
 

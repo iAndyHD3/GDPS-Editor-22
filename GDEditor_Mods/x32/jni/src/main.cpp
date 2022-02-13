@@ -17,6 +17,7 @@
 #include "hooks/AccountRegisterLayerExt.h"
 #include "hooks/onRobtopExt.h"
 #include "hooks/onFacebookExt.h"
+#include "hooks/CreatorLayerExt.h"
 #include "GDPSManager.h"
 #include "layers/GDPSSettings.h"
 #include <gd.h>
@@ -29,8 +30,10 @@
 #include <cocos2dx/extensions/CCScale9Sprite.h>
 #include "LevelBrowserLayer.h"
 #include "GJSearchObject.h"
-
 #include "SetGroupIDLayer.h"
+#include "DialogLayer.h"
+#include "DialogObject.h"
+
 
 using namespace std;
 
@@ -901,6 +904,21 @@ bool levelinfoinit_hk( LevelInfoLayer* ptr, GJGameLevel* level, bool a3 )
 	 if(dir->getScheduler()->_fTimeScale != 1) {
     dir->getScheduler()->_fTimeScale = 1;
 	 }
+
+	 	auto btn2 = CCSprite::createWithSpriteFrameName("GJ_optionsBtn_001.png");
+        auto myButton2 = CCMenuItemSpriteExtra::create(
+                btn2,
+                nullptr,
+                ptr,
+                menu_selector(MenuLayer::onOptions)
+        );
+		btn2->setScale(.7);
+        auto bottomMenu2 =  CCMenu::create();
+		bottomMenu2->addChild(myButton2);
+        reinterpret_cast<CCSprite*>(bottomMenu2)->setPosition({CCRIGHT - 130 , CCTOP - 25 });
+		ptr->addChild(bottomMenu2);
+	 
+	 
     return r;
 }
 
@@ -995,6 +1013,7 @@ const char* CCString_getCStringH(CCString* self) {
 		ret = s;
 	}
 	
+	
 	return ret;
 }
 
@@ -1007,7 +1026,7 @@ bool creatorLayer_hk( CreatorLayer* ptr )
 
 	auto menu = CCMenu::create();
 	menu->setPosition(0, 0);
-	ptr->addChild(menu, 200);
+	ptr->addChild(menu);
 	
 	// creating buttons
 	int iterator = 0;
@@ -1019,12 +1038,12 @@ bool creatorLayer_hk( CreatorLayer* ptr )
 		switch(iterator) {
 			case 1:
 				spriteFrameName = "GJ_safeBtn_001.png";
-				buttonCallback = menu_selector(CreatorLayerExt::onSafe);
+				buttonCallback = menu_selector(CreatorLayer::onOnlyFullVersion);
 				break;
 
 			case 2:
 				spriteFrameName = "GJ_listsBtn_001.png";
-				buttonCallback = menu_selector(CreatorLayer::onFameLevels);
+				buttonCallback = menu_selector(CreatorLayer::onOnlyFullVersion);
 				break;
 
 			case 3:
@@ -1054,7 +1073,7 @@ bool creatorLayer_hk( CreatorLayer* ptr )
 
 			case 8:
 				spriteFrameName = "GJ_eventBtn_001.png";
-				buttonCallback = menu_selector(CreatorLayerExt::onEvent);
+				buttonCallback = menu_selector(CreatorLayer::onOnlyFullVersion);
 				break;
 
 			case 9:
@@ -1084,7 +1103,7 @@ bool creatorLayer_hk( CreatorLayer* ptr )
 
 			case 14:
 				spriteFrameName = "GJ_versusBtn_001.png";
-				buttonCallback = menu_selector(CreatorLayer::onMultiplayer);
+				buttonCallback = menu_selector(CreatorLayer::onOnlyFullVersion);
 				break;
 
 			default:
@@ -1169,6 +1188,30 @@ void (*LevelEditorLayer_sortStickyGroupsO)(LevelEditorLayer*);
 void LevelEditorLayer_sortStickyGroupsH(LevelEditorLayer* self) {
 
 }
+/*
+
+// have to test this more
+bool (*onDelete)(LevelInfoLayer*, CCObject*, int, int, int, int);
+bool onDelete_hk(LevelInfoLayer* self, GJSearchObject* a2, int a3, int a4, int a5, int a6) {
+	
+	auto ret = onDelete(self, a2, a3, a4, a5, a6);
+	self->playMenu_->onExit();
+	
+	return ret;
+}
+
+bool (*rate)(RateStarsLayer*, int, bool);
+bool rate_hk(RateStarsLayer* self, int a2, bool a3) {
+	
+	auto ret = rate(self, a2, a3);
+	
+	//https://media.discordapp.net/attachments/847950548921614366/942101116571746314/unknown.png
+	
+	
+	return ret;
+}
+
+*/
 
 extern void lib_entry();
 
@@ -1176,7 +1219,7 @@ void loader()
 {
 	auto cocos2d = dlopen(targetLibName != "" ? targetLibName : NULL, RTLD_LAZY);
 	auto libShira = dlopen("libgdkit.so", RTLD_LAZY);
-	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16LevelEditorLayer16sortStickyGroupsEv"), (void*)LevelEditorLayer_sortStickyGroupsH, (void**)&LevelEditorLayer_sortStickyGroupsO);
+	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16LevelEditorLayer16sortStickyGroupsEv"), (void*)LevelEditorLayer_sortStickyGroupsH, (void**)&LevelEditorLayer_sortStickyGroupsO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZNK7cocos2d8CCString10getCStringEv"), (void*)CCString_getCStringH, (void**)&CCString_getCStringO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11ProfilePage4initEib"), (void*)profile_hk, (void**)&profile);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN17LevelBrowserLayer4initEP14GJSearchObject"), (void*)lvlbrowser_hk, (void**)&lvlbrowser);
@@ -1258,6 +1301,9 @@ void loader()
 	
 	//grounds
 	tmp->addPatch("libcocos2dcpp.so", 0x28CE72, "12 23"); 
+	
+	//full -> 2.2
+	tmp->addPatch("libcocos2dcpp.so", 0x7A6024, "32 2e 32 20"); 
 
 	//fix level too short
 	tmp->addPatch("libcocos2dcpp.so", 0x241ADA, "00 bf");
@@ -1279,7 +1325,6 @@ void loader()
 	
 	
 	//world island tests
-	tmp->addPatch("libcocos2dcpp.so", 0x7BFD68, "30 33");
 	
 	
 	//add 1 more icon to profile

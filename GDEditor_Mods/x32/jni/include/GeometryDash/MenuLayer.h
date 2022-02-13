@@ -14,6 +14,7 @@ public:
     MenuLayer();
     virtual ~MenuLayer();
 	  static cocos2d::CCScene* scene(bool);
-
     bool init( );
+	void onOptions(CCObject*);
+	void onOptionsInstant(CCObject*);
 };
