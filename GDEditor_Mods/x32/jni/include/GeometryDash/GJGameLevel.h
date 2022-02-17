@@ -3,146 +3,195 @@
 #include "CCLayer.h"
 
 // size 0x2F4
+
+    enum GJLevelType {
+        kGJLevelTypeLocal = 1,
+        kGJLevelTypeEditor = 2,
+        kGJLevelTypeSaved = 3
+    };
+	
+	
 class GJGameLevel : public cocos2d::CCNode
 {
 public:
-    cocos2d::CCDictionary* lastBuildSave_; // 0xF8
-    int levelIDRand_;
-    int levelIDEnc_;
-    int levelID_;
-    std::string levelName_;
-    std::string levelDesc_;
-    std::string* levelString_;
-    std::string userName_;
-    std::string recordString_;
-    int dword11C;
-    int dword120;
-    int dword124;
-    int userIDEnc_;
-    int userIDRand_;
-    int userID_;
-    int accountIDEnc_;
-    int accountIDRand_;
-    int accountID_;
-    int difficulty_;
-    int audioTrack_;
-    int songID_;
-    int levelRev_;
-    bool isUnlisted_;
-    bool friendsOnly_;
-    int objectCountEnc_;
-    int objectCountRand_;
-    int objectCount_;
-    int levelOrder_;
-    int ratings_;
-    int ratingsSum_;
-    int downloads_;
-    bool isEditable_;
-    bool isGauntlet_;
-    bool isGauntlet2_;
-    int wt_;
-    int wt2_;
-    bool lowDetailMode_;
-    bool toggleLowDetail_;
-    bool byte17E;
-    bool byte17F;
-    int isVerifiedEnc_;
-    int isVerifiedRand_;
-    bool isVerified_;
-    bool isUploaded_;
-    bool hasBeenModified_;
-    int levelVersion_;
-    int gameVersion_;
-    int attemptsEnc_;
-    int attemptsRand_;
-    int attempts_;
-    int jumpsEnc_;
-    int jumpsRand_;
-    int jumps_;
-    int clicksEnc_;
-    int clicksRand_;
-    int clicks_;
-    int attemptTimeEnc_;
-    int attemptTimeRand_;
-    int attemptTime_;
-    int levelScoreSeed_;
-    bool isChkValid_;
-    bool anticheat_;
-    int normPercent_;
-    int normPercentRand_;
-    int normPercentEnc_;
-    int newNormPercentEnc_;
-    int newNormPercentRand_;
-    int newNormPercent_;
-    int newNormPercent2Enc_;
-    int newNormPercent2Rand_;
-    int newNormPercent2_;
-    int practicePercent_;
-    int likes_;
-    int dislikes_;
-    int levelLength_;
-    int featured_;
-    int epic_;
-    bool isHearted_;
-    int levelFolder_;
-    int dailyIDEnc_;
-    int dailyIDRand_;
-    int dailyID_;
-    int demonEnc_;
-    int demonRand_;
-    int demon_;
-    int demonDifficulty_;
-    int starsEnc_;
-    int starsRand_;
-    int stars_;
-    bool autoLevel_;
-    int coins_;
-    int coinsVerifiedEnc_;
-    int coinsVerifiedRand_;
-    int coinsVerified_;
-    int passwordEnc_;
-    int passwordRand_;
-    int originalLevelEnc_;
-    int originalLevelRand_;
-    int originalLevel_;
-    bool twoPlayerMode_;
-    int failedPasswordAttempts_;
-    int coin1VerifiedEnc_;
-    int coin1VerifiedRand_;
-    int coin1Verified_;
-    int coin2VerifiedEnc_;
-    int coin2VerifiedRand_;
-    int coin2Verified_;
-    int coin3VerifiedEnc_;
-    int coin3VerifiedRand_;
-    int coin3Verified_;
-    int requiredStars_;
-    bool showedStarWarning_;
-    int starRatings_;
-    int starRatingsSum_;
-    int maxStarRatings_;
-    int minStarRatings_;
-    int demonVotes_;
-    int rateStars_;
-    bool rateFeature_;
-    std::string rateUser_;
-    bool dontSave_;
-    bool isHidden_;
-    int requiredCoins_;
-    bool isUnlocked_;
-    cocos2d::CCPoint lastCameraPos_;
-    float lastEditorZoom;
-    int lastBuildTab_;
-    int lastBuildPage_;
-    int lastBuildGroupID_;
-    int levelType_;
-    int M_ID;
-    std::string tempName_;
-    std::string capacityString_;
-    bool highObjectCount_;
-    bool byte2E9;
-    std::string levelSeed_;
-    int dword2F0;
+    cocos2d::CCDictionary *lastBuildSave;
+
+        int levelID_rand; // levelID + seed = levelID_rand
+        int levelID_seed;
+        int levelID;
+
+        std::string levelName;
+        std::string levelDesc;
+        std::string levelString;
+        std::string userName;
+        std::string recordString;
+
+        std::string uploadDate;
+        std::string updateDate;
+
+        int userID_rand;
+        int userID_seed;
+        int userID;
+
+        int accountID_rand;
+        int accountID_seed;
+        int accountID;
+
+        int difficulty;
+        int audioTrack;
+        int songID;
+
+        int levelRev;
+
+        bool unlisted;
+
+        int objectCount_rand;
+        int objectCount_seed;
+        int objectCount;
+        int averageDifficulty;
+        int ratings;
+        int ratingsSum;
+
+        int downloads;
+
+        bool isEditable;
+        bool gauntletLevel;
+        bool gauntletLevel2;
+
+        int workingTime;
+        int workingTime2;
+
+        bool lowDetailMode;
+        bool lowDetailModeToggled;
+
+        int isVerified_rand;
+        int isVerified_seed;
+        bool isVerified;
+        bool isUploaded;
+        bool hasBeenModified;
+
+        int levelVersion;
+        int gameVersion;
+
+        int attempts_rand;
+        int attempts_seed;
+        int attempts;
+
+        int jumps_rand;
+        int jumps_seed;
+        int jumps;
+
+        int clicks_rand;
+        int clicks_seed;
+        int clicks;
+
+        int attemptTime_rand;
+        int attemptTime_seed;
+        int attemptTime;
+
+        int chk;
+
+        bool isChkValid;
+        bool isCompletionLegitimate;
+
+        int normalPercent; // yes, it is out of order
+        int normalPercent_seed;
+        int normalPercent_rand;
+
+        int orbCompletion_rand;
+        int orbCompletion_seed;
+        int orbCompletion;
+
+        int newNormalPercent2_rand;
+        int newNormalPercent2_seed;
+        int newNormalPercent2;
+
+        int practicePercent;
+
+        int likes;
+        int dislikes;
+        int levelLength;
+        int featured;
+
+        int epic;
+        bool levelFavorited;
+        int levelFolder;
+
+        int dailyID_rand;
+        int dailyID_seed;
+        int dailyID;
+
+        int demon_rand;
+        int demon_seed;
+        int demon;
+        int demonDifficulty;
+        int stars_rand;
+        int stars_seed;
+        int stars;
+
+        bool autoLevel;
+        int coins;
+        int coinsVerified_rand;
+        int coinsVerified_seed;
+        int coinsVerified;
+
+        int password_rand;
+        int password_seed;
+
+        int originalLevel_rand;
+        int originalLevel_seed;
+        int originalLevel;
+
+        bool twoPlayerMode;
+
+        int failedPasswordAttempts;
+
+        int firstCoinVerified_rand;
+        int firstCoinVerified_seed;
+        int firstCoinVerified;
+
+        int secondCoinVerified_rand;
+        int secondCoinVerified_seed;
+        int secondCoinVerified;
+
+        int thirdCoinVerified_rand;
+        int thirdCoinVerified_seed;
+        int thirdCoinVerified;
+
+        int starsRequested;
+
+        bool showedSongWarning;
+        int starRatings;
+        int starRatingsSum;
+        int maxStarRatings;
+        int minStarRatings;
+        int demonVotes;
+        int rateStars;
+        int rateFeature;
+
+        std::string rateUser;
+
+        bool dontSave;
+        bool levelNotDownloaded;
+
+        int requiredCoins;
+        bool isUnlocked;
+
+        cocos2d::CCPoint lastCameraPos;
+
+        float lastEditorZoom;
+        int lastBuildTab;
+        int lastBuildPage;
+        int lastBuildGroupID;
+
+        GJLevelType levelType;
+
+        int M_ID;
+        std::string tempName;
+        std::string capacityString;
+
+        bool highObjectsEnabled;
+        std::string personalBests;
 
     
 public:
@@ -156,4 +205,9 @@ public:
     virtual void encodeWithCoder( DS_Dictionary* dict );
     virtual bool canEncode( void );
     virtual bool init( void );
+	
+    CLASS_MEMBER(int, coins, 0x23C);
+    CLASS_MEMBER(int, stars, 0x234);
+    CLASS_MEMBER(bool, epic, 0x204);
+
 };

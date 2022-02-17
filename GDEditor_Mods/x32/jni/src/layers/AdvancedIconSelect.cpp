@@ -412,7 +412,8 @@ void AdvancedIconSelect::onSwingClick(CCObject * sender){
 	extern bool userDataChanged;
 	userDataChanged = true;
 
-	
+	extern bool shouldSendDefaultValue;
+	shouldSendDefaultValue = false;
 	
 		auto winSize = CCDirector::sharedDirector()->getWinSize();
 	    float initX = -winSize.width/2 + 50,initY = winSize.height/2 - 80;

@@ -31,6 +31,7 @@ public:
 
 
 	void onGDPSSettings(CCObject *sender);
+	void onVideo(CCObject* sender);
 
 
 };

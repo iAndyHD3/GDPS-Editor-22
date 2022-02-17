@@ -1,3 +1,4 @@
+#define hook(x, y, z) 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "x"), (void*)y, (void**)&z);
 
 class HookManager {
 	public:

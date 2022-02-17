@@ -8,7 +8,7 @@
 #include "rapidjson/document.h"
 #include "patch.h"
 #include "KittyMemory.h"
-#define version2 2210
+#define version2 2211
 #include "../Encryption/Encryption.h"
 #include "../ZLIB/zlib.h"
 #include "../GDPSManager.h"
@@ -199,7 +199,7 @@ const char * level = decodeZLib.c_str();
 */
 
 		 //auto label22 = CCLabelBMFont::create("Version 2.2.0.8 Beta 3 V1", "chatFont.fnt");
-		auto label22 = CCLabelBMFont::create("Version 2.2.1.0", "chatFont.fnt");
+		auto label22 = CCLabelBMFont::create("Version 2.2.1.1", "chatFont.fnt");
 		if(GM->getGameVariable("100004")) {
 			
 	label22->setPosition(CCPoint(dir->getScreenRight() - 80, dir->getScreenTop() - 10));
@@ -232,12 +232,13 @@ const char * level = decodeZLib.c_str();
                 btn2,
                 btn2,
                 this,
-                menu_selector(CreatorLayer::onMyLevels)
+               menu_selector(CreatorLayer::onMyLevels)
+                //menu_selector(OptionsLayer::onVideo)
         );
 		btn2->setScale(.7);
         auto bottomMenu2 =  CCMenu::create();
 		bottomMenu2->addChild(myButton2);
-        reinterpret_cast<CCSprite*>(bottomMenu2)->setPosition({CCRIGHT - 50, CCBOTTOM + 40 });
+        reinterpret_cast<CCSprite*>(bottomMenu2)->setPosition({CCRIGHT - 50, CCBOTTOM + 45 });
 		
 		
 		auto btn4 = CCSprite::createWithSpriteFrameName("communityCreditsBtn_001.png");
@@ -250,7 +251,7 @@ const char * level = decodeZLib.c_str();
                 menu_selector(CreditsLayer::create)
         );
         auto bottomMenu4 =  CCMenu::create();
-        reinterpret_cast<CCSprite*>(bottomMenu4)->setPosition({CCRIGHT - 177, CCBOTTOM + 45 });
+        reinterpret_cast<CCSprite*>(bottomMenu4)->setPosition({winSize.width / 2 + 110, CCBOTTOM + 45 });
 		btn4->setScale(1.4);
         bottomMenu4->addChild(myButton4);
 			auto btn3 = CCSprite::createWithSpriteFrameName("GJ_optionsBtn02_001.png");
@@ -271,9 +272,10 @@ const char * level = decodeZLib.c_str();
 		        this->addChild(bottomMenu3, 100);
 				this->addChild(bottomMenu4);
 				this->addChild(label22);
-				this->addChild(label33);
+				//this->addChild(label33);
 
 	}
+	
         {
             auto gm = GameManager::sharedState();
 

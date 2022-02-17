@@ -59,6 +59,7 @@ LOCAL_C_INCLUDES += $(LOCAL_PATH)/include/KittyMemory \
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/include/layers \
 
 LOCAL_SRC_FILES := 	src/main.cpp \
+					src/hooks/onPlaytestExt.cpp \
 					src/layers/advancedOptionsLayer.cpp \
 					src/layers/CreditsLayer.cpp \
 					include/Encryption/Base64/base64.cpp \
@@ -73,7 +74,6 @@ LOCAL_SRC_FILES := 	src/main.cpp \
 					src/KittyMemory/MemoryPatch.cpp \
 					src/hooks/EditLevelLayerExt.cpp \
 					src/hooks/EditorUIExt.cpp \
-					src/hooks/LevelEditorLayerExt.cpp \
 					src/hooks/MoreOptionsLayerExt.cpp \
 					src/hooks/MoreSearchLayerExt.cpp \
 					src/hooks/MultiplayerLayerExt.cpp \
@@ -81,8 +81,8 @@ LOCAL_SRC_FILES := 	src/main.cpp \
 					src/hooks/PlayLayerExt.cpp \
 					src/hooks/GJGarageLayerExt.cpp \
 					src/hooks/AccountRegisterLayerExt.cpp \
-					src/hooks/onFacebookExt.cpp \
-					src/hooks/onRobtopExt.cpp \
+					src/hooks/AccountLayerExt.cpp \
+					src/hooks/LevelBrowserLayerExt.cpp \
 					src/hooks/MenuLayerExt.cpp \
 					include/Encryption/Encryption.cpp \
 
