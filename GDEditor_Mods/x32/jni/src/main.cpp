@@ -35,7 +35,7 @@
 #include "DialogLayer.h"
 #include "DialogObject.h"
 #include "GJGameLevel.h"
-
+#include "GJUserScore.h"
 using namespace std;
 
 //it wont work if I put it in the header ._.
@@ -44,19 +44,29 @@ using namespace std;
 #define null NULL
 #define targetLibName ("libcocos2dcpp.so")
 
+
 patch *pauseBtn = new patch();
 patch *groupIDLayerPatches = new patch();
 bool inEditor;
 bool userDataChanged;
 bool legendaryChanged;
 bool shouldSendDefaultValue;
-
 template < class T>
 	void *getPointer(T value)
 	{
 		auto val = reinterpret_cast< void *&> (value);
 		return val;
 	}
+	
+	template <typename T>
+  std::string itos ( T Number )
+  {
+     std::ostringstream ss;
+     ss << Number;
+     return ss.str();
+  }
+  //https://stackoverflow.com/a/13636164
+  
 
 void *getPointerFromSymbol(void *handle, const char *symbol)
 {
@@ -231,13 +241,23 @@ CCSpriteFrame* sprite_hk( CCSpriteFrameCache* ptr, const char* s )
 	
 	    if( !strcmp( s, "GJ_epicCoin2_001.png" )) {
 			
-			if(GM->getIntGameVariable("52342") >= 3) {
+		if(GM->getIntGameVariable("52342") >= 3) {
 		
         return old5( ptr, "GJ_epicCoin3_001.png" );
 		} else {
-				    return old5( ptr, s );
+		return old5( ptr, s );
 		} }
-
+		/*
+			    if( !strcmp( s, "modBadge_01_001.png" )) {
+			
+		//if(GM->getIntGameVariable("52343") >= 3) {
+		if(3 == 3) {
+		
+        return old5( ptr, "GJ_epicCoin3_001.png" );
+		} else {
+		return old5( ptr, s );
+		} }
+*/
 	/*
     if ( !strcmp( s, "GJ_gauntletsBtn_001.png" ) )
     {
@@ -756,9 +776,101 @@ void MenuLayer_updateUserProfileButtonH(MenuLayer *self) {
 void (*ProfilePage_loadPageFromUserInfoO)(ProfilePage*, GJUserScore*);
 void ProfilePage_loadPageFromUserInfoH(ProfilePage* self, GJUserScore* userData) {
 	ProfilePage_loadPageFromUserInfoO(self, userData);
+	
+			//self->_userName()->setPositionX(self->_userName()->getPositionX() + 20);
+		/*
+		1 = mod
+		2 = elder
+		3 = booster
+		4 = verified
+		5 = youtuber
+		6 = dev
+		7 = admin
+		8 = owner
+		*/
 
+		int modBadgeLevel = userData->modBadge_;
+
+		auto string = CCString::createWithFormat("%i", userData->modBadge_)->getCString();
+					auto texture1 = CCString::createWithFormat("%i", modBadgeLevel)->getCString();
+
+	auto label33 = CCLabelBMFont::create(texture1, "chatFont.fnt");
+	label33->setPosition(190, 283);
+	label33->setScale(1);
+	self->addChild(label33,50);
+	
+	
+	
+	auto label44 = CCLabelBMFont::create(texture1, "chatFont.fnt");
+	label44->setPosition(470, 275);
+	label44->setScale(1);
+	self->addChild(label44,50);
+	
+
+	CCSprite* original;		
+
+		if(modBadgeLevel > 2) {
+			
+
+
+	
+		//mod badge
+		for(int i = 0; i < self->_someArray()->count(); i++) {
+		auto thing = (CCSprite*)self->_someArray()->objectAtIndex(i);
+		
+			if(thing->getChildrenCount() == 0 && thing->getPositionX() > 190 && thing->getPositionY() > 283) {
+				
+				thing->setVisible(false);
+				//thing->setPositionX(thing->getPositionX() - 10);
+				original = thing;
+				
+				break;
+			}
+		}
+				//social button (not working idk)
+				for(int i = 0; i < self->_someArray()->count(); i++) {
+		auto thing = (CCSprite*)self->_someArray()->objectAtIndex(i);
+		
+			if(thing->getPositionX() > 470 && thing->getPositionY() > 270) {
+				
+				thing->setPositionX(thing->getPositionX() + 30);
+				
+				break;
+			}
+		}
+		
+	
+			std::string modBadge = itos(modBadgeLevel);
+ 
+    int length = modBadge.length();
+    char char_array[length + 1];
+	strcpy(char_array, modBadge.c_str());
+ 
+    for (int i = 0; i < length; i++) {
+		
+	auto texture = CCString::createWithFormat("modBadge_0%c_001.png", char_array[i])->getCString();
+	auto badge = CCSprite::createWithSpriteFrameName(texture);
+	badge->setPosition(original->getPosition());
+	self->addChild(badge);
+			
+	original->setPositionX(original->getPositionX() + 25);
+	}
+	original->setPositionX(original->getPositionX() - (length * 25));
+	
+	auto userName = self->_userName();
+	userName->setPositionX(userName->getPositionX() + ((length * 25) - 25));
+		
+
+
+	
+		}
+	
+		
+		
+
+	
+	
 	auto winSize = CCDirector::sharedDirector()->getWinSize();
-
 	// show swing
 	int iconIterator = 1;
 	for(int i = 0; i < self->_someArray()->count(); i++) {
@@ -778,6 +890,9 @@ void ProfilePage_loadPageFromUserInfoH(ProfilePage* self, GJUserScore* userData)
 			iconIterator++;
 		}
 	}
+	
+
+
 
 
 }
@@ -787,23 +902,12 @@ void ProfilePage_loadPageFromUserInfoH(ProfilePage* self, GJUserScore* userData)
 // gotta do this when the comments actually work
 void (*CommentCell_loadFromCommentO)(CommentCell*, GJComment*);
 void CommentCell_loadFromCommentH(CommentCell* self, GJComment* commentData) {
+	GM->setIntGameVariable("52343", commentData->_modBadge());
 	CommentCell_loadFromCommentO(self, commentData);
 
-	int modBadgeLevel = commentData->_modBadge();
+	
 
-	// testing
-	modBadgeLevel = 3;
-	/*
-	if(modBadgeLevel > 3) {
-		for(int i = 0; i < self->_menu()->getChildrenCount(); i++) {
-			auto thing = (CCNode*)self->_menu()->getChildren()->objectAtIndex(i);
 
-			if(thing->getChildrenCount() == 0) {
-
-			}
-		}
-	}
-	*/
 }
 
 bool (*SelectArtLayer_initO)(SelectArtLayer*, SelectArtType);
@@ -938,7 +1042,6 @@ bool levelinfoinit_hk( LevelInfoLayer* ptr, GJGameLevel* level, bool a3 )
 	auto label33 = CCLabelBMFont::create(string, "chatFont.fnt");
 	label33->setPosition(CCLEFT + 100, CCTOP - 100);
 	label33->setScale(2);
-	//ptr->addChild(label33, 200000);
 	
 
     return r;
@@ -999,10 +1102,12 @@ void* ui_hk(EditorUI*ptr){
 // make GJUserScore store the acc swing
 GJUserScore* (*GJUserScore_createO)(CCDictionary*);
 GJUserScore* GJUserScore_createH(CCDictionary* userData) {
+	
+
+	
 	auto userScore = GJUserScore_createO(userData);
 
 	int accSwing = userData->valueForKey("69")->intValue();
-
 	reinterpret_cast<GJUserScoreExt*>(userScore)->playerSwing_ = accSwing;
 
 	return userScore;
@@ -1034,6 +1139,18 @@ const char* CCString_getCStringH(CCString* self) {
 
 		auto glm = GameLevelManager::sharedState();
 		auto toAdd = CCString::createWithFormat("&legendary=%i", glm->getBoolForKey("legendary_filter_custom"))->getCString();
+
+		char *s = new char[strlen(ret)+strlen(toAdd)+1];
+        strcpy(s, ret);
+       	strcat(s, toAdd);
+
+		ret = s;
+	}
+	
+			if(strstr(ret, "&targetAccountID") != NULL) {
+
+		auto glm = GameLevelManager::sharedState();
+		auto toAdd = CCString::createWithFormat("&gdpsVersion=%i", version2)->getCString();
 
 		char *s = new char[strlen(ret)+strlen(toAdd)+1];
         strcpy(s, ret);
@@ -1189,15 +1306,17 @@ bool world_hk( WorldSelectLayer* ptr, int a2)
 bool (*profile)(ProfilePage*, int, bool);
 bool profile_hk(ProfilePage* self, int accountID, bool inMenu) {
 
+auto ret = profile(self, accountID, inMenu);
 	extern bool userDataChanged;
+	
 
 	if(userDataChanged && inMenu) {
-	auto glm = GameLevelManager::sharedState();
-	glm->updateUserScore();
-	glm->resetStoredUserInfo(accountID);
+	GLM->updateUserScore();
+	GLM->resetStoredUserInfo(accountID);
 	userDataChanged = false;
 	}
-	return profile(self, accountID, inMenu);
+
+	return ret;
 }
 
 #include "LevelCell.h"
@@ -1456,7 +1575,6 @@ void loader()
 	cameraRotatePopupPatches->Modify();
 
 	tmp->Modify();
-
 
 
 }

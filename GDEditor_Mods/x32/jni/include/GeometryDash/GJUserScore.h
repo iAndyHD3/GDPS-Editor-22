@@ -33,31 +33,31 @@ public:
     std::string twitterURL_;
     std::string twitchURL_;
 
-    int playerCube_;
-    int playerShip_;
-    int playerBall_;
-    int playerUfo_;
-    int playerWave_;
-    int playerRobot_;
-    int playerSpider_;
-    int playerStreak_;
+    int idk; //idk
+    int playerCube_; //cube
+    int playerShip_; //ship
+    int playerBall_; //ball
+    int playerUfo_; //ufo
+    int playerWave_; //wave
+    int playerRobot_; //robot
+    int playerSpider_; //spider
     bool glowEnabled_ : 4;
 
-    int playerExplosion_;
+    int playerExplosion_; //idk
 
-    int modBadge_;
-    int globalRank_;
+    int idk2;
+    int modBadge_; //0x17C
 
-    int friendReqStatus_;
-    int newMsgCount_;
-    int friendReqCount_;
+    int globalRank_; //global rank
+    int newMsgCount_; //idk
+    int friendReqCount_; //idk2
     bool isBlocked : 4;
 
     std::string lastScoreAge;
 
 // fixed members
 public:
-    CLASS_MEMBER(int, modBadge, 0x17C);
+    //CLASS_MEMBER(int, modBadgeTexture, 0x17C); //the texture that gets created, not actually the mod badge 
 };
 
 class GJUserScoreExt : public GJUserScore {

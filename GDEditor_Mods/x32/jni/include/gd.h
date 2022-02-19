@@ -4,7 +4,7 @@
 
 #include <cocos2d.h>
 
-#include "GJUserScore.h"
+//#include "GJUserScore.h"
 #include "EffectGameObject.h"
 #include "SetupCameraRotatePopup.h"
 #include "Slider.h"

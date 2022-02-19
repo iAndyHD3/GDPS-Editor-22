@@ -10,6 +10,9 @@ class ProfilePage : public FLAlertLayer {
 public:
     CLASS_MEMBER(cocos2d::CCMenu*, modBadgeMenuThing, 0x1B8);
     CLASS_MEMBER(cocos2d::CCArray*, someArray, 0x220);
+    CLASS_MEMBER(cocos2d::CCLabelBMFont*, userName, 0x208);
+    CLASS_MEMBER(cocos2d::CCSprite*, modBadgeSprite, 0x1B8);
+    CLASS_MEMBER(cocos2d::CCSprite*, socials, 0xA0);
 	
 public:
 

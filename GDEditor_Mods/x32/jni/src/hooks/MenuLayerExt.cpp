@@ -8,7 +8,6 @@
 #include "rapidjson/document.h"
 #include "patch.h"
 #include "KittyMemory.h"
-#define version2 2211
 #include "../Encryption/Encryption.h"
 #include "../ZLIB/zlib.h"
 #include "../GDPSManager.h"
@@ -20,7 +19,6 @@
 
 template<class T>
 extern void* getPointer(T value);
-
 		
 void MenuLayerExt::onRequestCompleted(cocos2d::extension::CCHttpClient *sender, cocos2d::extension::CCHttpResponse *response){
         CCLog("Completed!");
