@@ -902,12 +902,27 @@ void ProfilePage_loadPageFromUserInfoH(ProfilePage* self, GJUserScore* userData)
 // gotta do this when the comments actually work
 void (*CommentCell_loadFromCommentO)(CommentCell*, GJComment*);
 void CommentCell_loadFromCommentH(CommentCell* self, GJComment* commentData) {
-	GM->setIntGameVariable("52343", commentData->_modBadge());
+	//GM->setIntGameVariable("52343", commentData->_modBadge());
 	CommentCell_loadFromCommentO(self, commentData);
 
-	
+	int modBadgeLevel = commentData->_modBadge();
 
+	// testing
+	modBadgeLevel = 3;
 
+	if(modBadgeLevel > 2) {
+		auto commentLayer = (CCLayer*)self->getChildren()->objectAtIndex(1);
+
+		for (int c = 0; c < commentLayer->getChildrenCount(); c++) {
+			auto modBadgeSpr = (CCSprite *)commentLayer->getChildren()->objectAtIndex(c);
+
+			// getting mod badge lolol
+			if (modBadgeSpr->getChildrenCount() == 0) {
+				// changing mod badge
+				//modBadgeSpr->setDisplayFrame();
+			}
+		}
+	}
 }
 
 bool (*SelectArtLayer_initO)(SelectArtLayer*, SelectArtType);
@@ -1428,7 +1443,7 @@ void loader()
 
 		//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN9MenuLayer4initEv"), (void*) getPointer(&MenuLayerExt::init_hk), (void **) &MenuLayerExt::init_trp);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11ProfilePage20loadPageFromUserInfoEP11GJUserScore"), (void*)ProfilePage_loadPageFromUserInfoH, (void**)&ProfilePage_loadPageFromUserInfoO);
-	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11CommentCell15loadFromCommentEP9GJComment"), (void*)CommentCell_loadFromCommentH, (void**)&CommentCell_loadFromCommentO);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11CommentCell15loadFromCommentEP9GJComment"), (void*)CommentCell_loadFromCommentH, (void**)&CommentCell_loadFromCommentO);
 	//HookManager::do_hook(getPointerFromSymbol(cocos2d,"_ZN12PlayerObject15updateGlowColorEv"), (void*) PlayerObject_updateGlowColorhook,(void **)&PlayerObject_updateGlowColortrp);
 
 
