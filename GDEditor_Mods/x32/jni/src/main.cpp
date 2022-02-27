@@ -1081,11 +1081,8 @@ void CommentCell_loadFromCommentH(CommentCell* self, GJComment* commentData) {
 
 label33->setPositionX(label33->getPositionX() + ((real_length * pos) + pos));	
 	//pcg->setPositionX(pcg->getPositionX() + ((real_length * 25) - 25));
-		
-
-
-	}
 	
+}
 }
 	
 
