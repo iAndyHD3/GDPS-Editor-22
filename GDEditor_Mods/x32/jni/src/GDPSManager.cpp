@@ -220,4 +220,3 @@ void GDPSManager::changeServers(const char* server, const char* server_b64) {
 		 tmp->Modify();
 
  }
- 

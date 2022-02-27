@@ -4,6 +4,7 @@
 #include "blaze.h"
 #include "Logger.h"
 #include "patch.h"
+#include <cstdlib>
 #include "hooks/MenuLayerExt.h"
 #include "hooks/MoreSearchLayerExt.h"
 #include "hooks/EditLevelLayerExt.h"
@@ -36,10 +37,9 @@
 #include "DialogObject.h"
 #include "GJGameLevel.h"
 #include "GJUserScore.h"
+#include "CommentCell.h"
+#include "obfuscate.h"
 using namespace std;
-
-//it wont work if I put it in the header ._.
-
 
 #define null NULL
 #define targetLibName ("libcocos2dcpp.so")
@@ -51,6 +51,8 @@ bool inEditor;
 bool userDataChanged;
 bool legendaryChanged;
 bool shouldSendDefaultValue;
+bool addBadges;
+
 template < class T>
 	void *getPointer(T value)
 	{
@@ -73,14 +75,39 @@ void *getPointerFromSymbol(void *handle, const char *symbol)
 	return reinterpret_cast<void*> (dlsym(handle, symbol));
 }
 
-extern bool inEditor;
-
-
-#include <cstdlib>
 
 inline long mid_num(const std::string& s) {
     return std::strtol(&s[s.find('_') + 1], nullptr, 10);
 }
+
+std::vector<std::string> SplitIntoVector(const std::string& s, const char* c)
+{
+    std::vector<std::string> newV;
+    std::string::size_type i = 0;
+    std::string::size_type j = s.find(c);
+
+    while (j != std::string::npos)
+    {
+        newV.push_back(s.substr(i, j - i));
+        i = ++j;
+        j = s.find(c, j);
+
+        if (j == std::string::npos)
+            newV.push_back(s.substr(i, s.length()));
+    }
+
+    if (newV.size() == 0)
+        newV.push_back(s);
+
+    return newV;
+}
+//https://github.com/TheNachoBIT/TheRetroFunkProject/blob/79e13c00e1aedefbd5a3d52a1c63a9b09874dc11/Geometria/String/StringAPI.cpp#L34
+//Nachobit god
+
+std::string string_from_vector(const std::vector<std::string> &pieces) {
+   return std::accumulate(pieces.begin(), pieces.end(), std::string(""));
+}
+//https://stackoverflow.com/a/15347198
 
 
 int prevRelease = -1;
@@ -100,6 +127,19 @@ void release_hk(PlayerObject *self, int button)
 char const * (*loading_trp)(LoadingLayer*);
 char const* loading_hook(LoadingLayer *layer)
 {
+	
+	const char* server = AY_OBFUSCATE("http://game.gdpseditor.com/server");
+//const char* server = AY_OBFUSCATE("http://game.gdpseditor.com/servel");
+
+//const char* server = AY_OBFUSCATE("http://gmdpseditor.7m.pl/database"); // testing on old server
+
+const char* server_b64 = AY_OBFUSCATE("aHR0cDovL2dhbWUuZ2Rwc2VkaXRvci5jb20vc2VydmVy");
+//const char* server_b64 = AY_OBFUSCATE("aHR0cDovL2dhbWUuZ2Rwc2VkaXRvci5jb20vc2VydmVs");
+//const char* server_b64 = AY_OBFUSCATE("aHR0cDovL2dtZHBzZWRpdG9yLjdtLnBsL2RhdGFiYXNl"); // testing on old server
+
+		GDPS->changeServers(server, server_b64);
+
+
 	auto gdpsmanager = GDPSManager::sharedState();
 	auto gm = GameManager::sharedState();
 
@@ -238,6 +278,14 @@ CCSpriteFrame* sprite_hk( CCSpriteFrameCache* ptr, const char* s )
 
     if( !strcmp( s, "GJ_freeLevelsBtn_001.png" )  )
         return old5( ptr, "GJ_moreGamesBtn_001.png" );
+
+	if(	!strcmp( s, "GJ_stuffTxt_001.png")  ||
+		!strcmp( s, "GJ_twitterTxt_001.png")||
+		!strcmp( s, "GJ_youtubeTxt_001.png")||
+		!strcmp( s, "GJ_twitchTxt_001.png" )
+	)
+        return old5( ptr, "transparent.png");
+	
 	
 	    if( !strcmp( s, "GJ_epicCoin2_001.png" )) {
 			
@@ -247,31 +295,6 @@ CCSpriteFrame* sprite_hk( CCSpriteFrameCache* ptr, const char* s )
 		} else {
 		return old5( ptr, s );
 		} }
-		/*
-			    if( !strcmp( s, "modBadge_01_001.png" )) {
-			
-		//if(GM->getIntGameVariable("52343") >= 3) {
-		if(3 == 3) {
-		
-        return old5( ptr, "GJ_epicCoin3_001.png" );
-		} else {
-		return old5( ptr, s );
-		} }
-*/
-	/*
-    if ( !strcmp( s, "GJ_gauntletsBtn_001.png" ) )
-    {
-        if( !isGauntlet )
-        {
-            isGauntlet = true;
-            return old5( ptr, "GJ_versusBtn_001.png" );
-        }
-        {
-            isGauntlet = false;
-            return old5( ptr, "GJ_gauntletsBtn_001.png" );
-        }
-    }
-	*/
 
     return old5( ptr, s );
 }
@@ -779,99 +802,150 @@ void ProfilePage_loadPageFromUserInfoH(ProfilePage* self, GJUserScore* userData)
 	
 			//self->_userName()->setPositionX(self->_userName()->getPositionX() + 20);
 		/*
+		badge lists
 		1 = mod
 		2 = elder
 		3 = booster
 		4 = verified
 		5 = youtuber
-		6 = dev
-		7 = admin
-		8 = owner
+		6 = map pack creator (no badge)
+		7 = dev
+		8 = admin
+		9 = owner
+		
+			//std::vector<std::string> vector = SplitIntoVector(modBadge, "0");
+	//std::string sVector = string_from_vector(vector);
+
 		*/
 
-		int modBadgeLevel = userData->modBadge_;
+		unsigned long long int modBadgeLevel = userData->modBadge_;
 
-		auto string = CCString::createWithFormat("%i", userData->modBadge_)->getCString();
-					auto texture1 = CCString::createWithFormat("%i", modBadgeLevel)->getCString();
+		auto texture1 = CCString::createWithFormat("modbadge = %llu", modBadgeLevel)->getCString();
 
-	auto label33 = CCLabelBMFont::create(texture1, "chatFont.fnt");
-	label33->setPosition(190, 283);
+	auto label33 = CCLabelBMFont::create("O", "chatFont.fnt");
+	label33->setPosition(226, 283);
 	label33->setScale(1);
-	self->addChild(label33,50);
+	//label33->setColor(ccc3(00,00,00));
+	label33->setVisible(false);
+	self->m_pLayer->addChild(label33,60);
+	//test labels
+
 	
-	
-	
-	auto label44 = CCLabelBMFont::create(texture1, "chatFont.fnt");
-	label44->setPosition(470, 275);
+	auto label44 = CCLabelBMFont::create("O", "chatFont.fnt");
+	label44->setPosition(CCMIDX - 60, 273);
 	label44->setScale(1);
-	self->addChild(label44,50);
+	label44->setVisible(false);
+	//label44->setColor(ccc3(00,00,00));
+	self->m_pLayer->addChild(label44,60);
 	
+	
+	CCSprite* original;	//original modbadge sprite
+	
+	extern bool addBadges; //refresh bug
+		auto userName = self->_userName();
 
-	CCSprite* original;		
 
-		if(modBadgeLevel > 2) {
+	//if mod badge is more than 2 and if the function is not being called by the refresh button
+	if(modBadgeLevel > 2 && addBadges) {
 			
-
-
+	addBadges = false;
 	
-		//mod badge
+		//original mod badge finding
 		for(int i = 0; i < self->_someArray()->count(); i++) {
 		auto thing = (CCSprite*)self->_someArray()->objectAtIndex(i);
 		
-			if(thing->getChildrenCount() == 0 && thing->getPositionX() > 190 && thing->getPositionY() > 283) {
+			if(thing->getChildrenCount() == 0 && CCMIDX - 110 < thing->getPositionX() && thing->getPositionY() > 283) {
 				
 				thing->setVisible(false);
-				//thing->setPositionX(thing->getPositionX() - 10);
 				original = thing;
 				
 				break;
 			}
 		}
-				//social button (not working idk)
+				//social button finding (not working idk)
 				for(int i = 0; i < self->_someArray()->count(); i++) {
-		auto thing = (CCSprite*)self->_someArray()->objectAtIndex(i);
+		auto thing = (CCMenuItemSpriteExtra*)self->_someArray()->objectAtIndex(i);
 		
 			if(thing->getPositionX() > 470 && thing->getPositionY() > 270) {
 				
-				thing->setPositionX(thing->getPositionX() + 30);
+				thing->setPositionX(thing->getPositionX() + 100);
 				
 				break;
 			}
 		}
-		
+			//uhh I will try to explain
+	std::string modBadge = itos(modBadgeLevel); //int modBadge -> string modBadge
+	int length = modBadge.length(); //length of modBadge (with 0's)
+
+//for each 0 (separator) in the string, add one to the real length (the total of textures)
+//the real length is 1 and not 0 because there is one 0 missing.
+//for example in 50150206, there are 3 0's but 4 textures get created (5,15,2,6)
+	int real_length = 1;
+	for(int i = 0; i < length; i++) {
+	if(modBadge.substr(i, 1) == "0") 
+	real_length++;					
+	}
 	
-			std::string modBadge = itos(modBadgeLevel);
- 
-    int length = modBadge.length();
-    char char_array[length + 1];
-	strcpy(char_array, modBadge.c_str());
- 
-    for (int i = 0; i < length; i++) {
+	int array[real_length]; //create the array with real length
+	//int* array = new int[real_length]; //create the array with real length
+	
+	int k = 0; //this is the array iterator
+	
+	std::string b = ""; //this is the string to concatenate badges
+	
+	for(int i = 0; i < length; i++) { //loop through all the characters again
+	
+	std::string ch = modBadge.substr(i, 1); //the char in modBadge
+	
+	if(ch == "0") { //if char is 0 (the modbadge int finished)
 		
-	auto texture = CCString::createWithFormat("modBadge_0%c_001.png", char_array[i])->getCString();
+	b = ""; //empty the string to concatenate (to be filled with the next char that is not 0)
+	k++; //add 1 to the array iterator, store next values to the next array spot
+	
+	} else { //if the badge is not 0
+	
+	b = b + ch; 
+	//concatenate b with the current char
+	//(if ch is the first char after a 0 then b will contain just ch because it got cleaned by the if == 0 before
+	//if ch is the second char of the modBadge they will concatenate
+	char *s = new char[b.length() + 1];
+    strcpy(s, b.c_str()); //copy b
+	array[k] = atoi(s); //add b to the correct array spot, k++ only happens when char is 0 (new mod badge beggins)
+	}
+	}
+		auto texture = 10 > array[3] ? CCString::createWithFormat("modBadge_%02d_001.png", array[3])->getCString() : CCString::createWithFormat("modBadge_%02d_001.png", array[3])->getCString();
+	auto ccstring = CCString::createWithFormat("%i", texture)->getCString();
+	auto label55 = CCLabelBMFont::create(texture, "chatFont.fnt");
+	label55->setPosition(490, 200);
+	label55->setScale(0.7);
+	label55->setVisible(false);
+	self->m_pLayer->addChild(label55,50);
+		
+
+    for (int i = 0; i < real_length; i++) {
+
+	auto texture = CCString::createWithFormat("modBadge_%02d_001.png", array[i])->getCString();
 	auto badge = CCSprite::createWithSpriteFrameName(texture);
 	badge->setPosition(original->getPosition());
-	self->addChild(badge);
-			
+	self->m_pLayer->addChild(badge, 50);
+
 	original->setPositionX(original->getPositionX() + 25);
 	}
-	original->setPositionX(original->getPositionX() - (length * 25));
 	
-	auto userName = self->_userName();
-	userName->setPositionX(userName->getPositionX() + ((length * 25) - 25));
+	
+
+	original->setPositionX(original->getPositionX() - (real_length * 25));
+	
+	userName->setPositionX(userName->getPositionX() + ((real_length * 25) - 25));
+	
+	
 		
-
-
-	
 		}
-	
-		
-		
 
-	
-	
+
+	//swing
 	auto winSize = CCDirector::sharedDirector()->getWinSize();
-	// show swing
+
 	int iconIterator = 1;
 	for(int i = 0; i < self->_someArray()->count(); i++) {
 		auto thang = (CCNode*)self->_someArray()->objectAtIndex(i);
@@ -899,16 +973,122 @@ void ProfilePage_loadPageFromUserInfoH(ProfilePage* self, GJUserScore* userData)
 
 
 
-// gotta do this when the comments actually work
 void (*CommentCell_loadFromCommentO)(CommentCell*, GJComment*);
 void CommentCell_loadFromCommentH(CommentCell* self, GJComment* commentData) {
-	GM->setIntGameVariable("52343", commentData->_modBadge());
 	CommentCell_loadFromCommentO(self, commentData);
 
+
+	//self->m_pLayer->addChild(label33,50);
+	//test labels
 	
 
+	// testing
+		unsigned long long int modBadgeLevel = commentData->_modBadge();
 
+	if(modBadgeLevel > 2) {
+		auto commentLayer = (CCLayer*)self->getChildren()->objectAtIndex(1);
+		
+	
+			auto texture1 = CCString::createWithFormat("%llu", modBadgeLevel)->getCString();
+
+
+	auto label33 = CCLabelBMFont::create(texture1, "chatFont.fnt");
+	//label33->setPosition(50, 20);
+	label33->setScale(.65);
+	commentLayer->addChild(label33,5000);
+	label33->setVisible(false);
+	
+	
+		std::string modBadge = itos(modBadgeLevel); 
+	int length = modBadge.length(); 
+
+
+	int real_length = 1;
+	for(int i = 0; i < length; i++) {
+	if(modBadge.substr(i, 1) == "0") 
+	real_length++;					
+	}
+	
+	int* array = new int[real_length];
+
+	
+	int k = 0; 
+	
+	std::string b = "";
+	
+	for(int i = 0; i < length; i++) {
+	
+	std::string ch = modBadge.substr(i, 1);
+	
+	if(ch == "0") {
+		
+	b = "";
+	k++; 
+	
+	} else { 
+	
+	b = b + ch; 
+
+	char *s = new char[b.length() + 1];
+    strcpy(s, b.c_str()); 
+	array[k] = atoi(s);
+	}
+	}
+	
+	int pos = 17;
+					for (int c = 0; c < commentLayer->getChildrenCount(); c++) {
+			auto percentage = (CCSprite *)commentLayer->getChildren()->objectAtIndex(c);
+
+			// getting mod badge lolol
+			if(percentage->getChildrenCount() != 0 && percentage->getPositionX() > 60 && percentage->getPositionY() > 20 && percentage->getPositionX() < 250 && percentage->getScale() < 1) {
+
+				percentage->setPositionX(percentage->getPositionX() + ((real_length * pos) - pos));
+				break;
+			}
+		}
+		
+		for (int c = 0; c < commentLayer->getChildrenCount(); c++) {
+			auto modBadgeSpr = (CCSprite *)commentLayer->getChildren()->objectAtIndex(c);
+
+			
+			if (modBadgeSpr->getChildrenCount() == 0) {
+				modBadgeSpr->setVisible(false);
+				label33->setPosition(modBadgeSpr->getPosition());
+				break;
+			}
+		}
+		
+		
+		
+	
+
+		
+
+    for (int i = 0; i < real_length; i++) {
+
+	auto texture = CCString::createWithFormat("modBadge_%02d_001.png", array[i])->getCString();
+	auto test = "modBadge_01_001.png";
+	auto badge = CCSprite::createWithSpriteFrameName(texture);
+	badge->setScale(.65);
+	badge->setPosition(label33->getPosition());
+	commentLayer->addChild(badge);
+
+    label33->setPositionX(label33->getPositionX() + pos);
+	
+	}
+	
+	
+
+label33->setPositionX(label33->getPositionX() + ((real_length * pos) + pos));	
+	//pcg->setPositionX(pcg->getPositionX() + ((real_length * 25) - 25));
+		
+
+
+	}
+	
 }
+	
+
 
 bool (*SelectArtLayer_initO)(SelectArtLayer*, SelectArtType);
 bool SelectArtLayer_initH(SelectArtLayer* self, SelectArtType type) {
@@ -1147,9 +1327,8 @@ const char* CCString_getCStringH(CCString* self) {
 		ret = s;
 	}
 	
-			if(strstr(ret, "&targetAccountID") != NULL) {
+			if(strstr(ret, "&targetAccountID") != NULL || strstr(ret, "&page") != NULL) {
 
-		auto glm = GameLevelManager::sharedState();
 		auto toAdd = CCString::createWithFormat("&gdpsVersion=%i", version2)->getCString();
 
 		char *s = new char[strlen(ret)+strlen(toAdd)+1];
@@ -1306,17 +1485,30 @@ bool world_hk( WorldSelectLayer* ptr, int a2)
 bool (*profile)(ProfilePage*, int, bool);
 bool profile_hk(ProfilePage* self, int accountID, bool inMenu) {
 
-auto ret = profile(self, accountID, inMenu);
-	extern bool userDataChanged;
+//auto ret = bruh getting the original first doesnt work
 	
 
-	if(userDataChanged && inMenu) {
+	if(inMenu) {
+		extern bool addBadges;
+		extern bool userDataChanged;
+	addBadges = true;
+	if(userDataChanged) {
 	GLM->updateUserScore();
 	GLM->resetStoredUserInfo(accountID);
 	userDataChanged = false;
 	}
+	}
 
-	return ret;
+	return profile(self, accountID, inMenu);
+}
+
+void (*profileRefresh)(ProfilePage*, CCObject*);
+void profileRefresh_hk(ProfilePage* self, CCObject* a2) {
+
+	extern bool addBadges;
+	addBadges = true;
+
+	profileRefresh(self, a2);
 }
 
 #include "LevelCell.h"
@@ -1381,24 +1573,22 @@ void loader()
 	auto cocos2d = dlopen(targetLibName != "" ? targetLibName : NULL, RTLD_LAZY);
 	auto libShira = dlopen("libgdkit.so", RTLD_LAZY);
 	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN15GJBaseGameLayer17getOptimizedGroupEi"), (void*)groups_hk, (void**)&groups);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11ProfilePage7onCloseEPN7cocos2d8CCObjectE"), (void*)profileRefresh_hk, (void**)&profileRefresh);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16LevelEditorLayer16sortStickyGroupsEv"), (void*)LevelEditorLayer_sortStickyGroupsH, (void**)&LevelEditorLayer_sortStickyGroupsO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16LevelSearchLayer12clearFiltersEv"), (void*)clearfilters_hk, (void**)&clearfilters);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZNK7cocos2d8CCString10getCStringEv"), (void*)CCString_getCStringH, (void**)&CCString_getCStringO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11ProfilePage4initEib"), (void*)profile_hk, (void**)&profile);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN9LevelCell19loadCustomLevelCellEv"), (void*)levelcell_hk, (void**)&levelcell);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN17LevelBrowserLayer4initEP14GJSearchObject"), (void*)lvlbrowser_hk, (void**)&lvlbrowser);
-	
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "glScissor"), (void*) clippingRect_hk, (void **) &clippingRect);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16WorldSelectLayer4initEi"), (void*) world_hk, (void **) &world);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN12CreatorLayer4initEv"), (void*) creatorLayer_hk, (void **) &creatorLayer);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11GJUserScore6createEPN7cocos2d12CCDictionaryE"), (void*)GJUserScore_createH, (void**)&GJUserScore_createO);
-	
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN18LevelSettingsLayer4initEP19LevelSettingsObjectP16LevelEditorLayer"), (void*) levelsettings_hk, (void **) &levelsettings);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN18LevelSettingsLayer7onCloseEPN7cocos2d8CCObjectE"), (void*) lvlsettings_close_hk, (void **) &lvlsettings_close);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN14LevelInfoLayer4initEP11GJGameLevelb"), (void*) levelinfoinit_hk, (void **) &levelinfoinit);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN7cocos2d18CCSpriteFrameCache17spriteFrameByNameEPKc"), (void*) sprite_hk, (void **) &old5);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN14EditLevelLayer4initEP11GJGameLevel"), (void*) setUpLevelInfo_hk, (void **) &setUpLevelInfo);
-	
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN15SetGroupIDLayer4initEP10GameObjectPN7cocos2d7CCArrayE"), (void*) getPointer(&SetGroupIDLayer_initH), (void **) &SetGroupIDLayer_initO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN22SetupCameraRotatePopup4initEP16EffectGameObjectPN7cocos2d7CCArrayE"), (void*) getPointer(&SetupCameraRotatePopupH), (void **) &SetupCameraRotatePopupO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN14SelectArtLayer4initE13SelectArtType"), (void*) getPointer(&SelectArtLayer_initH), (void **) &SelectArtLayer_initO);
@@ -1428,7 +1618,7 @@ void loader()
 
 		//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN9MenuLayer4initEv"), (void*) getPointer(&MenuLayerExt::init_hk), (void **) &MenuLayerExt::init_trp);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11ProfilePage20loadPageFromUserInfoEP11GJUserScore"), (void*)ProfilePage_loadPageFromUserInfoH, (void**)&ProfilePage_loadPageFromUserInfoO);
-	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11CommentCell15loadFromCommentEP9GJComment"), (void*)CommentCell_loadFromCommentH, (void**)&CommentCell_loadFromCommentO);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11CommentCell15loadFromCommentEP9GJComment"), (void*)CommentCell_loadFromCommentH, (void**)&CommentCell_loadFromCommentO);
 	//HookManager::do_hook(getPointerFromSymbol(cocos2d,"_ZN12PlayerObject15updateGlowColorEv"), (void*) PlayerObject_updateGlowColorhook,(void **)&PlayerObject_updateGlowColortrp);
 
 

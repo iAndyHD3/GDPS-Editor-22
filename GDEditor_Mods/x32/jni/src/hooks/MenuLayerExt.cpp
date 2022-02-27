@@ -161,12 +161,21 @@ void MenuLayerExt::onRequestCompleted(cocos2d::extension::CCHttpClient *sender, 
 
         auto ret =  init_trp(this);
 		
-
+	extern bool addBadges;
+	addBadges = true;
+	
 		auto director = CCDirector::sharedDirector();
 		auto dir = CCDirector::sharedDirector();
         auto winSize = director->getWinSize();
 		auto gm = GameManager::sharedState();
 		
+		/*//auto gradient = CCLayerGradient::create(ccc4(255, 0, 0, 0), ccc4(255, 0, 0, 0));
+		auto gradient = CCLayerGradient::create(ccc4(255, 255, 0, 255), ccc4(0, 0, 255, 255));
+		gradient->setPosition(CCRIGHT / 2, CCTOP / 2);
+		//gradient->initWithColor(ccc4(59, 255, 240, 1), ccc4(241, 0, 255, 1));
+		this->addChild(gradient,10000000000);
+		gradient->init();
+		*/
 		auto levelFix = GM->getGameVariable("100004");
 		auto menuClear = GM->getGameVariable("100003");
 
@@ -196,8 +205,8 @@ const char * level = decodeZLib.c_str();
 		this->addChild(labellevel, 10);
 */
 
-		 //auto label22 = CCLabelBMFont::create("Version 2.2.0.8 Beta 3 V1", "chatFont.fnt");
-		auto label22 = CCLabelBMFont::create("Version 2.2.1.1", "chatFont.fnt");
+		 auto label22 = CCLabelBMFont::create("Version 2.2.1.2", "chatFont.fnt");
+		//auto label22 = CCLabelBMFont::create("Version 2.2.1.2", "chatFont.fnt");
 		if(GM->getGameVariable("100004")) {
 			
 	label22->setPosition(CCPoint(dir->getScreenRight() - 80, dir->getScreenTop() - 10));
@@ -230,8 +239,8 @@ const char * level = decodeZLib.c_str();
                 btn2,
                 btn2,
                 this,
-               menu_selector(CreatorLayer::onMyLevels)
-                //menu_selector(OptionsLayer::onVideo)
+              //menu_selector(CreatorLayer::onMyLevels)
+                menu_selector(OptionsLayer::onVideo)
         );
 		btn2->setScale(.7);
         auto bottomMenu2 =  CCMenu::create();
@@ -270,7 +279,7 @@ const char * level = decodeZLib.c_str();
 		        this->addChild(bottomMenu3, 100);
 				this->addChild(bottomMenu4);
 				this->addChild(label22);
-				//this->addChild(label33);
+				this->addChild(label33);
 
 	}
 	
@@ -298,7 +307,7 @@ const char * level = decodeZLib.c_str();
 			
 			if(numReq) {
 				
-				
+		/*
 
      cocos2d::extension::CCHttpRequest* request = new (std::nothrow) cocos2d::extension::CCHttpRequest();
         request->setUrl(AY_OBFUSCATE("http://game.gdpseditor.com/server/game/version.php"));
@@ -311,7 +320,7 @@ const char * level = decodeZLib.c_str();
         //*((int *)request + 16) = 0;
         cocos2d::extension::CCHttpClient::getInstance()->send(request);
         request->release();  
-        
+    */
 		gm->setGameVariable("11000", false);
 	
 			}else{
@@ -360,16 +369,6 @@ const char * level = decodeZLib.c_str();
 
 
 
-const char* server = AY_OBFUSCATE("http://game.gdpseditor.com/server");
-//const char* server = AY_OBFUSCATE("http://game.gdpseditor.com/servel");
-
-//const char* server = AY_OBFUSCATE("http://gmdpseditor.7m.pl/database"); // testing on old server
-
-const char* server_b64 = AY_OBFUSCATE("aHR0cDovL2dhbWUuZ2Rwc2VkaXRvci5jb20vc2VydmVy");
-//const char* server_b64 = AY_OBFUSCATE("aHR0cDovL2dhbWUuZ2Rwc2VkaXRvci5jb20vc2VydmVs");
-//const char* server_b64 = AY_OBFUSCATE("aHR0cDovL2dtZHBzZWRpdG9yLjdtLnBsL2RhdGFiYXNl"); // testing on old server
-
-		GDPS->changeServers(server, server_b64);
 
 
         return ret;

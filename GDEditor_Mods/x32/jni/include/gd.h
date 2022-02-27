@@ -48,7 +48,6 @@
 #include "VideoOptionsLayer.h"
 #include "GJAccountManager.h"
 #include "ProfilePage.h"
-#include "CommentCell.h"
 #include "SelectArtLayer.h" 
 #include "WorldSelectLayer.h"
 #endif
