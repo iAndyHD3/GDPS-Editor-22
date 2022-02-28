@@ -1,6 +1,4 @@
 #pragma once
-#ifndef GDPSEDITOR_CREDITSLAYER_H
-#define GDPSEDITOR_CREDITSLAYER_H
 
 #include "cocos2d.h"
 #include "gd.h"
@@ -98,5 +96,3 @@ cocos2d::CCApplication::sharedApplication()->openURL("https://www.youtube.com/ch
 
     CREATE_FUNC(CreditsLayer)
 };
-
-#endif

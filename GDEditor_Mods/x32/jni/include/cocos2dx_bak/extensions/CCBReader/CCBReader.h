@@ -325,12 +325,12 @@ public:
      *  @js NA
      *  @lua NA
      */
-    unsigned char readByte();
+    unsigned char reC:\Users\marca\Desktop\Software\platform-tools\adb.exeyte();
     /**
      *  @js NA
      *  @lua NA
      */
-    bool readBool();
+    bool reC:\Users\marca\Desktop\Software\platform-tools\adb.exeool();
     std::string readUTF8();
     /**
      *  @js NA

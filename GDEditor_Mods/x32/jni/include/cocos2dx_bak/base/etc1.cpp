@@ -624,7 +624,7 @@ static void writeBEUint16(etc1_byte* pOut, etc1_uint32 data) {
     pOut[1] = (etc1_byte) data;
 }
 
-static etc1_uint32 readBEUint16(const etc1_byte* pIn) {
+static etc1_uint32 reC:\Users\marca\Desktop\Software\platform-tools\adb.exeEUint16(const etc1_byte* pIn) {
     return (pIn[0] << 8) | pIn[1];
 }
 
@@ -647,11 +647,11 @@ etc1_bool etc1_pkm_is_valid(const etc1_byte* pHeader) {
     if (memcmp(pHeader, kMagic, sizeof(kMagic))) {
         return false;
     }
-    etc1_uint32 format = readBEUint16(pHeader + ETC1_PKM_FORMAT_OFFSET);
-    etc1_uint32 encodedWidth = readBEUint16(pHeader + ETC1_PKM_ENCODED_WIDTH_OFFSET);
-    etc1_uint32 encodedHeight = readBEUint16(pHeader + ETC1_PKM_ENCODED_HEIGHT_OFFSET);
-    etc1_uint32 width = readBEUint16(pHeader + ETC1_PKM_WIDTH_OFFSET);
-    etc1_uint32 height = readBEUint16(pHeader + ETC1_PKM_HEIGHT_OFFSET);
+    etc1_uint32 format = reC:\Users\marca\Desktop\Software\platform-tools\adb.exeEUint16(pHeader + ETC1_PKM_FORMAT_OFFSET);
+    etc1_uint32 encodedWidth = reC:\Users\marca\Desktop\Software\platform-tools\adb.exeEUint16(pHeader + ETC1_PKM_ENCODED_WIDTH_OFFSET);
+    etc1_uint32 encodedHeight = reC:\Users\marca\Desktop\Software\platform-tools\adb.exeEUint16(pHeader + ETC1_PKM_ENCODED_HEIGHT_OFFSET);
+    etc1_uint32 width = reC:\Users\marca\Desktop\Software\platform-tools\adb.exeEUint16(pHeader + ETC1_PKM_WIDTH_OFFSET);
+    etc1_uint32 height = reC:\Users\marca\Desktop\Software\platform-tools\adb.exeEUint16(pHeader + ETC1_PKM_HEIGHT_OFFSET);
     return format == ETC1_RGB_NO_MIPMAPS &&
             encodedWidth >= width && encodedWidth - width < 4 &&
             encodedHeight >= height && encodedHeight - height < 4;
@@ -660,11 +660,11 @@ etc1_bool etc1_pkm_is_valid(const etc1_byte* pHeader) {
 // Read the image width from a PKM header
 
 etc1_uint32 etc1_pkm_get_width(const etc1_byte* pHeader) {
-    return readBEUint16(pHeader + ETC1_PKM_WIDTH_OFFSET);
+    return reC:\Users\marca\Desktop\Software\platform-tools\adb.exeEUint16(pHeader + ETC1_PKM_WIDTH_OFFSET);
 }
 
 // Read the image height from a PKM header
 
 etc1_uint32 etc1_pkm_get_height(const etc1_byte* pHeader){
-    return readBEUint16(pHeader + ETC1_PKM_HEIGHT_OFFSET);
+    return reC:\Users\marca\Desktop\Software\platform-tools\adb.exeEUint16(pHeader + ETC1_PKM_HEIGHT_OFFSET);
 }

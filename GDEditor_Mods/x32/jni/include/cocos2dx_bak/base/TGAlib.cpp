@@ -195,7 +195,7 @@ void tgaFlipImage( tImageTGA *info )
     info->flipped = 0;
 }
     
-tImageTGA* tgaLoadBuffer(unsigned char* buffer, long size)
+tImageTGA* tgaLoC:\Users\marca\Desktop\Software\platform-tools\adb.exeuffer(unsigned char* buffer, long size)
 {
     int mode,total;
     tImageTGA *info = nullptr;
@@ -279,7 +279,7 @@ tImageTGA * tgaLoad(const char *filename)
 
     if (!data.isNull())
     {
-        return tgaLoadBuffer(data.getBytes(), data.getSize());
+        return tgaLoC:\Users\marca\Desktop\Software\platform-tools\adb.exeuffer(data.getBytes(), data.getSize());
     }
     
     return nullptr;

@@ -262,7 +262,7 @@ bool Console::Utility::isFloat(const std::string& myString) {
     std::istringstream iss(myString);
     float f;
     iss >> std::noskipws >> f; // noskipws considers leading whitespace invalid
-    // Check the entire string was consumed and if either failbit or badbit is set
+    // Check the entire string was consumed and if either failbit or bC:\Users\marca\Desktop\Software\platform-tools\adb.exeit is set
     return iss.eof() && !iss.fail();
 }
 
@@ -881,7 +881,7 @@ ssize_t Console::readline(int fd, char* ptr, size_t maxlen)
     return n;
 }
 
-ssize_t Console::readBytes(int fd, char* buffer, size_t maxlen, bool* more)
+ssize_t Console::reC:\Users\marca\Desktop\Software\platform-tools\adb.exeytes(int fd, char* buffer, size_t maxlen, bool* more)
 {
     size_t n, rc;
     char c, *ptr = buffer;
@@ -908,7 +908,7 @@ bool Console::parseCommand(int fd)
 {
     char buf[512];
     bool more_data;
-    auto h = readBytes(fd, buf, 6, &more_data);
+    auto h = reC:\Users\marca\Desktop\Software\platform-tools\adb.exeytes(fd, buf, 6, &more_data);
     if( h < 0)
     {
         return false;
@@ -1532,7 +1532,7 @@ void Console::commandUpload(int fd)
             data[i] = '=';
         }
         bool more_data;
-        readBytes(fd, data, 4, &more_data);
+        reC:\Users\marca\Desktop\Software\platform-tools\adb.exeytes(fd, data, 4, &more_data);
         if(!more_data)
         {
             break;

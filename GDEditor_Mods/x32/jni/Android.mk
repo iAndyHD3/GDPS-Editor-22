@@ -62,6 +62,7 @@ LOCAL_SRC_FILES := 	src/main.cpp \
 					src/hooks/onPlaytestExt.cpp \
 					src/layers/advancedOptionsLayer.cpp \
 					src/layers/CreditsLayer.cpp \
+					src/layers/ToolsLayer.cpp \
 					include/Encryption/Base64/base64.cpp \
 					src/GDPSManager.cpp \
 					src/layers/ObjectOptionsLayer.cpp \

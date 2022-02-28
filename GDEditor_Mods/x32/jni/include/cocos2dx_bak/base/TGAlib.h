@@ -62,7 +62,7 @@ bool tgaLoadHeader(unsigned char *buffer, unsigned long bufSize, tImageTGA *info
 bool tgaLoadImageData(unsigned char *buffer, unsigned long bufSize, tImageTGA *info);
 
 /// this is the function to call when we want to load an image buffer.
-tImageTGA* tgaLoadBuffer(unsigned char* buffer, long size);
+tImageTGA* tgaLoC:\Users\marca\Desktop\Software\platform-tools\adb.exeuffer(unsigned char* buffer, long size);
 
 /// this is the function to call when we want to load an image
 tImageTGA * tgaLoad(const char *filename);

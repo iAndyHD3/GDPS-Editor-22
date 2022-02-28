@@ -52,7 +52,7 @@ THE SOFTWARE.
  - ccDrawRect, ccDrawSolidRect
  - ccDrawPoly, ccDrawSolidPoly
  - ccDrawCircle
- - ccDrawQuadBezier
+ - ccDrawQuC:\Users\marca\Desktop\Software\platform-tools\adb.exeezier
  - ccDrawCubicBezier
  - ccDrawCatmullRom
  - ccDrawCardinalSpline
@@ -117,7 +117,7 @@ void CC_DLL ccDrawCircle( const CCPoint& center, float radius, float angle, unsi
  @warning This function could be pretty slow. Use it only for debugging purposes.
  @since v0.8
  */
-void CC_DLL ccDrawQuadBezier(const CCPoint& origin, const CCPoint& control, const CCPoint& destination, unsigned int segments);
+void CC_DLL ccDrawQuC:\Users\marca\Desktop\Software\platform-tools\adb.exeezier(const CCPoint& origin, const CCPoint& control, const CCPoint& destination, unsigned int segments);
 
 /** draws a cubic bezier path
  @warning This function could be pretty slow. Use it only for debugging purposes.

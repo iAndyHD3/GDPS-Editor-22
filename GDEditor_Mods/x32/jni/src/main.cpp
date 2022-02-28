@@ -1548,6 +1548,20 @@ void clearfilters_hk(LevelSearchLayer* self) {
 	clearfilters(self);
 }
 
+void (*loginerror)(int, int);
+void loginerror_hk(int a1, int a2) {
+
+    patch *tmp = new patch();
+	tmp->addPatch("libcocos2dcpp.so", 0x7B8839, "20 20 20 20");
+	tmp->addPatch("libcocos2dcpp.so", 0x7B883D, "20 20");
+	tmp->addPatch("libcocos2dcpp.so", 0x7B883F, "20 20 20 20 20 20");
+	tmp->Modify();
+
+	
+	loginerror(a1, a2);
+	
+}
+
 void (*groups)(GJBaseGameLayer*, int);
 void groups_hk(GJBaseGameLayer* self, int a2) {
 
@@ -1570,6 +1584,7 @@ void loader()
 	auto cocos2d = dlopen(targetLibName != "" ? targetLibName : NULL, RTLD_LAZY);
 	auto libShira = dlopen("libgdkit.so", RTLD_LAZY);
 	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN15GJBaseGameLayer17getOptimizedGroupEi"), (void*)groups_hk, (void**)&groups);
+	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN17AccountLoginLayer11updateLabelE12AccountError"), (void*)loginerror_hk, (void**)&loginerror);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11ProfilePage7onCloseEPN7cocos2d8CCObjectE"), (void*)profileRefresh_hk, (void**)&profileRefresh);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16LevelEditorLayer16sortStickyGroupsEv"), (void*)LevelEditorLayer_sortStickyGroupsH, (void**)&LevelEditorLayer_sortStickyGroupsO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16LevelSearchLayer12clearFiltersEv"), (void*)clearfilters_hk, (void**)&clearfilters);
@@ -1612,11 +1627,8 @@ void loader()
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11GameManager18toggleGameVariableEPKc"), (void*) hook_onToggle, (void **) &onToggleTrampoline);
 	HookManager::do_hook(
 	getPointerFromSymbol(cocos2d, "_ZN12PlayerObject13releaseButtonE12PlayerButton"), (void*) release_hk, (void **) &release_trp, true);
-
-		//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN9MenuLayer4initEv"), (void*) getPointer(&MenuLayerExt::init_hk), (void **) &MenuLayerExt::init_trp);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11ProfilePage20loadPageFromUserInfoEP11GJUserScore"), (void*)ProfilePage_loadPageFromUserInfoH, (void**)&ProfilePage_loadPageFromUserInfoO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11CommentCell15loadFromCommentEP9GJComment"), (void*)CommentCell_loadFromCommentH, (void**)&CommentCell_loadFromCommentO);
-	//HookManager::do_hook(getPointerFromSymbol(cocos2d,"_ZN12PlayerObject15updateGlowColorEv"), (void*) PlayerObject_updateGlowColorhook,(void **)&PlayerObject_updateGlowColortrp);
 
 
 	patch *tmp = new patch();
@@ -1635,8 +1647,6 @@ void loader()
 	tmp->addPatch("libcocos2dcpp.so", 0x2ECC64, "00 bf");
 	//tmp->addPatch("libcocos2dcpp.so", 0x2B1F52, "00 bf 00 bf 00 bf 00 bf");
 	//tmp->addPatch("libcocos2dcpp.so", 0x2B1F92, "00 bf");
-
-
 
 	//overflow crash spark 
 	//(you dont know how good it feels to have this commented)
@@ -1671,9 +1681,9 @@ void loader()
 	//125742
 	
 
-	
-	//gauntlet lock 
-	tmp->addPatch("libcocos2dcpp.so", 0x7BC25F, "30 31 36");
+
+	//garagelock texture 
+	tmp->addPatch("libcocos2dcpp.so", 0x2EC33A, "00 bf");
 
 	//10 stars limit bypass
 	tmp->addPatch("libcocos2dcpp.so", 0x2F8E5A, "04 e0");
@@ -1687,13 +1697,6 @@ void loader()
 
 	//patch for the swing limit
 	tmp->addPatch("libcocos2dcpp.so", 0x2EACB8, "23");
-	
-	
-	//tmp->addPatch("libcocos2dcpp.so", 0x22B6F2, "04 e0");
-	tmp->addPatch("libcocos2dcpp.so", 0x22B726, "0d e0");
-	
-		//tmp->addPatch("libcocos2dcpp.so", 0x22B6F2, "00 bf");
-	//tmp->addPatch("libcocos2dcpp.so", 0x22B726, "00 bf");
 	
 
 	// probably fix platformer kick

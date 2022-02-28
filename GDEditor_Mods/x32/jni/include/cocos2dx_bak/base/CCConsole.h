@@ -219,7 +219,7 @@ protected:
     
     // Helpers
     ssize_t readline(int fd, char *buf, size_t maxlen);
-    ssize_t readBytes(int fd, char* buffer, size_t maxlen, bool* more);
+    ssize_t reC:\Users\marca\Desktop\Software\platform-tools\adb.exeytes(int fd, char* buffer, size_t maxlen, bool* more);
     bool parseCommand(int fd);
     void performCommand(int fd, const std::string& command);
     

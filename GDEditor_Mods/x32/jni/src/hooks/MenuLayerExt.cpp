@@ -14,6 +14,7 @@
 #include "../obfuscate.h"
 #include "../layers/advancedOptionsLayer.h"
 #include "../layers/CreditsLayer.h"
+#include "../layers/ToolsLayer.h"
 #include "../../include/hooks/MenuLayerExt.h"
 
 
@@ -190,20 +191,6 @@ void MenuLayerExt::onRequestCompleted(cocos2d::extension::CCHttpClient *sender, 
         auto bottomMenu =  CCMenu::create();
         reinterpret_cast<CCSprite*>(bottomMenu)->setPositionY(90);
 
-/*
-	std::string levelSubstring = "H4sIAAAAAAAAC6VY27HdIAxsyDcjAeIx-UoNtwAXkBZSfAwCDBbCJ5Of46NdsYDAsuD3t40Hng5Oc6Kh056G6ETkh-EHg-78wtOfCABnOPFEyj_xhDOe-AfPIgHmMwn8f4m0lMg-3OAjEXPm9tpYWAbeRGgrAp-NxKsi_zgltxA5fv9Ce0B-ED88P9xx_fL_wEh9xPz4tqlYpvyyQCF-ufLLLAI_8ICfeFxNzGEiHfbwlxmzRdlCyqy_bIvZdtS82b4YPPL4O-yecBazgcUG-JqaORxk_CIvCzN4YXR3XMzI_Q5NqcPdy2MVGjrIcBkNgsCDxEPHA02mW3vhc0g8Bgm7jbeYF3srsJhfKPG7Fq7Zttgk_HzBjcBTGVt6dsd43hAP3Cu43fqToq_hYpzRlHF6gZOCR4nTrZOo2bSef22v4HKerLPAzRYX8686Eo9b3Cg6Ejfr-CZcxzE5iYcbTzTZs-6Ak4KLuNRxiLgzLudTcRGXikfRb-hZ4zadmPWdBRBvAG3JUzlfJsgwQsKKXyny6rk0z7nWpAMjHDnJ_gAKJvsVM4-oJD-T26Opb7U_vhLU3tGU4HxdvxR6VkQTRvSRX1sb7G1KMm6NjGtwGJ290JpoK2gaadjSQWHDXjtoI5toreugdF0CaEEJILN2y_otmxSWF6F2XBdB0n5P2z2dFJqGrrVwV22V9ns6fUQra9nENdruafiEVjZh1dZYv2XTB6y2QducNdruadDoK52MeyXZKXM4s8sclcV1Lmis7YllgpXwNxp6qxGWsSua3vYCc7DxmcIrLkqh5g8lbVs7Yr4n7gG9viazJJdRIyDqKPR-6KQASVaSdHsG6nYSwx5wUfA1YUVXw8W3DINZl8AY6DGVEDXP2D5_a0KUDY1ICiELhUr0yrvaovRuymL6wazDy7PUcBn2GhVFf-FvhH-ZaJSHAcblaYDxxQkp42lRKTMBe0LUeJVYLEol5DJWQi58JeRWqYTE5cvMuNzNw7Q1ndWsFyeNMIQj9hcx2SegHGpa7OOzMwPrRa-4eAcrLlJW0xFhbIQIfCPEUjVCLG4lZGAaIWpkA_1Q1cpShuMEP74jjZ4GEAe5ifAeMoW9fGfJ4RbAYDt6tP4Rt_3jcCSJg_8ckeBs4crblu8q_GECLDxM2Tb5kqN4jEw_66pt_T0txSMtlrFydrWSjVuc6zq3OCPOXL6FoblwqLzrC-HWfHjhF-e8WTv3ndsq_YcPfNx-DmT3Y6RVwpy4N-39-Mg3n-eOofS227yZdtvKg952nY9vuy70U7TwgJvnV86FCZlezXBfBQ62TG9hfWllQlh-k6u_o26vj-cmwlo3ritDE72Cr0uyqi--9VV_gcvSi259Of6kfA7S4vORoCxd4uUHO2KxYs3_WlpeJHawgG8O7s0hfOSATnVAeHOwbw5ecajX0u3KMOd9lxG-bB4RB6l8Tm1-ffl4UKSdf3p6l_pXBAvQr37mxbL1WlcSodVGD0DzlMVMI4Y0_xdEvc3Y8xkAAA==";
-
-			std::string decodeBase64 = Encryption::Base64::Decode(levelSubstring, true);
-			std::string decodeZLib = Encryption::ZLib::Inflate(decodeBase64, Encryption::ZLib::Format::GZIP);
-
-
-const char * level = decodeZLib.c_str();
-
-		auto labellevel = CCLabelBMFont::create(level, "chatFont.fnt");
-		labellevel->setPosition(dir->getScreenRight() / 2, dir->getScreenTop() - 80);
-		labellevel->setScale(1);
-		this->addChild(labellevel, 10);
-*/
 
 		 auto label22 = CCLabelBMFont::create("Version 2.2.1.2", "chatFont.fnt");
 		//auto label22 = CCLabelBMFont::create("Version 2.2.1.2", "chatFont.fnt");
@@ -239,8 +226,8 @@ const char * level = decodeZLib.c_str();
                 btn2,
                 btn2,
                 this,
-              //menu_selector(CreatorLayer::onMyLevels)
-                menu_selector(OptionsLayer::onVideo)
+				menu_selector(CreatorLayer::onMyLevels)
+              //menu_selector(OptionsLayer::onVideo)
         );
 		btn2->setScale(.7);
         auto bottomMenu2 =  CCMenu::create();
@@ -249,8 +236,6 @@ const char * level = decodeZLib.c_str();
 		
 		
 		auto btn4 = CCSprite::createWithSpriteFrameName("communityCreditsBtn_001.png");
-		//auto btn4 = CCSprite::createWithSpriteFrameName("GJ_infoBtn_001.png");
-		//btn4->setColor(ccc3(255,0,0));
 		auto myButton4 = CCMenuItemSpriteExtra::create(
                 btn4,
                 btn4,
@@ -261,7 +246,23 @@ const char * level = decodeZLib.c_str();
         reinterpret_cast<CCSprite*>(bottomMenu4)->setPosition({winSize.width / 2 + 110, CCBOTTOM + 45 });
 		btn4->setScale(1.4);
         bottomMenu4->addChild(myButton4);
-			auto btn3 = CCSprite::createWithSpriteFrameName("GJ_optionsBtn02_001.png");
+		
+		
+
+		
+				auto btn5 = CCSprite::createWithSpriteFrameName("communityCreditsBtn_001.png");
+		auto myButton5 = CCMenuItemSpriteExtra::create(
+                btn5,
+                btn5,
+                this,
+                menu_selector(ToolsLayer::create)
+        );
+				        auto bottomMenu5 =  CCMenu::create();
+        reinterpret_cast<CCSprite*>(bottomMenu5)->setPosition({winSize.width / 2 + 150, CCBOTTOM + 45 });
+		btn5->setScale(1.4);
+        bottomMenu5->addChild(myButton5);
+		
+		auto btn3 = CCSprite::createWithSpriteFrameName("GJ_optionsBtn02_001.png");
         auto myButton3 = CCMenuItemSpriteExtra::create(
                 btn3,
                 btn3,
@@ -278,6 +279,7 @@ const char * level = decodeZLib.c_str();
 		        this->addChild(bottomMenu2, 100);
 		        this->addChild(bottomMenu3, 100);
 				this->addChild(bottomMenu4);
+				this->addChild(bottomMenu5);
 				this->addChild(label22);
 				this->addChild(label33);
 
