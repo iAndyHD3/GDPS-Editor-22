@@ -1602,6 +1602,34 @@ bool UILayer_ccTouchEndedH(UILayer* self, CCTouch* touch, CCEvent* event) {
 	return ret;
 }
 
+// fix the particle popup
+bool (*CreateParticlePopup_initO)(CreateParticlePopup*, ParticleGameObject*, CCArray*, std::string);
+bool CreateParticlePopup_initH(CreateParticlePopup* self, ParticleGameObject* object, CCArray* idk, std::string data) {
+	auto ret = CreateParticlePopup_initO(self, object, idk, data);
+
+	auto nodes = self->getPageInputNodes(0);
+	auto sliders = self->getPageSliders(0);
+
+	int moveY = 96.5;
+
+	// moving text input and sliders
+	for(int i = 50; i < 56; i++) {
+		auto node = (CCNode*)nodes->objectForKey(i);
+		node->setPositionY(node->getPositionY() + moveY);
+
+		auto slider = (CCNode*)sliders->objectForKey(i);
+		slider->setPositionY(slider->getPositionY() + moveY);
+	}
+
+	// moving input bg and text
+	for(int i = 0; i < self->_textAndStuff()->count(); i++) {
+		auto thang = (CCNode*)self->_textAndStuff()->objectAtIndex(i);
+		thang->setPositionY(thang->getPositionY() + moveY);
+	}
+
+	return ret;
+}
+
 extern void lib_entry();
 
 void loader()
@@ -1611,7 +1639,7 @@ void loader()
 	auto libShira = dlopen("libgdkit.so", RTLD_LAZY);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN7UILayer12ccTouchBeganEPN7cocos2d7CCTouchEPNS0_7CCEventE"), (void*)UILayer_ccTouchBeganH, (void**)&UILayer_ccTouchBeganO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN7UILayer12ccTouchEndedEPN7cocos2d7CCTouchEPNS0_7CCEventE"), (void*)UILayer_ccTouchEndedH, (void**)&UILayer_ccTouchEndedO);
-	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN17AccountLoginLayer11updateLabelE12AccountError"), (void*)loginerror_hk, (void**)&loginerror);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN19CreateParticlePopup4initEP18ParticleGameObjectPN7cocos2d7CCArrayESs"), (void*)CreateParticlePopup_initH, (void**)&CreateParticlePopup_initO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11ProfilePage7onCloseEPN7cocos2d8CCObjectE"), (void*)profileRefresh_hk, (void**)&profileRefresh);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16LevelEditorLayer16sortStickyGroupsEv"), (void*)LevelEditorLayer_sortStickyGroupsH, (void**)&LevelEditorLayer_sortStickyGroupsO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16LevelSearchLayer12clearFiltersEv"), (void*)clearfilters_hk, (void**)&clearfilters);
