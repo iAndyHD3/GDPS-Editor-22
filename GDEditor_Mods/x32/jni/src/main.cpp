@@ -1573,8 +1573,34 @@ void groups_hk(GJBaseGameLayer* self, int a2) {
 	groups(self, a2);
 }
 
+// gotta overwrite the gdkit code cuz it was bad
+// not saying like this is any better but it fixes touch triggers
+bool (*UILayer_ccTouchBeganO)(UILayer*, CCTouch*, CCEvent*);
+bool UILayer_ccTouchBeganH(UILayer* self, CCTouch* touch, CCEvent* event) {
+	auto ret = UILayer_ccTouchBeganO(self, touch, event);
+	auto pos = touch->getLocation();
 
+	PlayLayer* layer = GameManager::sharedState()->_playLayer();
+	if(layer->_player1()->_platformer()) {
+		if(pos.x > 200.0 || pos.y > 100.0) {
+			layer->pushButton(1, 0);
+		}
+	}
 
+	return ret;
+}
+
+bool (*UILayer_ccTouchEndedO)(UILayer*, CCTouch*, CCEvent*);
+bool UILayer_ccTouchEndedH(UILayer* self, CCTouch* touch, CCEvent* event) {
+	auto ret = UILayer_ccTouchEndedO(self, touch, event);
+
+	PlayLayer* layer = GameManager::sharedState()->_playLayer();
+	if(layer->_player1()->_platformer()) {
+		layer->releaseButton(1, 0);
+	}
+
+	return ret;
+}
 
 extern void lib_entry();
 
@@ -1583,7 +1609,8 @@ void loader()
 	
 	auto cocos2d = dlopen(targetLibName != "" ? targetLibName : NULL, RTLD_LAZY);
 	auto libShira = dlopen("libgdkit.so", RTLD_LAZY);
-	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN15GJBaseGameLayer17getOptimizedGroupEi"), (void*)groups_hk, (void**)&groups);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN7UILayer12ccTouchBeganEPN7cocos2d7CCTouchEPNS0_7CCEventE"), (void*)UILayer_ccTouchBeganH, (void**)&UILayer_ccTouchBeganO);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN7UILayer12ccTouchEndedEPN7cocos2d7CCTouchEPNS0_7CCEventE"), (void*)UILayer_ccTouchEndedH, (void**)&UILayer_ccTouchEndedO);
 	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN17AccountLoginLayer11updateLabelE12AccountError"), (void*)loginerror_hk, (void**)&loginerror);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11ProfilePage7onCloseEPN7cocos2d8CCObjectE"), (void*)profileRefresh_hk, (void**)&profileRefresh);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16LevelEditorLayer16sortStickyGroupsEv"), (void*)LevelEditorLayer_sortStickyGroupsH, (void**)&LevelEditorLayer_sortStickyGroupsO);
