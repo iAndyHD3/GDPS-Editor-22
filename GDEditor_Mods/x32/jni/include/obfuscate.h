@@ -1,3 +1,4 @@
+#pragma once
 /* --------------------------------- ABOUT -------------------------------------
 Original Author: Adam Yaxley
 Website: https://github.com/adamyaxley

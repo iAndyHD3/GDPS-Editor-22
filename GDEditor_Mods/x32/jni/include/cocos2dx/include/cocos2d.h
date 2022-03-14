@@ -27,6 +27,8 @@ static __TYPE__* create() \
 #define CCRIGHT CCDirector::sharedDirector()->getScreenRight()
 #define CCMIDX CCDirector::sharedDirector()->getScreenRight() / 2
 #define CCMIDY CCDirector::sharedDirector()->getScreenTop() / 2
+#define CCMIDL CCDirector::sharedDirector()->getScreenLeft() / 2
+
 #define version2 2212
 
 

@@ -243,25 +243,29 @@ void MenuLayerExt::onRequestCompleted(cocos2d::extension::CCHttpClient *sender, 
                 menu_selector(CreditsLayer::create)
         );
         auto bottomMenu4 =  CCMenu::create();
-        reinterpret_cast<CCSprite*>(bottomMenu4)->setPosition({winSize.width / 2 + 110, CCBOTTOM + 45 });
+        reinterpret_cast<CCSprite*>(bottomMenu4)->setPosition({winSize.width / 2 + 113, CCBOTTOM + 45 });
 		btn4->setScale(1.4);
         bottomMenu4->addChild(myButton4);
 		
 		
 
 		
-				auto btn5 = CCSprite::createWithSpriteFrameName("communityCreditsBtn_001.png");
+				auto btn5 = CCSprite::createWithSpriteFrameName("toolsBtn_001.png");
+		btn5->setScale(1.1);
 		auto myButton5 = CCMenuItemSpriteExtra::create(
                 btn5,
                 btn5,
                 this,
                 menu_selector(ToolsLayer::create)
         );
-				        auto bottomMenu5 =  CCMenu::create();
-        reinterpret_cast<CCSprite*>(bottomMenu5)->setPosition({winSize.width / 2 + 150, CCBOTTOM + 45 });
-		btn5->setScale(1.4);
+				        auto bottomMenu5 =  CCMenu::create();       
+        reinterpret_cast<CCSprite*>(bottomMenu5)->setPosition({winSize.width / 2 - 113, CCBOTTOM + 45 });
         bottomMenu5->addChild(myButton5);
 		
+	//auto glview = cocos2d::CCEGLView::sharedOpenGLView();
+	//glview->setDesignResolutionSize(winSize.width + 1000, winSize.height + 100, kResolutionNoBorder);
+	//messing with this is funny
+	
 		auto btn3 = CCSprite::createWithSpriteFrameName("GJ_optionsBtn02_001.png");
         auto myButton3 = CCMenuItemSpriteExtra::create(
                 btn3,
@@ -309,8 +313,8 @@ void MenuLayerExt::onRequestCompleted(cocos2d::extension::CCHttpClient *sender, 
 			
 			if(numReq) {
 				
-		/*
-
+		
+/*
      cocos2d::extension::CCHttpRequest* request = new (std::nothrow) cocos2d::extension::CCHttpRequest();
         request->setUrl(AY_OBFUSCATE("http://game.gdpseditor.com/server/game/version.php"));
         request->setRequestType(cocos2d::extension::CCHttpRequest::kHttpGet);
@@ -322,8 +326,9 @@ void MenuLayerExt::onRequestCompleted(cocos2d::extension::CCHttpClient *sender, 
         //*((int *)request + 16) = 0;
         cocos2d::extension::CCHttpClient::getInstance()->send(request);
         request->release();  
-    */
+    
 		gm->setGameVariable("11000", false);
+		*/
 	
 			}else{
 				

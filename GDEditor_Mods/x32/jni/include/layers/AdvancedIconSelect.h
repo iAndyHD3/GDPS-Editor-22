@@ -44,6 +44,7 @@ class AdvancedIconSelect : public CCLayer {
 	CCMenuItemSpriteExtra* FalsoBtn;
 	CCMenuItemSpriteExtra* GhostPowerBtn;
 	CCMenuItemSpriteExtra* SenpaiShikaBtn;
+	CCMenuItemSpriteExtra* SprintBtn;
 
 	
 
@@ -81,6 +82,7 @@ public:
 		FalsoBtn->setPosition(0,100000);
 		GhostPowerBtn->setPosition(0,100000);
 		SenpaiShikaBtn->setPosition(0,100000);
+		SprintBtn->setPosition(0,100000);
 		
 	}
 	
@@ -188,7 +190,7 @@ public:
 					void onFalso(CCObject* sender) {
 		
 		        auto app = cocos2d::CCApplication::sharedApplication( );
-        auto url = ("https://www.youtube.com/channel/UCVkB5jRecDPHLyaZvLcK70w");
+        auto url = ("https://twitter.com/FalsoMashups");
 
 	app->openURL(url);
 	}
@@ -200,6 +202,14 @@ public:
 
 	app->openURL(url);
 	}						void onSenpaiShika(CCObject* sender) {
+		
+		        auto app = cocos2d::CCApplication::sharedApplication( );
+        auto url = ("https://twitter.com/SenpaiShika");
+
+	app->openURL(url);
+	}
+	
+	void onSprint(CCObject* sender) {
 		
 		        auto app = cocos2d::CCApplication::sharedApplication( );
         auto url = ("https://twitter.com/SenpaiShika");

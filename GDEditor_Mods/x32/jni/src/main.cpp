@@ -39,6 +39,7 @@
 #include "GJUserScore.h"
 #include "CommentCell.h"
 #include "obfuscate.h"
+
 using namespace std;
 
 #define null NULL
@@ -273,16 +274,14 @@ CCSpriteFrame* sprite_hk( CCSpriteFrameCache* ptr, const char* s )
     if( !strcmp( s, "GJ_fullBtn_001.png" )  )
         return old5( ptr, "GJ_creatorBtn_001.png" );
 
-    if( !strcmp( s, "GJ_freeStuffBtn_001.png" )  )
-        return old5( ptr, "GJ_dailyRewardBtn_001.png" );
-
     if( !strcmp( s, "GJ_freeLevelsBtn_001.png" )  )
         return old5( ptr, "GJ_moreGamesBtn_001.png" );
 
 	if(	!strcmp( s, "GJ_stuffTxt_001.png")  ||
 		!strcmp( s, "GJ_twitterTxt_001.png")||
 		!strcmp( s, "GJ_youtubeTxt_001.png")||
-		!strcmp( s, "GJ_twitchTxt_001.png" )
+		!strcmp( s, "GJ_twitchTxt_001.png" ) ||
+		!strcmp( s, "GJ_freeStuffBtn_001.png" )
 	)
         return old5( ptr, "transparent.png");
 	
@@ -921,23 +920,19 @@ void ProfilePage_loadPageFromUserInfoH(ProfilePage* self, GJUserScore* userData)
 	label55->setVisible(false);
 	self->m_pLayer->addChild(label55,50);
 		
-
     for (int i = 0; i < real_length; i++) {
 
 	auto texture = CCString::createWithFormat("modBadge_%02d_001.png", array[i])->getCString();
 	auto badge = CCSprite::createWithSpriteFrameName(texture);
 	badge->setPosition(original->getPosition());
 	self->m_pLayer->addChild(badge, 50);
-
 	original->setPositionX(original->getPositionX() + 25);
 	}
 	
 	
-
 	original->setPositionX(original->getPositionX() - (real_length * 25));
 	
 	userName->setPositionX(userName->getPositionX() + ((real_length * 25) - 25));
-	
 	
 		
 		}
@@ -1213,14 +1208,14 @@ bool levelinfoinit_hk( LevelInfoLayer* ptr, GJGameLevel* level, bool a3 )
         reinterpret_cast<CCSprite*>(bottomMenu2)->setPosition({CCLEFT + 65 , CCTOP - 25 });
 		ptr->addChild(bottomMenu2);
 
-
+/*
 	auto string = CCString::createWithFormat("level->featured = %i", level->levelID)->getCString();
 	
 	auto label33 = CCLabelBMFont::create(string, "chatFont.fnt");
 	label33->setPosition(CCLEFT + 100, CCTOP - 100);
 	label33->setScale(2);
 	
-
+*/
     return r;
 }
 
@@ -1236,19 +1231,44 @@ bool setUpLevelInfo_hk(EditLevelLayer* ptr, GJGameLevel* level) {
 	 if(dir->getScheduler()->_fTimeScale != 1) {
     dir->getScheduler()->_fTimeScale = 1;
 	 }
+	 
+			auto menu = ptr->_btnMenu();
 
 	// creator btn
-	auto menu = ptr->_btnMenu();
 
 	auto editBtn = (CCMenuItemSpriteExtra*)menu->getChildren()->objectAtIndex(0);
 
 	auto editBtnCustom = CCMenuItemSpriteExtra::create(CCSprite::createWithSpriteFrameName("GJ_editBtn_001.png"), nullptr, ptr, menu_selector(EditLevelLayer::onEditCustom));
 	menu->addChild(editBtnCustom);
 	editBtnCustom->setPosition(editBtn->getPosition());
-
 	editBtn->removeFromParent();
 	editBtn->cleanup();
 
+
+
+	 	auto btn2 = CCSprite::createWithSpriteFrameName("GJ_optionsBtn_001.png");
+        auto myButton2 = CCMenuItemSpriteExtra::create(
+                btn2,
+                nullptr,
+                ptr,
+                menu_selector(MenuLayer::onOptions)
+        );
+		btn2->setScale(.7);
+		myButton2->setPosition(CCLEFT - 255, editBtn->getPositionY() - 20);
+		menu->addChild(myButton2, 1000);	
+/*
+	 	auto btn3 = CCSprite::createWithSpriteFrameName("garage_001.png");
+        auto myButton3 = CCMenuItemSpriteExtra::create(
+                btn3,
+                nullptr,
+                ptr,
+                menu_selector(MenuLayer::onGarage)
+        );
+		btn3->setScale(.7);
+		myButton3->setPosition(editBtn->getPositionX() - 100, editBtn->getPositionY() + 150);
+		menu->addChild(myButton3, 1000);		
+		*/
+		
 	return ret;
 };
 
@@ -1580,7 +1600,7 @@ extern void lib_entry();
 
 void loader()
 {
-	
+
 	auto cocos2d = dlopen(targetLibName != "" ? targetLibName : NULL, RTLD_LAZY);
 	auto libShira = dlopen("libgdkit.so", RTLD_LAZY);
 	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN15GJBaseGameLayer17getOptimizedGroupEi"), (void*)groups_hk, (void**)&groups);
@@ -1682,8 +1702,7 @@ void loader()
 	
 
 
-	//garagelock texture 
-	tmp->addPatch("libcocos2dcpp.so", 0x2EC33A, "00 bf");
+
 
 	//10 stars limit bypass
 	tmp->addPatch("libcocos2dcpp.so", 0x2F8E5A, "04 e0");
@@ -1696,7 +1715,7 @@ void loader()
 
 
 	//patch for the swing limit
-	tmp->addPatch("libcocos2dcpp.so", 0x2EACB8, "23");
+	tmp->addPatch("libcocos2dcpp.so", 0x2EACB8, "27");
 	
 
 	// probably fix platformer kick

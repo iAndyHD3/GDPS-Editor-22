@@ -2,6 +2,7 @@
 
 #include "cocos2d.h"
 #include "gd.h"
+#include "obfuscate.h"
 
 
 class ToolsLayer : public CCLayer {
@@ -24,23 +25,23 @@ public:
         CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(0.5f, scene));
     }
 	
-void onYT(CCObject*){
-cocos2d::CCApplication::sharedApplication()->openURL("https://www.youtube.com/channel/UC9vRBa6Wffb0R7N7ezbwh9A");
+void onLevelRequest(CCObject*){
+cocos2d::CCApplication::sharedApplication()->openURL("https://gdpseditor.com/levelRequest");
 }
 void onUsername(CCObject*){
-cocos2d::CCApplication::sharedApplication()->openURL("http://game.gdpseditor.com/server/tools/account/changeUsername.php");
+cocos2d::CCApplication::sharedApplication()->openURL("https://gdpseditor.com/username");
 }
 void onPassword(CCObject*){
-cocos2d::CCApplication::sharedApplication()->openURL("http://game.gdpseditor.com/server/tools/account/changePassword.php");
+cocos2d::CCApplication::sharedApplication()->openURL("https://gdpseditor.com/password");
 }
 void onMusic(CCObject*){
-cocos2d::CCApplication::sharedApplication()->openURL("http://game.gdpseditor.com/server/tools/music.php");
+cocos2d::CCApplication::sharedApplication()->openURL("https://gdpseditor.com/music");
 }
 void onGDBrowser(CCObject*){
-cocos2d::CCApplication::sharedApplication()->openURL("https://gdpseditor.gdbrowser.com/");
+cocos2d::CCApplication::sharedApplication()->openURL("https://gdpseditor.com/gdbrowser");
 }
 void onUnlisted(CCObject*){
-cocos2d::CCApplication::sharedApplication()->openURL("http://game.gdpseditor.com/server/tools/stats/unlisted.php");
+cocos2d::CCApplication::sharedApplication()->openURL("https://gdpseditor.com/unlisted");
 }
 		
 

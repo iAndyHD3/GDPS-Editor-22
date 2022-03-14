@@ -67,7 +67,7 @@ auto director = CCDirector::sharedDirector();
             this,
             menu_selector(ToolsLayer::onUsername)
     );
-	toolBtn->setPosition((CCMIDX / 5) - 50, (CCMIDY / 5) + 18.5); //idk what i did here lol
+	toolBtn->setPosition((CCMIDX / 50), (CCMIDY / 5) + 18.5); //idk what i did here lol
 	tool->setScale(scale);
     misc->addChild(toolBtn, 50);
 	
@@ -86,12 +86,12 @@ auto director = CCDirector::sharedDirector();
 	tool2->setScale(scale);
     misc->addChild(toolBtn2, 50);
 	
-	auto tool3 = CCSprite::createWithSpriteFrameName("GJ_youtubetBtn_001.png");
+	auto tool3 = CCSprite::createWithSpriteFrameName("GJ_requestBtn_001.png");
     auto toolBtn3 = CCMenuItemSpriteExtra::create(
             tool3,
             tool3,
             this,
-            menu_selector(ToolsLayer::onYT)
+            menu_selector(ToolsLayer::onLevelRequest)
     );
 	
     toolBtn3->setPosition(referenceX + 100, referenceY);

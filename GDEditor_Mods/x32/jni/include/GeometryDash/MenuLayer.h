@@ -17,4 +17,5 @@ public:
     bool init( );
 	void onOptions(CCObject*);
 	void onOptionsInstant(CCObject*);
+	void onGarage(CCObject*);
 };

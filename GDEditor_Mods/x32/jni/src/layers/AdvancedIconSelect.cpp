@@ -52,6 +52,7 @@ bool AdvancedIconSelect::init()
 	auto Falso = CCLabelBMFont::create("Falso", "goldFont.fnt");
 	auto GhostPower = CCLabelBMFont::create("Ghost Power", "goldFont.fnt");
 	auto SenpaiShika = CCLabelBMFont::create("SenpaiShika", "goldFont.fnt");
+	auto Sprint = CCLabelBMFont::create("Sprint", "goldFont.fnt");
 	
 	robtopBtn = CCMenuItemSpriteExtra::create(robtop, robtop, this, menu_selector(AdvancedIconSelect::onRobtop));
 	RetroAdvance64Btn = CCMenuItemSpriteExtra::create(RetroAdvance64, RetroAdvance64, this, menu_selector(AdvancedIconSelect::onRetroAdvance64));
@@ -68,6 +69,7 @@ bool AdvancedIconSelect::init()
 	FalsoBtn = CCMenuItemSpriteExtra::create(Falso, Falso, this, menu_selector(AdvancedIconSelect::onFalso));
 	GhostPowerBtn = CCMenuItemSpriteExtra::create(GhostPower, GhostPower, this, menu_selector(AdvancedIconSelect::onGhostPower));
 	SenpaiShikaBtn = CCMenuItemSpriteExtra::create(SenpaiShika, SenpaiShika, this, menu_selector(AdvancedIconSelect::onSenpaiShika));
+	SprintBtn = CCMenuItemSpriteExtra::create(Sprint, Sprint, this, menu_selector(AdvancedIconSelect::onSprint));
 
 
 	
@@ -96,6 +98,7 @@ bool AdvancedIconSelect::init()
 	Falso->setScale(.7);
 	GhostPower->setScale(.7);
 	SenpaiShika->setScale(.5);
+	Sprint->setScale(.7);
 	
 	
 				
@@ -167,6 +170,7 @@ bool AdvancedIconSelect::init()
 	FalsoBtn->setPosition(ccp(winSize.width,winSize.height));
 	GhostPowerBtn->setPosition(ccp(winSize.width,winSize.height));
 	SenpaiShikaBtn->setPosition(ccp(winSize.width,winSize.height));
+	SprintBtn->setPosition(ccp(winSize.width,winSize.height));
 	
 		//swings
 	if (page == 1) {
@@ -191,7 +195,7 @@ bool AdvancedIconSelect::init()
 	}
 
 		    float space = 50;
-    int totalIcons = 35;
+    int totalIcons = 39;
 	
 		    for(int k = 0; k < totalIcons / 5 + (totalIcons % 5 != 0); k ++){
         for(int y = 0; y < 5; y++){
@@ -242,6 +246,7 @@ bool AdvancedIconSelect::init()
 	menu->addChild(FalsoBtn,101);
 	menu->addChild(GhostPowerBtn,101);
 	menu->addChild(SenpaiShikaBtn,101);
+	menu->addChild(SprintBtn,101);
 	
 			deleteAll();
 		
@@ -298,6 +303,12 @@ bool AdvancedIconSelect::init()
 			AermaBtn->setPosition(initX + 405, initY + 40);
 			plus->setPosition(initX + 442, initY + 40);
 			IghbyBtn->setPosition(initX + 480, initY + 40);
+			case 36: case 37: case 38:
+			SprintBtn->setPosition(initX + 420, initY + 40);
+			break;
+			case 39:
+			FalsoBtn->setPosition(initX + 420, initY + 40);
+			break;
 		
     }
 	
@@ -479,6 +490,12 @@ void AdvancedIconSelect::onSwingClick(CCObject * sender){
 			AermaBtn->setPosition(initX + 405, initY + 40);
 			plus->setPosition(initX + 442, initY + 40);
 			IghbyBtn->setPosition(initX + 480, initY + 40);
+			break;
+			case 36: case 37: case 38:
+			SprintBtn->setPosition(initX + 420, initY + 40);
+			break;
+			case 39:
+			FalsoBtn->setPosition(initX + 420, initY + 40);
 		
 		}
 		
