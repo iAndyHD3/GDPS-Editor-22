@@ -1593,8 +1593,62 @@ void groups_hk(GJBaseGameLayer* self, int a2) {
 	groups(self, a2);
 }
 
+// gotta overwrite the gdkit code cuz it was bad
+// not saying like this is any better but it fixes touch triggers
+bool (*UILayer_ccTouchBeganO)(UILayer*, CCTouch*, CCEvent*);
+bool UILayer_ccTouchBeganH(UILayer* self, CCTouch* touch, CCEvent* event) {
+	auto ret = UILayer_ccTouchBeganO(self, touch, event);
+	auto pos = touch->getLocation();
 
+	PlayLayer* layer = GameManager::sharedState()->_playLayer();
+	if(layer->_player1()->_platformer()) {
+		if(pos.x > 200.0 || pos.y > 100.0) {
+			layer->pushButton(1, 0);
+		}
+	}
 
+	return ret;
+}
+
+bool (*UILayer_ccTouchEndedO)(UILayer*, CCTouch*, CCEvent*);
+bool UILayer_ccTouchEndedH(UILayer* self, CCTouch* touch, CCEvent* event) {
+	auto ret = UILayer_ccTouchEndedO(self, touch, event);
+
+	PlayLayer* layer = GameManager::sharedState()->_playLayer();
+	if(layer->_player1()->_platformer()) {
+		layer->releaseButton(1, 0);
+	}
+
+	return ret;
+}
+
+// fix the particle popup
+bool (*CreateParticlePopup_initO)(CreateParticlePopup*, ParticleGameObject*, CCArray*, std::string);
+bool CreateParticlePopup_initH(CreateParticlePopup* self, ParticleGameObject* object, CCArray* idk, std::string data) {
+	auto ret = CreateParticlePopup_initO(self, object, idk, data);
+
+	auto nodes = self->getPageInputNodes(0);
+	auto sliders = self->getPageSliders(0);
+
+	int moveY = 96.5;
+
+	// moving text input and sliders
+	for(int i = 50; i < 56; i++) {
+		auto node = (CCNode*)nodes->objectForKey(i);
+		node->setPositionY(node->getPositionY() + moveY);
+
+		auto slider = (CCNode*)sliders->objectForKey(i);
+		slider->setPositionY(slider->getPositionY() + moveY);
+	}
+
+	// moving input bg and text
+	for(int i = 0; i < self->_textAndStuff()->count(); i++) {
+		auto thang = (CCNode*)self->_textAndStuff()->objectAtIndex(i);
+		thang->setPositionY(thang->getPositionY() + moveY);
+	}
+
+	return ret;
+}
 
 extern void lib_entry();
 
@@ -1603,8 +1657,9 @@ void loader()
 
 	auto cocos2d = dlopen(targetLibName != "" ? targetLibName : NULL, RTLD_LAZY);
 	auto libShira = dlopen("libgdkit.so", RTLD_LAZY);
-	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN15GJBaseGameLayer17getOptimizedGroupEi"), (void*)groups_hk, (void**)&groups);
-	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN17AccountLoginLayer11updateLabelE12AccountError"), (void*)loginerror_hk, (void**)&loginerror);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN7UILayer12ccTouchBeganEPN7cocos2d7CCTouchEPNS0_7CCEventE"), (void*)UILayer_ccTouchBeganH, (void**)&UILayer_ccTouchBeganO);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN7UILayer12ccTouchEndedEPN7cocos2d7CCTouchEPNS0_7CCEventE"), (void*)UILayer_ccTouchEndedH, (void**)&UILayer_ccTouchEndedO);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN19CreateParticlePopup4initEP18ParticleGameObjectPN7cocos2d7CCArrayESs"), (void*)CreateParticlePopup_initH, (void**)&CreateParticlePopup_initO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11ProfilePage7onCloseEPN7cocos2d8CCObjectE"), (void*)profileRefresh_hk, (void**)&profileRefresh);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16LevelEditorLayer16sortStickyGroupsEv"), (void*)LevelEditorLayer_sortStickyGroupsH, (void**)&LevelEditorLayer_sortStickyGroupsO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16LevelSearchLayer12clearFiltersEv"), (void*)clearfilters_hk, (void**)&clearfilters);

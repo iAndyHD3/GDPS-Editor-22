@@ -2,6 +2,8 @@
 
 #include "CCSprite.h"
 
+#include "GDAPI_Macros.h"
+
 enum PlayerButton 
 {
     Jump = 1,
@@ -16,6 +18,9 @@ public:
     bool field6f8; // 0x6f8
     uint8_t _pad6f9[ 0x68b ]; // 0x3f9
     int platformerMode; // 0xA84
+
+public:
+    CLASS_MEMBER(bool, platformer, 0xA84);
 
 public:
     PlayerObject();
