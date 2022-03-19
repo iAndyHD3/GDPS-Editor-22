@@ -19,8 +19,6 @@ void PlayLayerExt::update_hk(float a1) {
 
     UILayer * layer = reinterpret_cast<UILayer *>(*((int *) this + 409));
 
-
-
     if(*(int *)((long)layer + 502)){ // is platformer
 
 

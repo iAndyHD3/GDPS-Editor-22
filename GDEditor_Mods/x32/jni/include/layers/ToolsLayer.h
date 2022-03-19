@@ -25,6 +25,27 @@ public:
         CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(0.5f, scene));
     }
 	
+	void onTest(CCObject*) {
+		/*
+		for(int i = 0; i < 1000; i++) {
+			
+			auto array = CCArray::create();
+			
+		for(int k = 0; k < 100; k++)
+			
+		 {
+		 auto label22 = CCLabelBMFont::create("Version 2.2.1.2", "chatFont.fnt");
+			array->addObject(label22);
+		}
+			array->removeAllObjects();
+
+	}
+	*/
+
+
+	}
+
+	
 void onLevelRequest(CCObject*){
 cocos2d::CCApplication::sharedApplication()->openURL("https://gdpseditor.com/levelRequest");
 }

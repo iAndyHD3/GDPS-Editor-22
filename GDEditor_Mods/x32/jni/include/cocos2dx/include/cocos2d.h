@@ -29,7 +29,7 @@ static __TYPE__* create() \
 #define CCMIDY CCDirector::sharedDirector()->getScreenTop() / 2
 #define CCMIDL CCDirector::sharedDirector()->getScreenLeft() / 2
 
-#define version2 2212
+#define version2 2213
 
 
 #define __STR_CAT___(str1, str2) str1##str2

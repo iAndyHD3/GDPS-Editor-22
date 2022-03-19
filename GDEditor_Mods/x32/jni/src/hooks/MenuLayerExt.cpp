@@ -192,7 +192,7 @@ void MenuLayerExt::onRequestCompleted(cocos2d::extension::CCHttpClient *sender, 
         reinterpret_cast<CCSprite*>(bottomMenu)->setPositionY(90);
 
 
-		 auto label22 = CCLabelBMFont::create("Version 2.2.1.2", "chatFont.fnt");
+		 auto label22 = CCLabelBMFont::create("Version 2.2.1.3", "chatFont.fnt");
 		//auto label22 = CCLabelBMFont::create("Version 2.2.1.2", "chatFont.fnt");
 		if(GM->getGameVariable("100004")) {
 			

@@ -39,6 +39,7 @@
 #include "GJUserScore.h"
 #include "CommentCell.h"
 #include "obfuscate.h"
+#include "layers/ToolsLayer.h"
 
 using namespace std;
 
@@ -1200,7 +1201,8 @@ bool levelinfoinit_hk( LevelInfoLayer* ptr, GJGameLevel* level, bool a3 )
                 btn2,
                 nullptr,
                 ptr,
-                menu_selector(MenuLayer::onOptions)
+               // menu_selector(MenuLayer::onOptions)
+                menu_selector(ToolsLayer::onTest)
         );
 		btn2->setScale(.7);
         auto bottomMenu2 =  CCMenu::create();
@@ -1657,8 +1659,10 @@ void loader()
 
 	auto cocos2d = dlopen(targetLibName != "" ? targetLibName : NULL, RTLD_LAZY);
 	auto libShira = dlopen("libgdkit.so", RTLD_LAZY);
+	
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN7UILayer12ccTouchBeganEPN7cocos2d7CCTouchEPNS0_7CCEventE"), (void*)UILayer_ccTouchBeganH, (void**)&UILayer_ccTouchBeganO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN7UILayer12ccTouchEndedEPN7cocos2d7CCTouchEPNS0_7CCEventE"), (void*)UILayer_ccTouchEndedH, (void**)&UILayer_ccTouchEndedO);
+	
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN19CreateParticlePopup4initEP18ParticleGameObjectPN7cocos2d7CCArrayESs"), (void*)CreateParticlePopup_initH, (void**)&CreateParticlePopup_initO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11ProfilePage7onCloseEPN7cocos2d8CCObjectE"), (void*)profileRefresh_hk, (void**)&profileRefresh);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16LevelEditorLayer16sortStickyGroupsEv"), (void*)LevelEditorLayer_sortStickyGroupsH, (void**)&LevelEditorLayer_sortStickyGroupsO);
@@ -1681,13 +1685,16 @@ void loader()
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN14SelectArtLayer4initE13SelectArtType"), (void*) getPointer(&SelectArtLayer_initH), (void **) &SelectArtLayer_initO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11GameManager11colorForIdxEi"), (void*) getPointer(&GameManager_colorForIdx_hook), (void **) &GameManager_colorForIdx_trp);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN13GJGarageLayer4initEv"), (void*) getPointer(&GJGarageLayerExt::init_hk), (void **) &GJGarageLayerExt::init_trp);
+	
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN20AccountRegisterLayer4initEv"), (void*) getPointer(&AccountRegisterLayerExt::init_hk), (void **) &AccountRegisterLayerExt::init_trp);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN12AccountLayer19syncAccountFinishedEv"), (void*) getPointer(&AccountLayerExt::accload_hk), (void **) &AccountLayerExt::accload);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN7cocos2d11CCFileUtils13addSearchPathEPKc"), (void*) CCFileUtils_addSearchPath_hk, (void **) &CCFileUtils_addSearchPath_trp);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11GameManager10dataLoadedEP13DS_Dictionary"), (void*) &GameManager_dataLoaded_hk, (void **) &dataLoaded_trp);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN12LoadingLayer15loadingFinishedEv"), (void*) loading_hook , (void **) &loading_trp);
+	
 	HookManager::do_hook((void*)&dict_hk , (void*) dict_hk1, (void **) &dict1);
 	HookManager::do_hook((void*) &menu_hk, getPointer(&MenuLayerExt::init_hk), (void **) &MenuLayerExt::init_trp);
+	
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN9MenuLayer23updateUserProfileButtonEv"), (void*)MenuLayer_updateUserProfileButtonH, (void**)&MenuLayer_updateUserProfileButtonO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16MultiplayerLayer4initEv"), (void*) getPointer(&MultiplayerLayerExt::init_hk), (void **) &MultiplayerLayerExt::init_trp);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN15MoreSearchLayer4initEv"), (void*) getPointer(&MoreSearchLayerExt::init_hk), (void **) &MoreSearchLayerExt::init_trp);
@@ -1695,6 +1702,7 @@ void loader()
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN8EditorUIC2Ev"), (void*) ui_hk, (void **) &ui);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN9PlayLayer6updateEf"), getPointer(&PlayLayerExt::update_hk), (void **) &PlayLayerExt::update_trp);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16LevelEditorLayer10onPlaytestEv"), getPointer(&onPlaytestExt::playtest_hk), (void **) &onPlaytestExt::playtest);
+
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11AppDelegate11trySaveGameEb"), (void*) save_hook, (void **) &save_trp);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN10GameObject13createWithKeyEi"), (void*) create_hk, (void **) &old4);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN12OptionsLayer11customSetupEv"), (void*) OptionsLayer_customSetup_hk, (void **) &ol_customSetup_trp);
@@ -1753,7 +1761,73 @@ void loader()
 	tmp->addPatch("libcocos2dcpp.so", 0x241B04, "00 bf 00 bf");
 	tmp->addPatch("libcocos2dcpp.so", 0x241B14, "00 bf 00 bf");
 	
-	//125742
+	
+	//1101 trigger group bypass
+	tmp->addPatch("libcocos2dcpp.so", 0x38C80A, "20 7E"); //opacity
+	tmp->addPatch("libcocos2dcpp.so", 0x38E912, "20 7E"); //toggle
+	tmp->addPatch("libcocos2dcpp.so", 0x38FDEA, "20 7E"); //spawn
+	tmp->addPatch("libcocos2dcpp.so", 0x390EBC, "20 7E"); //pulse
+	tmp->addPatch("libcocos2dcpp.so", 0x3BFB52, "20 7E"); //stop
+	tmp->addPatch("libcocos2dcpp.so", 0x3C186A, "20 7E"); //animation
+	tmp->addPatch("libcocos2dcpp.so", 0x3C3FF6, "20 7E"); //collision
+	tmp->addPatch("libcocos2dcpp.so", 0x3C545E, "20 7E"); //count
+	tmp->addPatch("libcocos2dcpp.so", 0x3C5B62, "20 7E"); //pickup
+	tmp->addPatch("libcocos2dcpp.so", 0x3C7D12, "20 7E"); //instant count
+	tmp->addPatch("libcocos2dcpp.so", 0x3CC842, "20 7E"); //touch
+	tmp->addPatch("libcocos2dcpp.so", 0x3DD04A, "20 7E"); //random 1
+	tmp->addPatch("libcocos2dcpp.so", 0x3DD0EE, "20 7E"); //random 2
+	tmp->addPatch("libcocos2dcpp.so", 0x3DE3EE, "20 7E"); //end
+	
+	
+	//move 
+	tmp->addPatch("libcocos2dcpp.so", 0x38AEA6, "20 7E");
+	tmp->addPatch("libcocos2dcpp.so", 0x38AE72, "20 7E");
+	tmp->addPatch("libcocos2dcpp.so", 0x38AF10, "20 7E");
+	tmp->addPatch("libcocos2dcpp.so", 0x38AEDC, "20 7E");
+	tmp->addPatch("libcocos2dcpp.so", 0x38B6D6, "20 7E");
+	tmp->addPatch("libcocos2dcpp.so", 0x38AF36, "20 7E");
+	
+	//follow
+	tmp->addPatch("libcocos2dcpp.so", 0x3AB8FE, "20 7E");
+	tmp->addPatch("libcocos2dcpp.so", 0x3AB968, "20 7E");
+	tmp->addPatch("libcocos2dcpp.so", 0x3ADA06, "20 7E");
+	tmp->addPatch("libcocos2dcpp.so", 0x3AD9D2, "20 7E");
+	tmp->addPatch("libcocos2dcpp.so", 0x3ABD68, "20 7E");
+	tmp->addPatch("libcocos2dcpp.so", 0x3ADE52, "20 7E");
+	tmp->addPatch("libcocos2dcpp.so", 0x3AB98E, "20 7E");
+	
+	//rotate
+	tmp->addPatch("libcocos2dcpp.so", 0x3AFDE6, "20 7E");
+	tmp->addPatch("libcocos2dcpp.so", 0x3AFE50, "20 7E");
+	tmp->addPatch("libcocos2dcpp.so", 0x3B037A, "20 7E");
+	tmp->addPatch("libcocos2dcpp.so", 0x3AFE76, "20 7E");
+	
+	//static camera
+	tmp->addPatch("libcocos2dcpp.so", 0x3D9F36, "20 7E");
+	tmp->addPatch("libcocos2dcpp.so", 0x3D9F5C, "20 7E");
+	
+	//scale?
+	tmp->addPatch("libcocos2dcpp.so", 0x3F756A, "20 7E");
+	tmp->addPatch("libcocos2dcpp.so", 0x3F75D4, "20 7E");
+	tmp->addPatch("libcocos2dcpp.so", 0x3F7B02, "20 7E");
+	tmp->addPatch("libcocos2dcpp.so", 0x3F75FA, "20 7E");
+	
+		
+	//not working
+	//build helper
+	/*
+	tmp->addPatch("libcocos2dcpp.so", 0x2939DC, "0F 7E");
+	tmp->addPatch("libcocos2dcpp.so", 0x2939F8, "0F 7E");
+	
+	
+
+	//create loop
+	tmp->addPatch("libcocos2dcpp.so", 0x293EBA, "20 7E");
+	tmp->addPatch("libcocos2dcpp.so", 0x294122, "20 7E");
+	tmp->addPatch("libcocos2dcpp.so", 0x2941B8, "20 7E");
+	*/
+	
+	
 	
 
 
