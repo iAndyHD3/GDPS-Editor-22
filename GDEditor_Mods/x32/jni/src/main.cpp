@@ -1813,15 +1813,15 @@ void loader()
 	tmp->addPatch("libcocos2dcpp.so", 0x3F75FA, "20 7E");
 	
 		
-	//not working
 	//build helper
-	/*
-	tmp->addPatch("libcocos2dcpp.so", 0x2939DC, "0F 7E");
-	tmp->addPatch("libcocos2dcpp.so", 0x2939F8, "0F 7E");
+	
+	tmp->addPatch("libcocos2dcpp.so", 0x2939DA, "42 F2 0F 73");
+	tmp->addPatch("libcocos2dcpp.so", 0x2939F6, "42 F2 0F 73");
 	
 	
 
 	//create loop
+	/*
 	tmp->addPatch("libcocos2dcpp.so", 0x293EBA, "20 7E");
 	tmp->addPatch("libcocos2dcpp.so", 0x294122, "20 7E");
 	tmp->addPatch("libcocos2dcpp.so", 0x2941B8, "20 7E");
