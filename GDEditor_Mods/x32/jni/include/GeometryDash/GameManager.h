@@ -191,6 +191,7 @@ int getIntGameVariable(const char* variable);
 	void setPlayerJetpack(int);
 	void setPlayerFrame(int);
 	void resetAllIcons();
+	CLASS_MEMBER(bool, editMode, 0x1AA);
 };
 
 #define GM GameManager::sharedState()

@@ -68,4 +68,11 @@ public:
     void onPlayReplay( cocos2d::CCObject* ref );
 
     void onFeatured( cocos2d::CCObject* ref );
+    void confirmClone( cocos2d::CCObject* ref );
+    void onClone( cocos2d::CCObject* ref );
+    void tryCloneLevel( cocos2d::CCObject* ref );
+	
+public:
+
+CLASS_MEMBER(CCMenu*, buttons, 0x14C);
 };

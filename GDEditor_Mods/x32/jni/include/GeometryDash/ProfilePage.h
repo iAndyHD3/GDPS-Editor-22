@@ -19,4 +19,5 @@ public:
 void onUpdate(CCObject*);
 void userInfoChanged(GJUserScore*);
 void loadPageFromUserInfo(GJUserScore*);
+void onMyLevels(CCObject*);
 };

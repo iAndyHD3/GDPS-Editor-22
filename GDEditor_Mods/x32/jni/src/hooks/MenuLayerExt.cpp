@@ -164,6 +164,8 @@ void MenuLayerExt::onRequestCompleted(cocos2d::extension::CCHttpClient *sender, 
 		
 	extern bool addBadges;
 	addBadges = true;
+		extern bool enteredMenu;
+		enteredMenu = true;
 	
 		auto director = CCDirector::sharedDirector();
 		auto dir = CCDirector::sharedDirector();
@@ -251,7 +253,7 @@ void MenuLayerExt::onRequestCompleted(cocos2d::extension::CCHttpClient *sender, 
 
 		
 				auto btn5 = CCSprite::createWithSpriteFrameName("toolsBtn_001.png");
-		btn5->setScale(1.1);
+		btn5->setScale(1.2);
 		auto myButton5 = CCMenuItemSpriteExtra::create(
                 btn5,
                 btn5,
@@ -276,10 +278,10 @@ void MenuLayerExt::onRequestCompleted(cocos2d::extension::CCHttpClient *sender, 
         auto bottomMenu3 =  CCMenu::create();
         reinterpret_cast<CCSprite*>(bottomMenu3)->setPosition(CCPoint(winSize.width - 22, winSize.height - 35));
 	if(!menuClear) {
-				bottomMenu->addChild(myButton);
+				//bottomMenu->addChild(myButton);
 		        bottomMenu3->addChild(myButton3);
 
-		        this->addChild(bottomMenu, 100);
+		        //this->addChild(bottomMenu, 100);
 		        this->addChild(bottomMenu2, 100);
 		        this->addChild(bottomMenu3, 100);
 				this->addChild(bottomMenu4);
