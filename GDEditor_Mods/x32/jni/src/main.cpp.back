@@ -1,7 +1,6 @@
 #include "cocos2d.h"
 #include <jni.h>
 #include <dlfcn.h>
-#include <map>
 #include "blaze.h"
 #include "Logger.h"
 #include "patch.h"
@@ -40,10 +39,6 @@
 #include "GJUserScore.h"
 #include "CommentCell.h"
 #include "obfuscate.h"
-#include "layers/ToolsLayer.h"
-#include "LevelSearchLayer.h"
-#include "SearchButton.h"
-#include "PlatformToolBox.h"
 
 using namespace std;
 
@@ -53,20 +48,11 @@ using namespace std;
 
 patch *pauseBtn = new patch();
 patch *groupIDLayerPatches = new patch();
-patch *groups = new patch();
-patch *bh = new patch();
 bool inEditor;
 bool userDataChanged;
 bool legendaryChanged;
 bool shouldSendDefaultValue;
 bool addBadges;
-
-bool canContinue = false;
-int onMyLevels = 0;
-bool onMyLevelsChanged = false;
-int antiDeleteBug;
-bool levelBrowserCallBack;
-bool enteredMenu;
 
 template < class T>
 	void *getPointer(T value)
@@ -143,15 +129,11 @@ char const * (*loading_trp)(LoadingLayer*);
 char const* loading_hook(LoadingLayer *layer)
 {
 	
-	
-
-	
-//	const char* server = AY_OBFUSCATE("http://game.gdpseditor.com/dashbx");
 	const char* server = AY_OBFUSCATE("http://game.gdpseditor.com/server");
 //const char* server = AY_OBFUSCATE("http://game.gdpseditor.com/servel");
+
 //const char* server = AY_OBFUSCATE("http://gmdpseditor.7m.pl/database"); // testing on old server
 
-//const char* server_b64 = AY_OBFUSCATE("aHR0cDovL2dhbWUuZ2Rwc2VkaXRvci5jb20vZGFzaGJ4");
 const char* server_b64 = AY_OBFUSCATE("aHR0cDovL2dhbWUuZ2Rwc2VkaXRvci5jb20vc2VydmVy");
 //const char* server_b64 = AY_OBFUSCATE("aHR0cDovL2dhbWUuZ2Rwc2VkaXRvci5jb20vc2VydmVs");
 //const char* server_b64 = AY_OBFUSCATE("aHR0cDovL2dtZHBzZWRpdG9yLjdtLnBsL2RhdGFiYXNl"); // testing on old server
@@ -173,23 +155,36 @@ const char* server_b64 = AY_OBFUSCATE("aHR0cDovL2dhbWUuZ2Rwc2VkaXRvci5jb20vc2Vyd
 	
 	gdpsmanager->playTest = GameManager::sharedState()->getGameVariable("100001");
 	gdpsmanager->pauseBtn = GameManager::sharedState()->getGameVariable("100005");
-	gdpsmanager->groups = GameManager::sharedState()->getGameVariable("100007");
-	gdpsmanager->bh = GameManager::sharedState()->getGameVariable("100008");
 
-	if (!gdpsmanager->playTest) {}
+	if (!gdpsmanager->playTest)
+	{
+	}
 
-		if (gdpsmanager->pauseBtn) {
+		if (gdpsmanager->pauseBtn)
+	{
 		pauseBtn->Modify();
 	}
-	
-	if (gdpsmanager->groups) {
-		groups->Modify();
-	}
-	
-	if (gdpsmanager->bh) {
-		bh->Modify();
-	}
 
+
+
+/* 	 	auto crashfix = gm->getGameVariable("100004");
+
+	if(!crashfix) {
+				patch *tmp = new patch();
+			tmp->addPatch("libcocos2dcpp.so", 0x44D2AE, "00 bf 00 bf"); // editor fix, breaks levels
+
+			tmp->Modify();
+	}else{
+						patch *tmp = new patch();
+
+					tmp->addPatch("libcocos2dcpp.so", 0x7A617F, "47 4a 5f 63 72 65 61 74 65 42 74 6e 5f 30 30 32"); // editor fix, breaks levels
+			tmp->Modify();
+
+
+
+
+		}
+ */
 	return loading_trp(layer);
 }
 
@@ -225,26 +220,6 @@ void dict_hk1( cocos2d::CCDictionary* d, CCObject* obj, int key )
     case 0x80E:
         return dict1( d, CCString::create( "edit_eEdgeBtn_001.png" ), key );
         break;
-		
-	case 0x7DE:
-        return dict1( d, CCString::create( "edit_eGShowBtn_001.png" ), key ); 
-        break;
-		
-	case 0x7DD:
-        return dict1( d, CCString::create( "edit_eGHideBtn_001.png" ), key ); 
-        break;
-		
-	case 0x7E2:
-        return dict1( d, CCString::create( "edit_eBTEOff_001.png" ), key ); 
-        break;
-		
-	case 0x7E1:
-        return dict1( d, CCString::create( "edit_eBTEOn_001.png" ), key ); 
-        break;
-		
-	case 0x77B:
-        return dict1( d, CCString::create( "edit_lastTrigger.png" ), key );
-        break;
 
     default:
 
@@ -253,7 +228,7 @@ void dict_hk1( cocos2d::CCDictionary* d, CCObject* obj, int key )
     }
 
 }
-/*
+
 GameObject* create_hk( int key )
 {
     auto tb = ObjectToolbox::sharedState( )->intKeyToFrame( key );
@@ -288,61 +263,40 @@ GameObject* create_hk( int key )
     return o;
 }
 
+bool isGauntlet = false;
 
-*/
-CCSpriteFrame* (*CCSpriteFrameCache_spriteFrameByNameO)(CCSpriteFrameCache*, const char*);
-CCSpriteFrame* CCSpriteFrameCache_spriteFrameByNameH(CCSpriteFrameCache* self, const char* frame) {    
-    if ( !strcmp( frame, "block005b_16_color_001.png" ) )
-        return CCSpriteFrameCache_spriteFrameByNameO( self, "block005b_16_001.png" );
+CCSpriteFrame* (*old5)(CCSpriteFrameCache*, const char*) = nullptr;
+CCSpriteFrame* sprite_hk( CCSpriteFrameCache* ptr, const char* s )
+{
+    // LOGD("SPRITE: %s", s);
 
-    if ( !strcmp( frame, "block005b_16_001.png" ) )
-        return CCSpriteFrameCache_spriteFrameByNameO( self, "pixelb_03_01_001.png" );
 
-    // stolen from gd-editor-leak lolol
-    if ( !strcmp( frame, "pixelb_03_01_color_001.png" ) )
-        return CCSpriteFrameCache_spriteFrameByNameO( self, "pixelb_03_01_001.png" );
+    if( !strcmp( s, "GJ_fullBtn_001.png" )  )
+        return old5( ptr, "GJ_creatorBtn_001.png" );
 
-    if ( !strcmp( frame, "pixelb_03_02_color_001.png" ) )
-        return CCSpriteFrameCache_spriteFrameByNameO( self, "pixelb_03_02_001.png" );
+    if( !strcmp( s, "GJ_freeLevelsBtn_001.png" )  )
+        return old5( ptr, "GJ_moreGamesBtn_001.png" );
 
-    if ( !strcmp( frame, "pixelart_045_color_001.png" ) )
-        return CCSpriteFrameCache_spriteFrameByNameO( self, "pixelart_045_001.png" );
-
-    if ( !strcmp( frame, "pixelart_016_color_001.png" ) )
-        return CCSpriteFrameCache_spriteFrameByNameO( self, "pixelart_016_001.png" );
-
-    if ( !strcmp( frame, "pixelart_044_color_001.png" ) )
-        return CCSpriteFrameCache_spriteFrameByNameO( self, "pixelart_044_001.png" );
-	
-	    if ( !strcmp( frame, "GJ_editHSVBtn2_001.png" ) ) {
-			extern bool levelBrowserCallBack;
-			levelBrowserCallBack = true;
-        return CCSpriteFrameCache_spriteFrameByNameO( self, frame);
-		}
-	
-	
-		if(	!strcmp( frame, "GJ_stuffTxt_001.png")  ||
-		!strcmp( frame, "GJ_twitterTxt_001.png")||
-		!strcmp( frame, "GJ_youtubeTxt_001.png")||
-		!strcmp( frame, "GJ_twitchTxt_001.png" ) ||
-		!strcmp( frame, "GJ_freeStuffBtn_001.png" )
+	if(	!strcmp( s, "GJ_stuffTxt_001.png")  ||
+		!strcmp( s, "GJ_twitterTxt_001.png")||
+		!strcmp( s, "GJ_youtubeTxt_001.png")||
+		!strcmp( s, "GJ_twitchTxt_001.png" ) ||
+		!strcmp( s, "GJ_freeStuffBtn_001.png" )
 	)
-        return CCSpriteFrameCache_spriteFrameByNameO( self, "transparent.png");
+        return old5( ptr, "transparent.png");
 	
 	
-	    if( !strcmp( frame, "GJ_epicCoin2_001.png" )) {
+	    if( !strcmp( s, "GJ_epicCoin2_001.png" )) {
 			
-		if(GameManager::sharedState()->getIntGameVariable("52342") >= 3) {
+		if(GM->getIntGameVariable("52342") >= 3) {
 		
-        return CCSpriteFrameCache_spriteFrameByNameO( self, "GJ_epicCoin3_001.png" );
+        return old5( ptr, "GJ_epicCoin3_001.png" );
 		} else {
-		return CCSpriteFrameCache_spriteFrameByNameO( self, frame );
-		} 
-		}
+		return old5( ptr, s );
+		} }
 
-    return CCSpriteFrameCache_spriteFrameByNameO(self, frame);
+    return old5( ptr, s );
 }
-
 
 void(*save_trp)(void*);
 void save_hook(void *self)
@@ -443,40 +397,10 @@ void hook_onToggle(void *pthis, const char *val)
 			{
 				pauseBtn->Restore();
 			}
-
-		}
-		
-			if(v == 100007)
-		{
-			GDPS->groups = !GDPS->groups;
-			if (GDPS->groups)
-			{
-				groups->Modify();
-			}
-			else
-			{
-				groups->Restore();
-			}
-
-		}
-		
-			if(v == 100008)
-		{
-			GDPS->bh = !GDPS->bh;
-			if (GDPS->bh)
-			{
-				bh->Modify();
-			}
-			else
-			{
-				bh->Restore();
-			}
-
 		}
 
 	}
 }
-
 
 void(*CCFileUtils_addSearchPath_trp)(CCFileUtils *self, const char *searchpath);
 void CCFileUtils_addSearchPath_hk(CCFileUtils *self, const char *searchpath)
@@ -995,58 +919,13 @@ void ProfilePage_loadPageFromUserInfoH(ProfilePage* self, GJUserScore* userData)
 	label55->setScale(0.7);
 	label55->setVisible(false);
 	self->m_pLayer->addChild(label55,50);
-	auto menu = CCMenu::create();
-	menu->setPosition(0, 0);
-	SEL_MenuHandler buttonCallback;
+		
     for (int i = 0; i < real_length; i++) {
-	
-	bool isBadgeNew = array[i] > 2 ? true : false;
-	
-	switch(array[i]) {
-	case 1: 
-	buttonCallback = NULL;
-	break;
-	case 2: 
-	buttonCallback = NULL;
-	break;
-	
-	case 3: 
-	buttonCallback = menu_selector(ToolsLayer::onBooster);
-	break;
-	
-	case 4: 
-	buttonCallback = menu_selector(ToolsLayer::onVerified);
-	break;
-	
-	case 5: 
-	buttonCallback = menu_selector(ToolsLayer::onYoutuber);
-	break;
-	
-	case 7: 
-	buttonCallback = menu_selector(ToolsLayer::onDev);
-	break;
-	
-	case 8: 
-	buttonCallback = menu_selector(ToolsLayer::onAdmin);
-	break;
-	
-	case 9: 
-	buttonCallback = menu_selector(ToolsLayer::onOwner);
-	break;
-	
-	default:
-		buttonCallback = menu_selector(ToolsLayer::onUndefined);
-	}
 
 	auto texture = CCString::createWithFormat("modBadge_%02d_001.png", array[i])->getCString();
 	auto badge = CCSprite::createWithSpriteFrameName(texture);
-	auto btn = CCMenuItemSpriteExtra::create(badge, badge, self->m_pLayer, buttonCallback);
-	btn->setPosition(original->getPosition());
-	if(isBadgeNew) {
-	menu->addChild(btn);
-	} else {
-	self->m_pLayer->addChild(btn);
-	}
+	badge->setPosition(original->getPosition());
+	self->m_pLayer->addChild(badge, 50);
 	original->setPositionX(original->getPositionX() + 25);
 	}
 	
@@ -1054,8 +933,7 @@ void ProfilePage_loadPageFromUserInfoH(ProfilePage* self, GJUserScore* userData)
 	original->setPositionX(original->getPositionX() - (real_length * 25));
 	
 	userName->setPositionX(userName->getPositionX() + ((real_length * 25) - 25));
-	self->m_pLayer->addChild(menu, 50);
-
+	
 		
 		}
 
@@ -1074,7 +952,6 @@ void ProfilePage_loadPageFromUserInfoH(ProfilePage* self, GJUserScore* userData)
 			// change swing icon
 			if(iconIterator == 8) {
 				auto icon = (SimplePlayer*)thang;
-			thang->setPositionX(thang->getPositionX() + 7);
 
 				icon->updatePlayerFrame(reinterpret_cast<GJUserScoreExt*>(userData)->playerSwing_, IconType::Swing);
 			}
@@ -1083,24 +960,8 @@ void ProfilePage_loadPageFromUserInfoH(ProfilePage* self, GJUserScore* userData)
 		}
 	}
 	
-	bool inMenu = GM->getGameVariable("172156");
-	
-	if(!inMenu) {
-		
-			auto sprite = CCSprite::createWithSpriteFrameName("accountBtn_myLevels_001.png");
-	sprite->setScale(.75);
-	auto btn = CCMenuItemSpriteExtra::create(sprite, sprite, self->m_pLayer, menu_selector(ProfilePage::onMyLevels));
-	btn->setPosition(CCRIGHT - 90, CCBOTTOM + 40);
-	auto menu = CCMenu::create();
-	menu->setPosition(0, 0);
-	menu->addChild(btn, 50);
-	self->m_pLayer->addChild(menu);
-	}
-	/*
-	self->registerWithTouchDispatcher();
-	CCDirector::sharedDirector()->getTouchDispatcher()->incrementForcePrio(2);
-	self->setTouchEnabled(true);
-*/
+
+
 
 
 }
@@ -1143,7 +1004,7 @@ void CommentCell_loadFromCommentH(CommentCell* self, GJComment* commentData) {
 	real_length++;					
 	}
 	
-	int array[real_length];
+	int* array = new int[real_length];
 
 	
 	int k = 0; 
@@ -1196,70 +1057,24 @@ void CommentCell_loadFromCommentH(CommentCell* self, GJComment* commentData) {
 		
 	
 
-		SEL_MenuHandler buttonCallback;
-		auto menu = CCMenu::create();
-		menu->setPosition(0, 0);
 		
+
     for (int i = 0; i < real_length; i++) {
 
-	bool isBadgeNew = array[i] > 2 ? true : false;
-
-
-	switch(array[i]) {
-	case 1: 
-	buttonCallback = menu_selector(ToolsLayer::onAlert);
-	break;
-	case 2: 
-	buttonCallback = menu_selector(ToolsLayer::onAlert);
-	break;
-	
-	case 3: 
-	buttonCallback = menu_selector(ToolsLayer::onBooster);
-	break;
-	
-	case 4: 
-	buttonCallback = menu_selector(ToolsLayer::onVerified);
-	break;
-	
-	case 5: 
-	buttonCallback = menu_selector(ToolsLayer::onYoutuber);
-	break;
-	
-	case 7: 
-	buttonCallback = menu_selector(ToolsLayer::onDev);
-	break;
-	
-	case 8: 
-	buttonCallback = menu_selector(ToolsLayer::onAdmin);
-	break;
-	
-	case 9: 
-	buttonCallback = menu_selector(ToolsLayer::onOwner);
-	break;
-	
-	default:
-	buttonCallback = menu_selector(ToolsLayer::onUndefined);
-	}
-	
-	
 	auto texture = CCString::createWithFormat("modBadge_%02d_001.png", array[i])->getCString();
+	auto test = "modBadge_01_001.png";
 	auto badge = CCSprite::createWithSpriteFrameName(texture);
 	badge->setScale(.65);
-	auto btn = CCMenuItemSpriteExtra::create(badge, badge, commentLayer, buttonCallback);
-	btn->setPosition(label33->getPosition());
-	if(isBadgeNew) {
-	menu->addChild(btn);
-	} else {
-	commentLayer->addChild(btn);
-	}
+	badge->setPosition(label33->getPosition());
+	commentLayer->addChild(badge);
 
     label33->setPositionX(label33->getPositionX() + pos);
 	
 	}
 	
-	commentLayer->addChild(menu);
+	
 
-	label33->setPositionX(label33->getPositionX() + ((real_length * pos) + pos));	
+label33->setPositionX(label33->getPositionX() + ((real_length * pos) + pos));	
 	//pcg->setPositionX(pcg->getPositionX() + ((real_length * 25) - 25));
 	
 }
@@ -1390,7 +1205,7 @@ bool levelinfoinit_hk( LevelInfoLayer* ptr, GJGameLevel* level, bool a3 )
 		btn2->setScale(.7);
         auto bottomMenu2 =  CCMenu::create();
 		bottomMenu2->addChild(myButton2);
-        reinterpret_cast<CCSprite*>(bottomMenu2)->setPosition({CCLEFT + 75 , CCTOP - 25 });
+        reinterpret_cast<CCSprite*>(bottomMenu2)->setPosition({CCLEFT + 65 , CCTOP - 25 });
 		ptr->addChild(bottomMenu2);
 
 /*
@@ -1401,30 +1216,14 @@ bool levelinfoinit_hk( LevelInfoLayer* ptr, GJGameLevel* level, bool a3 )
 	label33->setScale(2);
 	
 */
-
-	auto sprite = CCSprite::createWithSpriteFrameName("GJ_duplicateLockedBtn_001.png");
-    auto btn = CCMenuItemSpriteExtra::create( sprite, sprite, ptr, menu_selector(LevelInfoLayer::tryCloneLevel));
-	btn->setPosition(ccp(dir->getScreenLeft() + 30, dir->getScreenTop() - 60));
-    auto menu = CCMenu::create();
-    menu->setPosition({0,0});
-	menu->addChild(btn);
-    ptr->addChild(menu);
-	
-
-	
-	extern int antiDeleteBug;
-	antiDeleteBug = 1;
-	
-	
     return r;
 }
-/*
+
 bool(*setUpLevelInfo)(EditLevelLayer*, GJGameLevel*);
 bool setUpLevelInfo_hk(EditLevelLayer* ptr, GJGameLevel* level) {
 
 	    auto ret = setUpLevelInfo(ptr, level);
-extern int levelBrowserCallBack;
-levelBrowserCallBack = 1;
+
 		extern bool inEditor;
 		inEditor = false;
 
@@ -1468,33 +1267,21 @@ levelBrowserCallBack = 1;
 		btn3->setScale(.7);
 		myButton3->setPosition(editBtn->getPositionX() - 100, editBtn->getPositionY() + 150);
 		menu->addChild(myButton3, 1000);		
-		
+		*/
 		
 	return ret;
 };
-*/
+
 
 void (*clippingRect)( GLint, GLint, GLsizei, GLsizei );
 void clippingRect_hk( GLint x, GLint y, GLsizei width, GLsizei height )
 {
     // LOGD( "SIZE: (%i, %i, %i, %i)", x, y, width, height );
-	extern bool enteredMenu;
-	
-	if(enteredMenu) {
-		
-	if(GM->_editMode()) {
-		
+	extern bool inEditor;
+	if(inEditor) {
     clippingRect( x, y, 1000, 1000 );
-	
 	} else {
-		
 		clippingRect(x,y,width,height);
-	}
-	
-	} else {
-		
-	clippingRect(x,y,width,height);
-	
 	}
 }
 
@@ -1522,6 +1309,7 @@ GJUserScore* GJUserScore_createH(CCDictionary* userData) {
 
 	return userScore;
 }
+
 const char* (*CCString_getCStringO)(CCString*);
 const char* CCString_getCStringH(CCString* self) {
 	auto ret = CCString_getCStringO(self);
@@ -1559,49 +1347,10 @@ const char* CCString_getCStringH(CCString* self) {
 			if(strstr(ret, "&targetAccountID") != NULL || strstr(ret, "&page") != NULL) {
 
 		auto toAdd = CCString::createWithFormat("&gdpsVersion=%i", version2)->getCString();
-		
-
 
 		char *s = new char[strlen(ret)+strlen(toAdd)+1];
         strcpy(s, ret);
        	strcat(s, toAdd);
-		
-					extern int onMyLevels;
-					extern bool onMyLevelsChanged;
-		if (strstr(ret, "str") != NULL && onMyLevels == 1) {
-
-			bool strReplaced = false;
-			for (int i = 0; i < strlen(s); i++) {
-				if (s[i] == 's') {
-					if (s[i + 1] = 't') {
-						if (s[i + 2] = 'r') {
-							s[i + 2] = 'a';
-							break;
-						}
-					}
-				}
-			const char* toAdd2;
-			switch(onMyLevels) {
-				case 1:
-				//onMyLevels = 0;
-				//onMyLevelsChanged = true;
-				toAdd2 = CCString::createWithFormat("&str=%i", GameLevelManager::sharedState()->userIDForAccountID(GM->getIntGameVariable("172157")))->getCString();
-				strcat(s, toAdd2);
-				break;
-				/*
-				case 2:
-				//onMyLevels = 0;
-				//onMyLevelsChanged = true;
-				auto AM = GJAccountManager::sharedState();
-				auto toAdd3 = CCString::createWithFormat("&str=%i", GLM->userIDForAccountID(AM->accountID_))->getCString();
-				strcat(s, toAdd3);
-				break;
-				*/
-			};
-		}
-		}
-		
-
 
 		ret = s;
 	}
@@ -1614,15 +1363,7 @@ bool (*creatorLayer)( CreatorLayer* );
 bool creatorLayer_hk( CreatorLayer* ptr )
 {
     if(!creatorLayer( ptr )) return false;
-	
-					extern int onMyLevels;
-					onMyLevels = 0;
-					extern bool onMyLevelsChanged;
-					onMyLevelsChanged = true;
-					
-					extern bool levelBrowserCallBack;
-					levelBrowserCallBack = false;
-					
+
 	auto winSize = CCDirector::sharedDirector()->getWinSize();
 
 	auto menu = CCMenu::create();
@@ -1659,7 +1400,7 @@ bool creatorLayer_hk( CreatorLayer* ptr )
 
 			case 5:
 				spriteFrameName = "GJ_mapBtn_001.png";
-				buttonCallback = menu_selector(ToolsLayer::onTheMap);
+				buttonCallback = menu_selector(CreatorLayerExt::onWorld);
 				break;
 
 			case 6:
@@ -1761,12 +1502,9 @@ bool world_hk( WorldSelectLayer* ptr, int a2)
 bool (*profile)(ProfilePage*, int, bool);
 bool profile_hk(ProfilePage* self, int accountID, bool inMenu) {
 
-	GM->setGameVariable("172156", inMenu);
-	if(GM->getIntGameVariable("172157") != accountID) {
-	extern bool onMyLevelsChanged;
-	onMyLevelsChanged = true;
-	GM->setIntGameVariable("172157", accountID);
-	}
+//auto ret = bruh getting the original first doesnt work
+	
+
 	if(inMenu) {
 		extern bool addBadges;
 		extern bool userDataChanged;
@@ -1775,10 +1513,8 @@ bool profile_hk(ProfilePage* self, int accountID, bool inMenu) {
 	GLM->updateUserScore();
 	GLM->resetStoredUserInfo(accountID);
 	userDataChanged = false;
-	
 	}
 	}
-		
 
 	return profile(self, accountID, inMenu);
 }
@@ -1790,16 +1526,6 @@ void profileRefresh_hk(ProfilePage* self, CCObject* a2) {
 	addBadges = true;
 
 	profileRefresh(self, a2);
-}
-
-void (*creatorLayeronMyLevels)(CCObject*);
-void creatorLayeronMyLevels_hk(CCObject* a1) {
-/*
-	extern bool onMyLevelsChanged;
-	extern int onMyLevels;
-	onMyLevels = 2;
-*/
-	creatorLayeronMyLevels(a1);
 }
 
 #include "LevelCell.h"
@@ -1825,38 +1551,13 @@ bool (*lvlbrowser)(LevelBrowserLayer*, GJSearchObject*);
 bool lvlbrowser_hk(LevelBrowserLayer* self, GJSearchObject* a2) {
 
 	extern bool legendaryChanged;
-	int noRepeat = 0;
 	if(legendaryChanged) {
 	self->runAction(CCCallFuncO::create(self, callfuncO_selector(LevelBrowserLayer::onRefresh), self));
 	legendaryChanged = false;
-	noRepeat++;
-	}
-	
-		extern bool onMyLevelsChanged;
-	if(onMyLevelsChanged && noRepeat == 0) {
-	self->runAction(CCCallFuncO::create(self, callfuncO_selector(LevelBrowserLayer::onRefresh), self));
-	onMyLevelsChanged = false;
 	}
 
 	return lvlbrowser(self, a2);
 }
-
-void (*LevelBrowserLayer_onBackO)(CCObject*);
-void LevelBrowserLayer_onBackH(CCObject* sender){
-
-	extern int onMyLevels;
-	onMyLevels = 0;
-	
-	extern bool levelBrowserCallBack;
-		if(levelBrowserCallBack) {
-        		auto dir = CCDirector::sharedDirector();
-        dir->pushScene( cocos2d::CCTransitionFade::create(0.5, CreatorLayer::scene(  ) ) );
-		levelBrowserCallBack = false;
-		} else {
-	LevelBrowserLayer_onBackO(sender);
-		}
-}
-
 #include "LevelSearchLayer.h"
 void (*clearfilters)(LevelSearchLayer*);
 void clearfilters_hk(LevelSearchLayer* self) {
@@ -1867,266 +1568,30 @@ void clearfilters_hk(LevelSearchLayer* self) {
 	clearfilters(self);
 }
 
+void (*loginerror)(int, int);
+void loginerror_hk(int a1, int a2) {
 
+    patch *tmp = new patch();
+	tmp->addPatch("libcocos2dcpp.so", 0x7B8839, "20 20 20 20");
+	tmp->addPatch("libcocos2dcpp.so", 0x7B883D, "20 20");
+	tmp->addPatch("libcocos2dcpp.so", 0x7B883F, "20 20 20 20 20 20");
+	tmp->Modify();
 
-
-// gotta overwrite the gdkit code cuz it was bad
-// not saying like this is any better but it fixes touch triggers
-bool (*UILayer_ccTouchBeganO)(UILayer*, CCTouch*, CCEvent*);
-bool UILayer_ccTouchBeganH(UILayer* self, CCTouch* touch, CCEvent* event) {
-	auto ret = UILayer_ccTouchBeganO(self, touch, event);
-	auto pos = touch->getLocation();
-
-	PlayLayer* layer = GameManager::sharedState()->_playLayer();
-	if(layer->_player1()->_platformer()) {
-		if(pos.x > 200.0 || pos.y > 100.0) {
-			layer->pushButton(1, 0);
-		}
-	}
-
-	return ret;
-}
-
-void (*deleteBug)(CCObject*);
-void deleteBug_hk(CCObject* a1) {
-		
-	extern int antiDeleteBug;
-	if(antiDeleteBug < 2) {
-	deleteBug(a1);
-	} else {
-	*(static_cast<std::string*>(nullptr)) = "amogus";
-	}
-}
-
-void (*deleteBugPlay)(CCObject*);
-void deleteBugPlay_hk(CCObject* a1) {
 	
-	extern int antiDeleteBug;
-	antiDeleteBug++;
-	deleteBugPlay(a1);
-	
-}
-void (*profileLevels)(CCObject*);
-void profileLevels_hk(CCObject* a1) {
-
-	extern bool levelBrowserCallBack;
-	levelBrowserCallBack = true;
-	extern int onMyLevels;
-	onMyLevels = 1;
-	profileLevels(a1);
-
-}
-
-void (*MapOnBack)(CCObject*);
-void MapOnBack_hk(CCObject* a1) {
-	
-        auto dir = CCDirector::sharedDirector();
-        dir->pushScene( cocos2d::CCTransitionFade::create(0.5, CreatorLayer::scene(  ) ) );
+	loginerror(a1, a2);
 	
 }
 
-bool (*MapSelectLayerO)(MapSelectLayer*, int);
-bool MapSelectLayer_hk(MapSelectLayer* self, int a2) {
-	
-	auto ret = MapSelectLayerO(self, a2);
-	auto dir = CCDirector::sharedDirector();
-	auto old_menu = CCMenu::create();
-	auto oldSprite = cocos2d::CCSprite::createWithSpriteFrameName("GJ_infoIcon_001.png");
-	auto old_btn = CCMenuItemSpriteExtra::create(
-		oldSprite,
-		oldSprite,
-		self,
-		static_cast<cocos2d::SEL_MenuHandler>(&ToolsLayer::onAlert)
-	);
-	old_menu->addChild(old_btn, 900);
-	old_btn->setPositionX(dir->getScreenRight() - 25);
-	old_btn->setPositionY(dir->getScreenTop() - 25);
-	old_menu->setPosition({ 0, 0 });
-	self->addChild(old_menu, 900);
+void (*groups)(GJBaseGameLayer*, int);
+void groups_hk(GJBaseGameLayer* self, int a2) {
+
+    LOGD("FJDSAKFJASDKFJASDKFJASKJFADSJK");
+
+	LOGD("%s", self, a2);
 
 
-	return ret;
+	groups(self, a2);
 }
-
-bool (*searchLayer)(LevelSearchLayer*);
-bool searchLayer_hk(LevelSearchLayer* self) {
-	
-	auto ret = searchLayer(self);
-	auto win_size = CCDirector::sharedDirector()->getWinSize();
-
-	/*
-		auto customBtn = SearchButton::create("GJ_longBtn03_001.png", "Hall of Fame", 0.55, "GJ_sbigStar_noShadow_001.png");
-		auto customBtn2 = SearchButton::create("GJ_longBtn03_001.png", "Most Disliked", 0.55, "GJ_sdislikesIcon_001.png");
-		auto btn = CCMenuItemSpriteExtra::create(customBtn, customBtn, self, menu_selector(CreatorLayer::onFameLevels));
-		auto btn2 = CCMenuItemSpriteExtra::create(customBtn2, customBtn2, self, menu_selector(CreatorLayer::onFameLevels));
-	
-	
-	CCMenu *buttons = dynamic_cast<CCMenu *>(self->getChildren()->objectAtIndex(9));
-               buttons->setPositionY(buttons->getPositionY() - 20);
-				btn->setPosition(btn->getPositionX() - 90, btn->getPositionY() + 100);
-				btn2->setPosition(btn2->getPositionX() + 90, btn2->getPositionY() + 100);
-                buttons->addChild(btn, 50);
-                buttons->addChild(btn2, 50);
-				
-				
-				auto buttonsBG = cocos2d::extension::CCScale9Sprite::create("square02b_001.png");
-            buttonsBG->setContentSize(cocos2d::CCSize(365.0f, 150.0f));
-            buttonsBG->setPosition(
-                    win_size.width/2,
-                    win_size.height/2 + 26
-            );
-            buttonsBG->setOpacity(255);
-            buttonsBG->setColor(ccc3(0,46,117));
-            self->addChild(buttonsBG,-1);
-*/
-
-			
-	return ret;
-}
-
-bool (*UILayer_ccTouchEndedO)(UILayer*, CCTouch*, CCEvent*);
-bool UILayer_ccTouchEndedH(UILayer* self, CCTouch* touch, CCEvent* event) {
-	auto ret = UILayer_ccTouchEndedO(self, touch, event);
-
-	PlayLayer* layer = GameManager::sharedState()->_playLayer();
-	if(layer->_player1()->_platformer()) {
-		layer->releaseButton(1, 0);
-	}
-
-	return ret;
-}
-
-// fix the particle popup
-bool (*CreateParticlePopup_initO)(CreateParticlePopup*, ParticleGameObject*, CCArray*, std::string);
-bool CreateParticlePopup_initH(CreateParticlePopup* self, ParticleGameObject* object, CCArray* idk, std::string data) {
-	auto ret = CreateParticlePopup_initO(self, object, idk, data);
-
-	auto nodes = self->getPageInputNodes(0);
-	auto sliders = self->getPageSliders(0);
-
-	int moveY = 96.5;
-
-	// moving text input and sliders
-	for(int i = 50; i < 56; i++) {
-		auto node = (CCNode*)nodes->objectForKey(i);
-		node->setPositionY(node->getPositionY() + moveY);
-
-		auto slider = (CCNode*)sliders->objectForKey(i);
-		slider->setPositionY(slider->getPositionY() + moveY);
-	}
-
-	// moving input bg and text
-	for(int i = 0; i < self->_textAndStuff()->count(); i++) {
-		auto thang = (CCNode*)self->_textAndStuff()->objectAtIndex(i);
-		thang->setPositionY(thang->getPositionY() + moveY);
-	}
-
-	return ret;
-}
-
-/*
-; _DWORD LevelEditorLayer::updatePreviewAnim(LevelEditorLayer *__hidden this)
-.text:002862B4                 EXPORT _ZN16LevelEditorLayer17updatePreviewAnimEv
-.text:002862B4 _ZN16LevelEditorLayer17updatePreviewAnimEv
- InfoAlertButton::create(std::string, std::string, float)
-.text:0038B824                 EXPORT _ZN15InfoAlertButton6createESsSsf
-uwuwuwuwu
-*/
-#include <unordered_map>
-#include "../include/Android/keycodes.h"
-#include "../include/cocos2dx/CCKeyboardDelegate.h"
-cocos2d::enumKeyCodes translateAndroidKeyCodeToWindows(int keyCode)
-{
-        std::unordered_map<int, cocos2d::enumKeyCodes> codes = {
-        { AKEYCODE_ESCAPE, cocos2d::kCCEnumKeyCodesEscape },
-        { AKEYCODE_SPACE, cocos2d::kCCEnumKeyCodesSpace },
-        { AKEYCODE_DPAD_LEFT, cocos2d::kCCEnumKeyCodesLeft },
-        { AKEYCODE_DPAD_RIGHT, cocos2d::kCCEnumKeyCodesRight },
-        { AKEYCODE_DPAD_UP, cocos2d::kCCEnumKeyCodesUp },
-        { AKEYCODE_DPAD_DOWN, cocos2d::kCCEnumKeyCodesDown },
-        { AKEYCODE_1, cocos2d::kCCEnumKeyCodesOne },
-        { AKEYCODE_2, cocos2d::kCCEnumKeyCodesTwo },
-        { AKEYCODE_3, cocos2d::kCCEnumKeyCodesThree },
-        { AKEYCODE_Q, cocos2d::kCCEnumKeyCodesQ },
-        { AKEYCODE_W, cocos2d::kCCEnumKeyCodesW },
-        { AKEYCODE_E, cocos2d::kCCEnumKeyCodesE },
-        { AKEYCODE_R, cocos2d::kCCEnumKeyCodesR },
-        { AKEYCODE_T, cocos2d::kCCEnumKeyCodesT },
-        { AKEYCODE_Y, cocos2d::kCCEnumKeyCodesY },
-        { AKEYCODE_A, cocos2d::kCCEnumKeyCodesA },
-        { AKEYCODE_S, cocos2d::kCCEnumKeyCodesS },
-        { AKEYCODE_D, cocos2d::kCCEnumKeyCodesD },
-        { AKEYCODE_F, cocos2d::kCCEnumKeyCodesF },
-        { AKEYCODE_G, cocos2d::kCCEnumKeyCodesG },
-        { AKEYCODE_Z, cocos2d::kCCEnumKeyCodesZ },
-        { AKEYCODE_X, cocos2d::kCCEnumKeyCodesX },
-        { AKEYCODE_C, cocos2d::kCCEnumKeyCodesC },
-        { AKEYCODE_V, cocos2d::kCCEnumKeyCodesV },
-        { AKEYCODE_F1, cocos2d::kCCEnumKeyCodesF1 },
-        { AKEYCODE_F2, cocos2d::kCCEnumKeyCodesF2 },
-        { AKEYCODE_ENTER, cocos2d::kCCEnumKeyCodesEnter },
-        { AKEYCODE_FORWARD_DEL, cocos2d::kCCEnumKeyCodesDelete },
-        { AKEYCODE_DEL, cocos2d::kCCEnumKeyCodesBackspace },
-        { AKEYCODE_CTRL_LEFT, cocos2d::kCCEnumKeyCodesControl },
-        { AKEYCODE_CTRL_RIGHT, cocos2d::kCCEnumKeyCodesControl },
-        { AKEYCODE_SHIFT_LEFT, cocos2d::kCCEnumKeyCodesShift },
-        { AKEYCODE_SHIFT_RIGHT, cocos2d::kCCEnumKeyCodesShift },
-        { AKEYCODE_ALT_LEFT, cocos2d::kCCEnumKeyCodesAlt },
-        { AKEYCODE_ALT_RIGHT, cocos2d::kCCEnumKeyCodesAlt },
-    };
-
-    if (auto it = codes.find(keyCode); it != codes.end()) {
-		
-        return it->second;
-    }
-}
-
-bool (*JavaCocos2dKeyDown)(void*, int, int);
-bool JavaCocos2dKeyDown_hk(void* env, int thiz, int keyCode)
-{
-	auto ret = JavaCocos2dKeyDown(env, thiz, keyCode);
-	
-    if (keyCode != 0x4 && keyCode != 0x52) {
-        auto keyboard_dispatcher = cocos2d::CCDirector::sharedDirector()->getKeyboardDispatcher();
-        auto translated_code = translateAndroidKeyCodeToWindows(keyCode);
-
-/*
-		UILayer* ui;
-		ui->keyDown(translated_code); idk why i tried this, probably stupid
-		*/
-        return keyboard_dispatcher->dispatchKeyboardMSG(translated_code, true);
-    } else {
-		return ret;
-	}
-}
-
-	bool (*JavaCocos2dKeyUp)(void*, int, int);
-	bool JavaCocos2dKeyUp_hk(void* env , int thiz, int keyCode)
-    {
-        if (keyCode != 0x4 && keyCode != 0x52) {
-            auto keyboard_dispatcher = cocos2d::CCDirector::sharedDirector()->getKeyboardDispatcher();
-            auto translated_code = translateAndroidKeyCodeToWindows(keyCode);
-
-
-            return keyboard_dispatcher->dispatchKeyboardMSG(translated_code, false);
-        }
-
-        return true;
-    }
-
-    bool Java_org_cocos2dx_lib_Cocos2dxRenderer_nativeActionScroll(void* /* env */, int /* thiz */, float scrollX, float scrollY)
-    {
-
-        // android scroll values: [-1, 1], -1 is down on the scroll
-        // windows scroll values: [-120, 120], 120 is down on the scroll
-        // but rob uses glfw thanks robtop, no idea what changed with the values but they different
-
-        constexpr auto SCROLL_FACTOR = -15.0f;
-
-        return cocos2d::CCDirector::sharedDirector()->getMouseDispatcher()->dispatchScrollMSG(
-            scrollX * SCROLL_FACTOR, scrollY * SCROLL_FACTOR);
-    }
-
 
 
 
@@ -2138,40 +1603,24 @@ void loader()
 
 	auto cocos2d = dlopen(targetLibName != "" ? targetLibName : NULL, RTLD_LAZY);
 	auto libShira = dlopen("libgdkit.so", RTLD_LAZY);
-	
-		extern bool enteredMenu;
-		enteredMenu = false;
-	
-
-   // HookManager::do_hook(getPointerFromSymbol(cocos2d, "Java_org_cocos2dx_lib_Cocos2dxRenderer_nativeKeyDown"), (void*)JavaCocos2dKeyDown_hk, (void**)&JavaCocos2dKeyDown);
-    HookManager::do_hook(getPointerFromSymbol(cocos2d, "Java_org_cocos2dx_lib_Cocos2dxRenderer_nativeKeyDown"), (void*)JavaCocos2dKeyUp_hk, (void**)&JavaCocos2dKeyUp);
-    HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN17LevelBrowserLayer6onBackEPN7cocos2d8CCObjectE"), (void*)LevelBrowserLayer_onBackH, (void**)&LevelBrowserLayer_onBackO);
-	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN12CreatorLayer10onMyLevelsEPN7cocos2d8CCObjectE"), (void*)creatorLayeronMyLevels_hk, (void**)&creatorLayeronMyLevels);
-	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11ProfilePage10onMyLevelsEPN7cocos2d8CCObjectE"), (void*)profileLevels_hk, (void**)&profileLevels);
-	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN14MapSelectLayer6onBackEPN7cocos2d8CCObjectE"), (void*)MapOnBack_hk, (void**)&MapOnBack);
-	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN14LevelInfoLayer6onPlayEPN7cocos2d8CCObjectE"), (void*)deleteBugPlay_hk, (void**)&deleteBugPlay);
-	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN14MapSelectLayer4initEi"), (void*)MapSelectLayer_hk, (void**)&MapSelectLayerO);
-	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN14LevelInfoLayer8onDeleteEPN7cocos2d8CCObjectE"), (void*)deleteBug_hk, (void**)&deleteBug);
-	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN7UILayer12ccTouchBeganEPN7cocos2d7CCTouchEPNS0_7CCEventE"), (void*)UILayer_ccTouchBeganH, (void**)&UILayer_ccTouchBeganO);
-	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN7UILayer12ccTouchEndedEPN7cocos2d7CCTouchEPNS0_7CCEventE"), (void*)UILayer_ccTouchEndedH, (void**)&UILayer_ccTouchEndedO);
-	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN19CreateParticlePopup4initEP18ParticleGameObjectPN7cocos2d7CCArrayESs"), (void*)CreateParticlePopup_initH, (void**)&CreateParticlePopup_initO);
-	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11ProfilePage7onCloseEPN7cocos2d8CCObjectE"), (void*)profileRefresh_hk, (void**)&profileRefresh);
-	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16LevelEditorLayer16sortStickyGroupsEv"), (void*)LevelEditorLayer_sortStickyGroupsH, (void**)&LevelEditorLayer_sortStickyGroupsO);
+	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN15GJBaseGameLayer17getOptimizedGroupEi"), (void*)groups_hk, (void**)&groups);
+	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN17AccountLoginLayer11updateLabelE12AccountError"), (void*)loginerror_hk, (void**)&loginerror);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11ProfilePage7onCloseEPN7cocos2d8CCObjectE"), (void*)profileRefresh_hk, (void**)&profileRefresh);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16LevelEditorLayer16sortStickyGroupsEv"), (void*)LevelEditorLayer_sortStickyGroupsH, (void**)&LevelEditorLayer_sortStickyGroupsO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16LevelSearchLayer12clearFiltersEv"), (void*)clearfilters_hk, (void**)&clearfilters);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZNK7cocos2d8CCString10getCStringEv"), (void*)CCString_getCStringH, (void**)&CCString_getCStringO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11ProfilePage4initEib"), (void*)profile_hk, (void**)&profile);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN9LevelCell19loadCustomLevelCellEv"), (void*)levelcell_hk, (void**)&levelcell);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN17LevelBrowserLayer4initEP14GJSearchObject"), (void*)lvlbrowser_hk, (void**)&lvlbrowser);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "glScissor"), (void*) clippingRect_hk, (void **) &clippingRect);
-	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16WorldSelectLayer4initEi"), (void*) world_hk, (void **) &world);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16WorldSelectLayer4initEi"), (void*) world_hk, (void **) &world);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN12CreatorLayer4initEv"), (void*) creatorLayer_hk, (void **) &creatorLayer);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11GJUserScore6createEPN7cocos2d12CCDictionaryE"), (void*)GJUserScore_createH, (void**)&GJUserScore_createO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN18LevelSettingsLayer4initEP19LevelSettingsObjectP16LevelEditorLayer"), (void*) levelsettings_hk, (void **) &levelsettings);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN18LevelSettingsLayer7onCloseEPN7cocos2d8CCObjectE"), (void*) lvlsettings_close_hk, (void **) &lvlsettings_close);
-	
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN14LevelInfoLayer4initEP11GJGameLevelb"), (void*) levelinfoinit_hk, (void **) &levelinfoinit);
-	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN7cocos2d18CCSpriteFrameCache17spriteFrameByNameEPKc"), (void*) CCSpriteFrameCache_spriteFrameByNameH, (void **) &CCSpriteFrameCache_spriteFrameByNameO);
-//	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN14EditLevelLayer4initEP11GJGameLevel"), (void*) setUpLevelInfo_hk, (void **) &setUpLevelInfo);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN7cocos2d18CCSpriteFrameCache17spriteFrameByNameEPKc"), (void*) sprite_hk, (void **) &old5);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN14EditLevelLayer4initEP11GJGameLevel"), (void*) setUpLevelInfo_hk, (void **) &setUpLevelInfo);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN15SetGroupIDLayer4initEP10GameObjectPN7cocos2d7CCArrayE"), (void*) getPointer(&SetGroupIDLayer_initH), (void **) &SetGroupIDLayer_initO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN22SetupCameraRotatePopup4initEP16EffectGameObjectPN7cocos2d7CCArrayE"), (void*) getPointer(&SetupCameraRotatePopupH), (void **) &SetupCameraRotatePopupO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN14SelectArtLayer4initE13SelectArtType"), (void*) getPointer(&SelectArtLayer_initH), (void **) &SelectArtLayer_initO);
@@ -2182,17 +1631,17 @@ void loader()
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN7cocos2d11CCFileUtils13addSearchPathEPKc"), (void*) CCFileUtils_addSearchPath_hk, (void **) &CCFileUtils_addSearchPath_trp);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11GameManager10dataLoadedEP13DS_Dictionary"), (void*) &GameManager_dataLoaded_hk, (void **) &dataLoaded_trp);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN12LoadingLayer15loadingFinishedEv"), (void*) loading_hook , (void **) &loading_trp);
-	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN7cocos2d12CCDictionary9setObjectEPNS_8CCObjectEi"), (void*) dict_hk1, (void **) &dict1);
-	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN9MenuLayer4initEv"), getPointer(&MenuLayerExt::init_hk), (void **) &MenuLayerExt::init_trp);
+	HookManager::do_hook((void*)&dict_hk , (void*) dict_hk1, (void **) &dict1);
+	HookManager::do_hook((void*) &menu_hk, getPointer(&MenuLayerExt::init_hk), (void **) &MenuLayerExt::init_trp);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN9MenuLayer23updateUserProfileButtonEv"), (void*)MenuLayer_updateUserProfileButtonH, (void**)&MenuLayer_updateUserProfileButtonO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16MultiplayerLayer4initEv"), (void*) getPointer(&MultiplayerLayerExt::init_hk), (void **) &MultiplayerLayerExt::init_trp);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN15MoreSearchLayer4initEv"), (void*) getPointer(&MoreSearchLayerExt::init_hk), (void **) &MoreSearchLayerExt::init_trp);
-	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN10PauseLayer11customSetupEv"), (void*) getPointer(&PauseLayerExt::init_hk), (void **) &PauseLayerExt::init_trp);
-	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN8EditorUIC2Ev"), (void*) ui_hk, (void **) &ui);
-//	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN9PlayLayer6updateEf"), getPointer(&PlayLayerExt::update_hk), (void **) &PlayLayerExt::update_trp);
-	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16LevelEditorLayer10onPlaytestEv"), getPointer(&onPlaytestExt::playtest_hk), (void **) &onPlaytestExt::playtest);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN10PauseLayer11customSetupEv"), (void*) getPointer(&PauseLayerExt::init_hk), (void **) &PauseLayerExt::init_trp);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN8EditorUIC2Ev"), (void*) ui_hk, (void **) &ui);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN9PlayLayer6updateEf"), getPointer(&PlayLayerExt::update_hk), (void **) &PlayLayerExt::update_trp);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16LevelEditorLayer10onPlaytestEv"), getPointer(&onPlaytestExt::playtest_hk), (void **) &onPlaytestExt::playtest);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11AppDelegate11trySaveGameEb"), (void*) save_hook, (void **) &save_trp);
-	//HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN10GameObject13createWithKeyEi"), (void*) create_hk, (void **) &old4);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN10GameObject13createWithKeyEi"), (void*) create_hk, (void **) &old4);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN12OptionsLayer11customSetupEv"), (void*) OptionsLayer_customSetup_hk, (void **) &ol_customSetup_trp);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16MoreOptionsLayer9addToggleEPKcS1_S1_"), getPointer(&MoreOptionsLayerExt::addToggle_hk), (void **) &MoreOptionsLayerExt::addToggle_trp);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11GameManager18toggleGameVariableEPKc"), (void*) hook_onToggle, (void **) &onToggleTrampoline);
@@ -2202,9 +1651,8 @@ void loader()
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11CommentCell15loadFromCommentEP9GJComment"), (void*)CommentCell_loadFromCommentH, (void**)&CommentCell_loadFromCommentO);
 
 
-
 	patch *tmp = new patch();
-/*
+
  	//EC34
 	//patch *shiraPTH = new patch();
 	//shiraPTH->addPatch("libgdkit.so", 0xEC34, "F0 B5 03 AF 2D E9");
@@ -2246,122 +1694,33 @@ void loader()
 	tmp->addPatch("libcocos2dcpp.so", 0x7A6024, "32 2e 32 20");
 
 	//fix level too short
-	tmp->addPatch("libcocos2dcpp.so", 0x241ADA, "00 bf"); */	tmp->addPatch("libcocos2dcpp.so", 0x241776, "00 bf"); //world */
-	/*
-	tmp->addPatch("libcocos2dcpp.so", 0x241B04, "00 bf 00 bf"); */ tmp->addPatch("libcocos2dcpp.so", 0x2417A0, "00 bf 00 bf"); //world */
-	/*
-	tmp->addPatch("libcocos2dcpp.so", 0x241B14, "00 bf 00 bf"); */ tmp->addPatch("libcocos2dcpp.so", 0x2417B0, "00 bf 00 bf");
+	tmp->addPatch("libcocos2dcpp.so", 0x241ADA, "00 bf");
+	tmp->addPatch("libcocos2dcpp.so", 0x241B04, "00 bf 00 bf");
+	tmp->addPatch("libcocos2dcpp.so", 0x241B14, "00 bf 00 bf");
 	
-	
-	//tmp->addPatch("libcocos2dcpp.so", 0x7C066F, "6d 61 70 69 6d 61 67 65 73 2f 69 6d 61 67 65 5f 70 61 72 74 5f 30 30 30 31 2e 70 6e 67");
-	
-	/*
-	//1101 trigger group bypass
-	groups->addPatch("libcocos2dcpp.so", 0x38C80A, "20 7E"); //opacity
-	groups->addPatch("libcocos2dcpp.so", 0x38E912, "20 7E"); //toggle
-	groups->addPatch("libcocos2dcpp.so", 0x38FDEA, "20 7E"); //spawn
-	groups->addPatch("libcocos2dcpp.so", 0x390EBC, "20 7E"); //pulse
-	groups->addPatch("libcocos2dcpp.so", 0x3BFB52, "20 7E"); //stop
-	groups->addPatch("libcocos2dcpp.so", 0x3C186A, "20 7E"); //animation
-	groups->addPatch("libcocos2dcpp.so", 0x3C3FF6, "20 7E"); //collision
-	groups->addPatch("libcocos2dcpp.so", 0x3C545E, "20 7E"); //count
-	groups->addPatch("libcocos2dcpp.so", 0x3C5B62, "20 7E"); //pickup
-	groups->addPatch("libcocos2dcpp.so", 0x3C7D12, "20 7E"); //instant count
-	groups->addPatch("libcocos2dcpp.so", 0x3CC842, "20 7E"); //touch
-	groups->addPatch("libcocos2dcpp.so", 0x3DD04A, "20 7E"); //random 1
-	groups->addPatch("libcocos2dcpp.so", 0x3DD0EE, "20 7E"); //random 2
-	groups->addPatch("libcocos2dcpp.so", 0x3DE3EE, "20 7E"); //end
-	
-	
-	//move 
-	groups->addPatch("libcocos2dcpp.so", 0x38AEA4, "42 F2 0F 73");
-	groups->addPatch("libcocos2dcpp.so", 0x38AE70, "42 F2 0F 73");
-	groups->addPatch("libcocos2dcpp.so", 0x38AF0E, "42 F2 0F 73");
-	groups->addPatch("libcocos2dcpp.so", 0x38AEDA, "42 F2 0F 73");
-	groups->addPatch("libcocos2dcpp.so", 0x38B6D4, "42 F2 0F 73");
-	groups->addPatch("libcocos2dcpp.so", 0x38AF34, "42 F2 0F 73");
-	
-	//follow
-	groups->addPatch("libcocos2dcpp.so", 0x3AB8FE, "20 7E");
-	groups->addPatch("libcocos2dcpp.so", 0x3AB968, "20 7E");
-	groups->addPatch("libcocos2dcpp.so", 0x3ADA06, "20 7E");
-	groups->addPatch("libcocos2dcpp.so", 0x3AD9D2, "20 7E");
-	groups->addPatch("libcocos2dcpp.so", 0x3ABD68, "20 7E");
-	groups->addPatch("libcocos2dcpp.so", 0x3ADE52, "20 7E");
-	groups->addPatch("libcocos2dcpp.so", 0x3AB98E, "20 7E");
-	
-	//rotate
-	groups->addPatch("libcocos2dcpp.so", 0x3AFDE6, "20 7E");
-	groups->addPatch("libcocos2dcpp.so", 0x3AFE50, "20 7E");
-	groups->addPatch("libcocos2dcpp.so", 0x3B037A, "20 7E");
-	groups->addPatch("libcocos2dcpp.so", 0x3AFE76, "20 7E");
-	
-	//static camera
-	groups->addPatch("libcocos2dcpp.so", 0x3D9F36, "20 7E");
-	groups->addPatch("libcocos2dcpp.so", 0x3D9F5C, "20 7E");
-	
-	//scale?
-	groups->addPatch("libcocos2dcpp.so", 0x3F756A, "20 7E");
-	groups->addPatch("libcocos2dcpp.so", 0x3F75D4, "20 7E");
-	groups->addPatch("libcocos2dcpp.so", 0x3F7B02, "20 7E");
-	groups->addPatch("libcocos2dcpp.so", 0x3F75FA, "20 7E");
-	
-		
-	//build helper
-	
-	bh->addPatch("libcocos2dcpp.so", 0x2939DA, "42 F2 0F 73");
-	bh->addPatch("libcocos2dcpp.so", 0x2939F6, "42 F2 0F 73");
-	
-	
-
-	//create loop
-	
-	groups->addPatch("libcocos2dcpp.so", 0x293EBA, "20 7E");
-	groups->addPatch("libcocos2dcpp.so", 0x294122, "20 7E");
-	groups->addPatch("libcocos2dcpp.so", 0x2941B8, "20 7E");
+	//125742
 	
 
 
 
 
 	//10 stars limit bypass
-	tmp->addPatch("libcocos2dcpp.so", 0x2F8E5A, "04 e0"); */ tmp->addPatch("libcocos2dcpp.so", 0x2F9C4A, "04 e0"); //world
-/*
+	tmp->addPatch("libcocos2dcpp.so", 0x2F8E5A, "04 e0");
+
 	//creator layer original buttons
 	tmp->addPatch("libcocos2dcpp.so", 0x2B1F92, "00 bf");
-	*/
-	tmp->addPatch("libcocos2dcpp.so", 0x2B2600, "00 bf"); //creator layer original buttons world
-	tmp->addPatch("libcocos2dcpp.so", 0x2B28CA, "00 bf"); //creator layer vault world
-	tmp->addPatch("libcocos2dcpp.so", 0x2B2962, "00 bf"); //creator layer vault world
-	tmp->addPatch("libcocos2dcpp.so", 0x2B29BC, "00 bf"); //creator layer font
-	
-	tmp->addPatch("libcocos2dcpp.so", 0x2ED68E, "00 bf"); //garage layer
-	tmp->addPatch("libcocos2dcpp.so", 0x2ED556, "00 bf"); //garage layer
-	
-	tmp->addPatch("libcocos2dcpp.so", 0x35B84A, "092B"); //global top bypass
-	
-	
-	
-	tmp->addPatch("libcocos2dcpp.so", 0x785F6A, "2f646174612f646174612f636f6d2e676470736564692e67656f6d6574727964617368776f726c642f");
-	/*
 
 	//world layer arrow
 	tmp->addPatch("libcocos2dcpp.so", 0x3D2D8E, "00 bf");
 
 
 	//patch for the swing limit
-	tmp->addPatch("libcocos2dcpp.so", 0x2EACB8, "27"); */ tmp->addPatch("libcocos2dcpp.so", 0x2EB540, "27");
-	/*
+	tmp->addPatch("libcocos2dcpp.so", 0x2EACB8, "27");
+	
 
 	// probably fix platformer kick
-	tmp->addPatch("libcocos2dcpp.so", 0x247EC4, "00 BF 00 BF"); */ tmp->addPatch("libcocos2dcpp.so", 0x247CA4, "00 BF 00 BF");
-	/*
-	tmp->addPatch("libcocos2dcpp.so", 0x24168E, "00 BF 00 BF"); */ tmp->addPatch("libcocos2dcpp.so", 0x24132A, "00 BF 00 BF");
-	/*
-	//level serach layer nops
-	tmp->addPatch("libcocos2dcpp.so", 0x2B6308, "00 BF"); //bg
-	tmp->addPatch("libcocos2dcpp.so", 0x2B66EE, "00 BF"); //filters label
-	tmp->addPatch("libcocos2dcpp.so", 0x2B622E, "00 BF"); //quick search label
+	tmp->addPatch("libcocos2dcpp.so", 0x247EC4, "00 BF 00 BF");
+	tmp->addPatch("libcocos2dcpp.so", 0x24168E, "00 BF 00 BF");
 
 	//package for save release
 	//tmp->addPatch("libcocos2dcpp.so", 0x785011, "67 65 6f 6d 65 74 72 79 6a 75 6d 70 6c 69 74 65");
@@ -2395,8 +1754,10 @@ void loader()
 	//tmp->addPatch("libgdkit.so", 0xF1FE, "00 bf 00 bf"); //levelinfoinit_hk
 
 	// add 1 more icon to ProfilePage
-	tmp->addPatch("libcocos2dcpp.so", 0x397C6C, "BB F1 08 0F"); */ tmp->addPatch("libcocos2dcpp.so", 0x398AB4, "BB F1 08 0F");
-/*
+	tmp->addPatch("libcocos2dcpp.so", 0x397C6C, "BB F1 08 0F");
+
+	tmp->Modify();
+
 	pauseBtn->addPatch("libcocos2dcpp.so", 0x7896A9, "32");
 
 	// removing the toggles from SetGroupIDLayer
@@ -2412,33 +1773,13 @@ void loader()
 	groupIDLayerPatches->addPatch("libcocos2dcpp.so", 0x3E2458, "00 bf 00 bf"); // IceBlock
 
 	groupIDLayerPatches->addPatch("libcocos2dcpp.so", 0x3E2494, "00 21"); // Order input bg
-	
-	*/ // world
-		groupIDLayerPatches->addPatch("libcocos2dcpp.so", 0x3E26C4, "00 bf 00 bf"); // Dont Fade
-		groupIDLayerPatches->addPatch("libcocos2dcpp.so", 0x3E26C4, "00 bf 00 bf"); // Dont Enter
-		groupIDLayerPatches->addPatch("libcocos2dcpp.so", 0x3E2768, "00 bf 00 bf"); // No effects
-		groupIDLayerPatches->addPatch("libcocos2dcpp.so", 0x3E2872, "00 bf 00 bf"); // No effects idkkkk
-		groupIDLayerPatches->addPatch("libcocos2dcpp.so", 0x3E2A20, "00 bf 00 bf"); // Group Parent
-		groupIDLayerPatches->addPatch("libcocos2dcpp.so", 0x3E2AA2, "00 bf 00 bf"); // High Detail
-		groupIDLayerPatches->addPatch("libcocos2dcpp.so", 0x3E2B20, "00 bf 00 bf"); // Untouchable
-		groupIDLayerPatches->addPatch("libcocos2dcpp.so", 0x3E2B9E, "00 bf 00 bf"); // Passable
-		groupIDLayerPatches->addPatch("libcocos2dcpp.so", 0x3E2C20, "00 bf 00 bf"); // Hide
-		groupIDLayerPatches->addPatch("libcocos2dcpp.so", 0x3E2CA8, "00 bf 00 bf"); // NonStick
-		groupIDLayerPatches->addPatch("libcocos2dcpp.so", 0x3E2D8C, "00 bf 00 bf"); // IceBlock
-		groupIDLayerPatches->addPatch("libcocos2dcpp.so", 0x3E2DC8, "00 21"); // Order input bg
 
 	groupIDLayerPatches->Modify();
 
 	// moving stuff in SetupCameraRotatePopup
 	auto cameraRotatePopupPatches = new patch();
-	/*
 	cameraRotatePopupPatches->addPatch("libcocos2dcpp.so", 0x3FA672, "27 EE 88 9A"); // VNMLS.F32  S18, S15, S16 -> VMUL.F32 S18, S15, S16
-*/
-	cameraRotatePopupPatches->addPatch("libcocos2dcpp.so", 0x3FAFA2, "27 EE 88 9A"); // VNMLS.F32  S18, S15, S16 -> VMUL.F32 S18, S15, S16 world
-	/*
 	cameraRotatePopupPatches->addPatch("libcocos2dcpp.so", 0x3FA348, "27 EE 88 7A"); //	VNMLS.F32  S14, S15, S16 -> VMUL.F32 S14, S15, S16
-	*/
-	cameraRotatePopupPatches->addPatch("libcocos2dcpp.so", 0x3FAC78, "27 EE 88 7A"); //	VNMLS.F32  S14, S15, S16 -> VMUL.F32 S14, S15, S16
 
 	cameraRotatePopupPatches->Modify();
 

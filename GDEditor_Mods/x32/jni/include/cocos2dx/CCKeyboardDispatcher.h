@@ -1,12 +1,14 @@
-﻿#pragma once
+﻿
+#pragma once
 
 #include "GDAPI_Macros.h"
-
+#include "CCKeyboardDelegate.h"
+#include "CCKeyboardDispatcher.h"
 #include "CCObject.h"
 #include "CCArray.h"
 
 NS_CC_BEGIN
-
+/*
 typedef enum
 {
 	kBackspace = 8,
@@ -183,30 +185,7 @@ typedef enum
 	kController_Left,
 	kController_Right,
 } enumKeyCodes;
-
-class CC_DLL CCKeyboardDelegate
-{
-public:
-	virtual void keyDown(enumKeyCodes);
-	virtual void keyUp(enumKeyCodes);
-};
-
-class CC_DLL CCKeyboardHandler : public CCObject
-{
-public:
-	CCKeyboardDelegate *_pDelegate;
-
-public:
-	CCKeyboardHandler();
-	virtual ~CCKeyboardHandler();
-
-	static CCKeyboardHandler *handlerWithDelegate(CCKeyboardDelegate *);
-
-	CCKeyboardDelegate *getDelegate();
-	void setDelegate(CCKeyboardDelegate *);
-
-	virtual bool initWithDelegate(CCKeyboardDelegate *);
-};
+*/
 
 class CC_DLL CCKeyboardDispatcher : public CCObject
 {
@@ -232,6 +211,7 @@ public:
 	const char *keyToString(enumKeyCodes);
 	void removeDelegate(CCKeyboardDelegate *);
 	void updateModifierKeys(bool shiftPressed, bool ctrlPressed, bool altPressed, bool cmdPressed);
+	
 };
 
 NS_CC_END

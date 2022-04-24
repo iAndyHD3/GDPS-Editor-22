@@ -189,7 +189,7 @@ bool GJGarageLayerExt::init_hk() {
         );
         old_menu->addChild(old_btn);
         old_btn->setPositionX(dir->getScreenLeft() + 80);
-		old_btn->setPositionY(dir->getScreenBottom() + 130);
+		old_btn->setPositionY(dir->getScreenBottom() + 100);
         this->addChild(old_menu);
     }
 

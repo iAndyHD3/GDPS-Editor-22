@@ -38,6 +38,8 @@ public:
     virtual bool init( );
     virtual void draw( );
 
+    virtual void keyDown(cocos2d::enumKeyCodes);
+    virtual void keyUp(cocos2d::enumKeyCodes);
     virtual bool ccTouchBegan( cocos2d::CCTouch*, cocos2d::CCEvent* );
     virtual void ccTouchMoved( cocos2d::CCTouch*, cocos2d::CCEvent* );
     virtual void ccTouchEnded( cocos2d::CCTouch*, cocos2d::CCEvent* );

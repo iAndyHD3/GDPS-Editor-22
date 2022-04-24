@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿
+#pragma once
 
 #include "GDAPI_Macros.h"
 
@@ -13,6 +14,7 @@ public:
 	virtual void keyBackClicked();
 	virtual void keyMenuClicked();
 };
+
 
 class CC_DLL CCKeypadHandler : public CCObject
 {
