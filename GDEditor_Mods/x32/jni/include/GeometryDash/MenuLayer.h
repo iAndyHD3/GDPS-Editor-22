@@ -18,5 +18,4 @@ public:
 	void onOptions(CCObject*);
 	void onOptionsInstant(CCObject*);
 	void onGarage(CCObject*);
-	void onCreator(CCObject*);
 };

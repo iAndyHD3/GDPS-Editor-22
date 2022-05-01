@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cocos2dx/CCLayer.h>
 #include "FLAlertLayer.h"
 #include "GJUserscore.h"
 #include "GJGameLevel.h"

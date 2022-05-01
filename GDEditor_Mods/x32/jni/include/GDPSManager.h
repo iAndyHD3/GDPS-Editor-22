@@ -11,8 +11,6 @@ public:
     bool pauseBtn;
     bool oldTextures;
     bool cleanMenu;
-    bool groups;
-    bool bh;
 
 protected:
     bool init();

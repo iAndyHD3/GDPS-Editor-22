@@ -85,5 +85,4 @@ public:
 	virtual bool init( );
 	bool getBoolForKey(const char*);
 	void  setBoolForKey(bool,const char*);
-	int userIDForAccountID(int);
 };

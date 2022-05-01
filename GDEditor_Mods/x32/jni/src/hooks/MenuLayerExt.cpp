@@ -16,7 +16,6 @@
 #include "../layers/CreditsLayer.h"
 #include "../layers/ToolsLayer.h"
 #include "../../include/hooks/MenuLayerExt.h"
-#include "../../include/GeometryDash/MPLobbyLayer.h"
 
 
 template<class T>
@@ -165,11 +164,6 @@ void MenuLayerExt::onRequestCompleted(cocos2d::extension::CCHttpClient *sender, 
 		
 	extern bool addBadges;
 	addBadges = true;
-		extern bool enteredMenu;
-		enteredMenu = true;
-		
-		MPLobbyLayer* MP;
-		MP->uploadActionFinished(58, 58);
 	
 		auto director = CCDirector::sharedDirector();
 		auto dir = CCDirector::sharedDirector();
@@ -193,7 +187,6 @@ void MenuLayerExt::onRequestCompleted(cocos2d::extension::CCHttpClient *sender, 
                 btn,
                 this,
                 menu_selector(MenuLayerExt::onBlaze)
-                //menu_selector(MPLobbyLayer::tryExitLobby())
         );
         auto bottomMenu =  CCMenu::create();
         reinterpret_cast<CCSprite*>(bottomMenu)->setPositionY(90);
@@ -258,7 +251,7 @@ void MenuLayerExt::onRequestCompleted(cocos2d::extension::CCHttpClient *sender, 
 
 		
 				auto btn5 = CCSprite::createWithSpriteFrameName("toolsBtn_001.png");
-		btn5->setScale(1.2);
+		btn5->setScale(1.1);
 		auto myButton5 = CCMenuItemSpriteExtra::create(
                 btn5,
                 btn5,
@@ -269,8 +262,8 @@ void MenuLayerExt::onRequestCompleted(cocos2d::extension::CCHttpClient *sender, 
         reinterpret_cast<CCSprite*>(bottomMenu5)->setPosition({winSize.width / 2 - 113, CCBOTTOM + 45 });
         bottomMenu5->addChild(myButton5);
 		
-	auto glview = cocos2d::CCEGLView::sharedOpenGLView();
-	//glview->setDesignResolutionSize(1920, 1080, kResolutionNoBorder);
+	//auto glview = cocos2d::CCEGLView::sharedOpenGLView();
+	//glview->setDesignResolutionSize(winSize.width + 1000, winSize.height + 100, kResolutionNoBorder);
 	//messing with this is funny
 	
 		auto btn3 = CCSprite::createWithSpriteFrameName("GJ_optionsBtn02_001.png");
@@ -283,10 +276,10 @@ void MenuLayerExt::onRequestCompleted(cocos2d::extension::CCHttpClient *sender, 
         auto bottomMenu3 =  CCMenu::create();
         reinterpret_cast<CCSprite*>(bottomMenu3)->setPosition(CCPoint(winSize.width - 22, winSize.height - 35));
 	if(!menuClear) {
-				//bottomMenu->addChild(myButton);
+				bottomMenu->addChild(myButton);
 		        bottomMenu3->addChild(myButton3);
 
-		        //this->addChild(bottomMenu, 100);
+		        this->addChild(bottomMenu, 100);
 		        this->addChild(bottomMenu2, 100);
 		        this->addChild(bottomMenu3, 100);
 				this->addChild(bottomMenu4);

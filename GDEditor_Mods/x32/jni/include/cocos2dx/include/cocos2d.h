@@ -77,8 +77,8 @@ static __TYPE__* create() \
 #include "ccTypes.h"
 
 
-#include "CCKeyboardDispatcher.h"
-#include "CCKeyboardDelegate.h"
+
+
 #include "CCKeypadDispatcher.h"
 #include "CCFileUtils.h"
 
