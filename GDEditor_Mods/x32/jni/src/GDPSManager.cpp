@@ -145,6 +145,13 @@ void GDPSManager::setPlayerJetpack(int id) {
 	
 }
 	
+string GDPSManager::itos (int Number)
+  {
+     std::ostringstream ss;
+     ss << Number;
+     return ss.str();
+  }
+	
 	
 void GDPSManager::changeServers(const char* server, const char* server_b64) {
 	

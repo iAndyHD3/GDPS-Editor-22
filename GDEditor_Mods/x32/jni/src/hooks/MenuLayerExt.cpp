@@ -176,10 +176,27 @@ void MenuLayerExt::onRequestCompleted(cocos2d::extension::CCHttpClient *sender, 
 		//gradient->initWithColor(ccc4(59, 255, 240, 1), ccc4(241, 0, 255, 1));
 		this->addChild(gradient,10000000000);
 		gradient->init();
-		*/
+		
 		auto levelFix = GM->getGameVariable("100004");
+		
+		auto platformer = CCSprite::createWithSpriteFrameName("Attack_Btn.png");
+		platformer->setPosition({CCMIDX, CCMIDY + 50 });
+		this->addChild(platformer);
+		
+		auto platformer2 = CCSprite::createWithSpriteFrameName("Attack_Btn_Dwn.png");
+		platformer2->setPosition({CCMIDX + 100, CCMIDY + 50 });
+		this->addChild(platformer2);
+		
+				auto platformer3 = CCSprite::createWithSpriteFrameName("Jump_Btn.png");
+		platformer3->setPosition({CCMIDX, CCMIDY - 20});
+		this->addChild(platformer3);
+		
+		
+				auto platformer4 = CCSprite::createWithSpriteFrameName("Jump_Btn_Dwn.png");
+		platformer4->setPosition({CCMIDX + 100, CCMIDY - 20});
+		this->addChild(platformer4);
+	*/
 		auto menuClear = GM->getGameVariable("100003");
-
 
         auto btn = ButtonSprite::create("Support Blaze!",80,10,10,1);
         auto myButton = CCMenuItemSpriteExtra::create(
@@ -251,7 +268,7 @@ void MenuLayerExt::onRequestCompleted(cocos2d::extension::CCHttpClient *sender, 
 
 		
 				auto btn5 = CCSprite::createWithSpriteFrameName("toolsBtn_001.png");
-		btn5->setScale(1.1);
+		btn5->setScale(1.2);
 		auto myButton5 = CCMenuItemSpriteExtra::create(
                 btn5,
                 btn5,

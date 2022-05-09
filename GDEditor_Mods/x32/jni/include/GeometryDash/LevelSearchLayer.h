@@ -5,6 +5,7 @@
 
 #include "FLAlertLayer.h"
 #include "CCMenuItemSpriteExtra.h"
+#include "CCTextInputNode.h"
 
 USING_NS_CC;
 
@@ -20,6 +21,7 @@ public:
 	CCDictionary* searchDict_; // 0x144
 	CCSprite* demonFilter_; // 0x148
 	CCMenuItemSpriteExtra* specialDemonBtn_; // 0x14C
+	CLASS_MEMBER(CCTextInputNode*, input, 0x134);
 
 public:
 	virtual ~LevelSearchLayer( );
@@ -50,4 +52,9 @@ public:
 	// TODO2: Implement demon protocol
 
 	virtual void demonFilterSelectClosed( int unknown );
+	
+	public: //custom
+	 void onClearString(CCObject* ref) {
+		 this->_input()->setString("");
+	 }
 };

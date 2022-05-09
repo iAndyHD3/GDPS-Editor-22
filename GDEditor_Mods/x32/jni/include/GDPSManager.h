@@ -32,6 +32,7 @@ public:
 	void setPlayerSwing(int id);
 	void setPlayerJetpack(int id);
 	void setWorldIsland(int id);
+	string itos(int Number);
 
 protected:
     CCDictionary * dictionary = nullptr;
