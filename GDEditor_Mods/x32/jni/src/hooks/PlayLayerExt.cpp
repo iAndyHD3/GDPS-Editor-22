@@ -27,7 +27,24 @@ void PlayLayerExt::update_hk(float a1) {
         auto sp = reinterpret_cast<CCSprite*>(reinterpret_cast<CCMenu *>(layer->getChildren()->objectAtIndex(0)));
 
 
-        sp->setOpacity(manager->opacity);
+	
+sp->setOpacity(manager->opacity);
+/*
+	auto children = reinterpret_cast<CCMenu *>(layer->getChildren());
+		
+		int count = children->getChildrenCount();
+		for(int i = 0; i < count; i++) {
+			
+			auto label = CCLabelBMFont::create(GDPS->itos(i).c_str(), "bigFont.fnt");
+			
+		    auto node = reinterpret_cast<CCNode*>(children->getChildren()->objectAtIndex(i));
+	
+			label->setPosition(node->getPosition());
+			layer->addChild(label, 1000);
+			
+		}
+	*/
+        
 
     }
 

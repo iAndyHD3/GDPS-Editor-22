@@ -10,7 +10,7 @@ class SliderThumb {
 public:
     float getValue();
 };
-
+	bool noclip;
 
 bool PauseLayerExt::init_hk() {
 
@@ -140,8 +140,24 @@ void PauseLayerExt::addPageControl() {
     misc->addChild(backBtn);
     misc->addChild(nextbtn);
 	
+	/*
+	
+	auto menuNoclip = CCMenu::create();
+	menuNoclip->setPosition(0,0);
+	GDPS->createToggleButton("Noclip",
+	CCPoint(CCLEFT + 50, CCTOP - 25), this, menu_selector(PauseLayerExt::onNoclip), 
+	menuNoclip, noclip, true); // Dont Fade
+	this->addChild(menuNoclip);
+	*/
+	
+	
+	
 
     //this->addChild(misc);
 }
 
-
+#include "CCMenuItemToggler.h"
+void PauseLayerExt::onNoclip(CCObject *sender) {
+	 noclip = reinterpret_cast<CCMenuItemToggler*>(sender)->_isToggled();
+	
+}

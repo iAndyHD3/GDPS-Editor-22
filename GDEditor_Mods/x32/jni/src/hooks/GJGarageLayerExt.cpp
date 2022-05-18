@@ -108,8 +108,8 @@ bool GJGarageLayerExt::init_hk() {
   {
 		auto icons_menu = reinterpret_cast<CCMenu*>(this->getChildren()->objectAtIndex(6));
 
-		 auto swingSprite = cocos2d::CCSprite::create("swing_off.png");
-		 swingSprite->setScale(.85);
+		 auto swingSprite = cocos2d::CCSprite::createWithSpriteFrameName("gj_swingBtn_off_001.png");
+		 swingSprite->setScale(.9);
         auto swing_btn = CCMenuItemSpriteExtra::create(
                 swingSprite,
                 swingSprite,

@@ -14,11 +14,13 @@ class PauseLayerExt : public PauseLayer, public PauseLayerExtProtocol{
 public:
 
 
+
     void showPage(int page);
     void onNextPage(CCObject * sender);
     void onPrevPage(CCObject * sender);
 
     void onPlatformOpacity(CCObject * sender);
+	void onNoclip(CCObject* sender);
 
 
     void addPageControl();

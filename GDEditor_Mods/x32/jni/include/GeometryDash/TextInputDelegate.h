@@ -5,6 +5,7 @@
 class TextInputDelegate
 {
 public:
+/*
 	virtual bool textChanged( CCTextInputNode* ) = 0;
 	virtual void textInputOpened( CCTextInputNode* ) = 0;
 	virtual void textInputClosed( CCTextInputNode* ) = 0;
@@ -12,4 +13,5 @@ public:
 	virtual void textInputReturn( CCTextInputNode* ) = 0;
 	virtual bool allowTextInput( CCTextInputNode* ) = 0;
 	virtual void enterPressed( CCTextInputNode* ) = 0;
+	*/
 };

@@ -214,6 +214,7 @@ namespace cocos2d{
 class MenuLayerExt : public MenuLayer {
 public:
 
+FLAlertLayer* alert;
 
 		
 void onRequestCompleted(cocos2d::extension::CCHttpClient *sender, cocos2d::extension::CCHttpResponse *response);
@@ -224,6 +225,7 @@ void onRequestCompleted(cocos2d::extension::CCHttpClient *sender, cocos2d::exten
 		
 
     void onDownload(CCObject* sender);
+    void onJoinDiscord(CCObject* sender);
 
 
     void onProgressChanged(CCObject *sender);
@@ -233,6 +235,7 @@ void onRequestCompleted(cocos2d::extension::CCHttpClient *sender, cocos2d::exten
     void onBlaze(CCObject* sender);
 	void onPopupTest(CCObject* sender);
 	virtual void FLAlert_Clicked(FLAlertLayer* alert, bool btn2);
+	void showUpdateAlert(string, string, string, string);
 	
     static inline bool (*init_trp)(MenuLayer * self);
     bool init_hk();

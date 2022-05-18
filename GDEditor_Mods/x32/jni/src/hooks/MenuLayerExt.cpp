@@ -54,16 +54,18 @@ void MenuLayerExt::onRequestCompleted(cocos2d::extension::CCHttpClient *sender, 
         CCLog("%d",parsedFromString["version"].GetInt());
 
         int ver = parsedFromString["version"].GetInt();
-		
         int particles = parsedFromString["particles"].GetInt();
+		string weight = parsedFromString["weight"].GetString();
+		string date = parsedFromString["date"].GetString();
+		string changelog = parsedFromString["changelog"].GetString();
 		
 		gm->setIntGameVariable("11001", particles);
 		
 		
 
         if(ver > version2){
-        FLAlertLayer::create(nullptr, "New update!", "New update!\n<cg>Download</c> the new update in the discord server\n Join using the <co>join discord!</c> button",  "OK", nullptr, 400, false, 300)->show();
-
+        //FLAlertLayer::create(nullptr, "New update!", "New update!\n<cg>Download</c> the new update in the discord server\n Join using the <co>join discord!</c> button",  "OK", nullptr, 400, false, 300)->show();
+		MenuLayerExt::showUpdateAlert(GDPS->itos(ver), weight, date, changelog);
         }
 		
 			//I dont think I will use this but it can be funny to troll or something XDD
@@ -114,18 +116,53 @@ void MenuLayerExt::onRequestCompleted(cocos2d::extension::CCHttpClient *sender, 
 
 		} 
 	
- 
 
+ 	void MenuLayerExt::showUpdateAlert(string version, string weight, string date, string changelog) {
+		
+		string v = "";
+		for(int i = 0; i < 4; i++) {
+			v = v + version[i];
+			if(i < 3) v = v + ".";
+		}
+		
+		
+	string description = "Version: " + v + "\nRelease Date: " + date + "\nSize: " + weight + " MB" + "\n\n\Changelog:\n" + changelog + "\n\nWould you like to download the new update?";
+		
+	alert = FLAlertLayer::create(nullptr, "New update!", description.c_str(),  "NO", nullptr, 400, true, 300);
+			
+		auto menu = alert->m_pButtonMenu;
+		auto okBtn = reinterpret_cast<CCNode*>(menu->getChildren()->objectAtIndex(0));
+	
+		auto sprite = ButtonSprite::create("Yes",50,10,10,5);
+		auto btn = CCMenuItemSpriteExtra::create(sprite, sprite, this, menu_selector(MenuLayerExt::onDownload));
+		menu->addChild(btn);
+
+
+		GameToolbox::alignItemsHorisontally(menu->getChildren(), 15, okBtn->getPosition(), false);
+	
+	alert->show();
+	
+
+	}
 
 		
 
     void MenuLayerExt::onDownload(CCObject* sender){
 
         auto app = cocos2d::CCApplication::sharedApplication();
-        auto url = ("https://ps.fhgdps.com/GDPSEditor22/game/latest.php");
+        auto url = ("http://game.gdpseditor.com/server/game/download.php");
 
         app->openURL(url);
     }
+	
+	    void MenuLayerExt::onJoinDiscord(CCObject* sender){
+
+        auto app = cocos2d::CCApplication::sharedApplication();
+        auto url = ("http://game.gdpseditor.com/server/game/discord.php");
+
+        app->openURL(url);
+    }
+
 
 
 
@@ -138,10 +175,7 @@ void MenuLayerExt::onRequestCompleted(cocos2d::extension::CCHttpClient *sender, 
 
     void MenuLayerExt::onBlaze(CCObject* sender){
 
-        auto app = cocos2d::CCApplication::sharedApplication();
-        auto url = ("https://www.youtube.com/channel/UCcfPtuop90e_JzxPkiZ6Q5Q");
-
-        app->openURL(url);	
+		//MenuLayerExt::showUpdateAlert();
     }
 	
 	
@@ -149,6 +183,8 @@ void MenuLayerExt::onRequestCompleted(cocos2d::extension::CCHttpClient *sender, 
 	//crash :v
 	advancedOptionsLayer::create()->show();
     }
+	
+
 	
 	
 
@@ -223,7 +259,7 @@ void MenuLayerExt::onRequestCompleted(cocos2d::extension::CCHttpClient *sender, 
     label22->setAnchorPoint({ 0, 0 });
     label22->setScale(.5);
 	
-	auto label33 = CCLabelBMFont::create("Beta 2", "chatFont.fnt");
+	auto label33 = CCLabelBMFont::create("Beta 5", "chatFont.fnt");
 		if(GM->getGameVariable("100004")) {
 			
 	label33->setPosition(CCPoint(dir->getScreenRight() - 80, dir->getScreenTop() - 20));
@@ -296,7 +332,7 @@ void MenuLayerExt::onRequestCompleted(cocos2d::extension::CCHttpClient *sender, 
 				bottomMenu->addChild(myButton);
 		        bottomMenu3->addChild(myButton3);
 
-		        this->addChild(bottomMenu, 100);
+		       // this->addChild(bottomMenu, 100);
 		        this->addChild(bottomMenu2, 100);
 		        this->addChild(bottomMenu3, 100);
 				this->addChild(bottomMenu4);
@@ -323,7 +359,7 @@ void MenuLayerExt::onRequestCompleted(cocos2d::extension::CCHttpClient *sender, 
 			GDPS->setPlayerSwing(gm->m_nPlayerSwing);
 			GDPS->setPlayerJetpack(m_nPlayerJetpack);
 			
-
+/*
 
 			auto numReq = gm->getGameVariable("11000");
 			
@@ -331,9 +367,9 @@ void MenuLayerExt::onRequestCompleted(cocos2d::extension::CCHttpClient *sender, 
 			if(numReq) {
 				
 		
-/*
+
      cocos2d::extension::CCHttpRequest* request = new (std::nothrow) cocos2d::extension::CCHttpRequest();
-        request->setUrl(AY_OBFUSCATE("http://game.gdpseditor.com/server/game/version.php"));
+        request->setUrl(AY_OBFUSCATE("http://game.gdpseditor.com/server/game/version2.php"));
         request->setRequestType(cocos2d::extension::CCHttpRequest::kHttpGet);
 
 
@@ -345,7 +381,8 @@ void MenuLayerExt::onRequestCompleted(cocos2d::extension::CCHttpClient *sender, 
         request->release();  
     
 		gm->setGameVariable("11000", false);
-		*/
+		
+		
 	
 			}else{
 				
@@ -390,6 +427,7 @@ void MenuLayerExt::onRequestCompleted(cocos2d::extension::CCHttpClient *sender, 
 		 }
 		 
 			}
+*/
 
 
 

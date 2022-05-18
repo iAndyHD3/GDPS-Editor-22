@@ -4,8 +4,8 @@
 #include <CCFileUtils.h>
 #include "GDPSManager.h"
 #include <sstream>
-
-
+#include <cocos2d.h>
+#include "CCMenuItemToggler.h"
 
 
 
@@ -145,12 +145,38 @@ void GDPSManager::setPlayerJetpack(int id) {
 	
 }
 	
-string GDPSManager::itos (int Number)
-  {
+string GDPSManager::itos(int Number) {
      std::ostringstream ss;
      ss << Number;
      return ss.str();
   }
+  
+void GDPSManager::createToggleButton(const char* text, CCPoint position, CCObject* baseclass, cocos2d::SEL_MenuHandler callback, CCMenu* menu, bool toggled, bool enabled) {
+    auto onSpr = CCSprite::createWithSpriteFrameName("GJ_checkOn_001.png");
+    auto offSpr = CCSprite::createWithSpriteFrameName("GJ_checkOff_001.png");
+
+    onSpr->setScale(.7);
+    offSpr->setScale(.7);
+
+    auto toggle = CCMenuItemToggler::create(
+        onSpr,
+        offSpr,
+        baseclass,
+        callback
+    );
+    toggle->setSizeMult(1.5);
+    toggle->toggle(!toggled);
+
+    auto label = CCLabelBMFont::create(text, "bigFont.fnt");
+    label->limitLabelWidth(80, 0.35, 0);
+    label->setAlignment(cocos2d::CCTextAlignment::kCCTextAlignmentLeft);
+
+    toggle->setPosition(position);
+    label->setPosition(toggle->getPositionX() + 17.5 + label->getScaledContentSize().width / 2, toggle->getPositionY());
+
+    menu->addChild(toggle);
+    menu->addChild(label);
+}
 	
 	
 void GDPSManager::changeServers(const char* server, const char* server_b64) {

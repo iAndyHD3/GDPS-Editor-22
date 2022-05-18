@@ -31,7 +31,7 @@ public:
     ~FLAlertLayer();
 
     static FLAlertLayer* create( FLAlertLayerProtocol* protocol, const char* title, std::string caption, const char* button_title, const char* button2_title );
-    static FLAlertLayer* create( FLAlertLayerProtocol* protocol, const char* title, std::string caption, const char* b1_title, const char* b2_title, float x_size, bool add_border, float y_size );
+    static FLAlertLayer* create( FLAlertLayerProtocol* protocol, const char* title, std::string caption, const char* b1_title, const char* b2_title, float x_size, bool scrollable, float y_size );
 
     virtual void onEnter(void);
     virtual bool ccTouchBegan(cocos2d::CCTouch *,cocos2d::CCEvent *);
