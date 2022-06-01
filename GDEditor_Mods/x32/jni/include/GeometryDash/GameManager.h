@@ -151,11 +151,13 @@ public:
     int secondaryColorID_1; // 0x228
 
 public:
-    CLASS_MEMBER(PlayLayer*, playLayer, 0x158);
-    CLASS_MEMBER(LastGameScene, lastScene, 0x1AC);
     CLASS_MEMBER(int, playerSwingSeed, 0x20C);
     CLASS_MEMBER(int, playerSwingRand, 0x210);
     CLASS_MEMBER(int, playerSwing, 0x214);
+	    CLASS_MEMBER(PlayLayer*, playLayer, 0x158);
+
+
+    CLASS_MEMBER(LastGameScene, lastScene, 0x1AC);
 
 // missing funcs
 public:

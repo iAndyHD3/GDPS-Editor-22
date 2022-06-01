@@ -7,11 +7,6 @@
 class LevelSettingsLayer : public FLAlertLayer 
 {
 public:
-    CLASS_MEMBER(CCSprite*, swingOff, 0x2C);
-    CLASS_MEMBER(CCSprite*, swingOn, 0x30);
-
-
-public:
     LevelSettingsLayer();
     virtual ~LevelSettingsLayer();
 

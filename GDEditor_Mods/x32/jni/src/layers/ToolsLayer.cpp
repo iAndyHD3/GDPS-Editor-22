@@ -133,11 +133,9 @@ auto director = CCDirector::sharedDirector();
     toolBtn6->setPosition(referenceX + 100, referenceY - 100);
 	tool6->setScale(scale);
     misc->addChild(toolBtn6);
-	
-	
-
 
 	
+//this->addChild(m);
 
     this->setTouchEnabled(true);
     this->setKeypadEnabled(true);

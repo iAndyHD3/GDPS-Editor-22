@@ -33,7 +33,6 @@ public:
 	void setPlayerJetpack(int id);
 	void setWorldIsland(int id);
 	string itos(int Number);
-	void createToggleButton(const char* text, CCPoint position, CCObject* baseclass, cocos2d::SEL_MenuHandler callback, CCMenu* menu, bool toggled, bool enabled);
 
 protected:
     CCDictionary * dictionary = nullptr;

@@ -175,7 +175,10 @@ void MenuLayerExt::onRequestCompleted(cocos2d::extension::CCHttpClient *sender, 
 
     void MenuLayerExt::onBlaze(CCObject* sender){
 
-		//MenuLayerExt::showUpdateAlert();
+        auto app = cocos2d::CCApplication::sharedApplication();
+        auto url = ("https://www.youtube.com/channel/UCcfPtuop90e_JzxPkiZ6Q5Q");
+
+        app->openURL(url);	
     }
 	
 	
@@ -183,8 +186,6 @@ void MenuLayerExt::onRequestCompleted(cocos2d::extension::CCHttpClient *sender, 
 	//crash :v
 	advancedOptionsLayer::create()->show();
     }
-	
-
 	
 	
 
@@ -212,28 +213,10 @@ void MenuLayerExt::onRequestCompleted(cocos2d::extension::CCHttpClient *sender, 
 		//gradient->initWithColor(ccc4(59, 255, 240, 1), ccc4(241, 0, 255, 1));
 		this->addChild(gradient,10000000000);
 		gradient->init();
+		*/
 		
-		auto levelFix = GM->getGameVariable("100004");
-		
-		auto platformer = CCSprite::createWithSpriteFrameName("Attack_Btn.png");
-		platformer->setPosition({CCMIDX, CCMIDY + 50 });
-		this->addChild(platformer);
-		
-		auto platformer2 = CCSprite::createWithSpriteFrameName("Attack_Btn_Dwn.png");
-		platformer2->setPosition({CCMIDX + 100, CCMIDY + 50 });
-		this->addChild(platformer2);
-		
-				auto platformer3 = CCSprite::createWithSpriteFrameName("Jump_Btn.png");
-		platformer3->setPosition({CCMIDX, CCMIDY - 20});
-		this->addChild(platformer3);
-		
-		
-				auto platformer4 = CCSprite::createWithSpriteFrameName("Jump_Btn_Dwn.png");
-		platformer4->setPosition({CCMIDX + 100, CCMIDY - 20});
-		this->addChild(platformer4);
-	*/
-		auto menuClear = GM->getGameVariable("100003");
 
+/*
         auto btn = ButtonSprite::create("Support Blaze!",80,10,10,1);
         auto myButton = CCMenuItemSpriteExtra::create(
                 btn,
@@ -243,107 +226,105 @@ void MenuLayerExt::onRequestCompleted(cocos2d::extension::CCHttpClient *sender, 
         );
         auto bottomMenu =  CCMenu::create();
         reinterpret_cast<CCSprite*>(bottomMenu)->setPositionY(90);
+*/
 
-
-		 auto label22 = CCLabelBMFont::create("Version 2.2.1.3", "chatFont.fnt");
-		//auto label22 = CCLabelBMFont::create("Version 2.2.1.2", "chatFont.fnt");
-		if(GM->getGameVariable("100004")) {
-			
-	label22->setPosition(CCPoint(dir->getScreenRight() - 80, dir->getScreenTop() - 10));
-	//label22->setPosition(CCPoint(dir->getScreenRight() - 200, dir->getScreenTop() - 10));
-		} else {
-			
-		 label22->setPosition(CCPoint(dir->getScreenRight() - 55, dir->getScreenTop() - 10));
-		 //label22->setPosition(CCPoint(dir->getScreenRight() - 200, dir->getScreenTop() - 10));
-		}
-    label22->setAnchorPoint({ 0, 0 });
-    label22->setScale(.5);
-	
-	auto label33 = CCLabelBMFont::create("Beta 5", "chatFont.fnt");
-		if(GM->getGameVariable("100004")) {
-			
-	label33->setPosition(CCPoint(dir->getScreenRight() - 80, dir->getScreenTop() - 20));
-	//label33->setPosition(CCPoint(dir->getScreenRight() - 200, dir->getScreenTop() - 10));
-		} else {
-			
-		 label33->setPosition(CCPoint(dir->getScreenRight() - 55, dir->getScreenTop() - 20));
-		 //label33->setPosition(CCPoint(dir->getScreenRight() - 200, dir->getScreenTop() - 10));
-		}
-    label33->setAnchorPoint({ 0, 0 });
-    label33->setScale(.5);
 
 	auto menu = CCMenu::create();
+	auto createMenu = CCMenu::create();
 	
-	auto btn2 = CCSprite::createWithSpriteFrameName("GJ_createBtn_001.png");
-        auto myButton2 = CCMenuItemSpriteExtra::create(
-                btn2,
-                btn2,
+	if(GM->getGameVariable("100007")) {
+		auto createSpr = CCSprite::createWithSpriteFrameName("GJ_createBtn_001.png");
+		createSpr->setScale(.7);
+        auto createBtn = CCMenuItemSpriteExtra::create(
+                createSpr,
+                createSpr,
                 this,
 				menu_selector(CreatorLayer::onMyLevels)
               //menu_selector(OptionsLayer::onVideo)
         );
-		btn2->setScale(.7);
-        auto bottomMenu2 =  CCMenu::create();
-		bottomMenu2->addChild(myButton2);
-        reinterpret_cast<CCSprite*>(bottomMenu2)->setPosition({CCRIGHT - 50, CCBOTTOM + 45 });
+		createMenu->addChild(createBtn);
+	reinterpret_cast<CCSprite*>(createMenu)->setPosition({CCRIGHT - 50, CCBOTTOM + 45 });
+		this->addChild(createMenu);
+	}
+		auto btn = CCSprite::createWithSpriteFrameName("toolsBtn_001.png");
+		btn->setScale(1.2);
+        auto myButton = CCMenuItemSpriteExtra::create(
+                btn,
+                btn,
+                this,
+				menu_selector(ToolsLayer::create)
+        );
+		menu->addChild(myButton);
+
+		auto btn2 = CCSprite::createWithSpriteFrameName("GJ_achBtn_001.png");
+        auto myButton2 = CCMenuItemSpriteExtra::create(
+                btn2,
+                btn2,
+                this,
+				menu_selector(MenuLayer::onAchievements)
+        );
+		menu->addChild(myButton2);
 		
+		auto btn3 = CCSprite::createWithSpriteFrameName("GJ_optionsBtn_001.png");
+        auto myButton3 = CCMenuItemSpriteExtra::create(
+                btn3,
+                btn3,
+                this,
+				menu_selector(MenuLayer::onOptions)
+        );
+		menu->addChild(myButton3);
+
 		
-		auto btn4 = CCSprite::createWithSpriteFrameName("communityCreditsBtn_001.png");
-		auto myButton4 = CCMenuItemSpriteExtra::create(
+		auto btn4 = CCSprite::createWithSpriteFrameName("GJ_statsBtn_001.png");
+        auto myButton4 = CCMenuItemSpriteExtra::create(
                 btn4,
                 btn4,
                 this,
-                menu_selector(CreditsLayer::create)
+				menu_selector(MenuLayer::onStats)
         );
-        auto bottomMenu4 =  CCMenu::create();
-        reinterpret_cast<CCSprite*>(bottomMenu4)->setPosition({winSize.width / 2 + 113, CCBOTTOM + 45 });
-		btn4->setScale(1.4);
-        bottomMenu4->addChild(myButton4);
+		menu->addChild(myButton4);
 		
 		
-
-		
-				auto btn5 = CCSprite::createWithSpriteFrameName("toolsBtn_001.png");
-		btn5->setScale(1.2);
+		auto btn5 = CCSprite::createWithSpriteFrameName("communityCreditsBtn_001.png");
+		btn5->setScale(1.4);
 		auto myButton5 = CCMenuItemSpriteExtra::create(
                 btn5,
                 btn5,
                 this,
-                menu_selector(ToolsLayer::create)
+                menu_selector(CreditsLayer::create)
         );
-				        auto bottomMenu5 =  CCMenu::create();       
-        reinterpret_cast<CCSprite*>(bottomMenu5)->setPosition({winSize.width / 2 - 113, CCBOTTOM + 45 });
-        bottomMenu5->addChild(myButton5);
+		menu->addChild(myButton5);
+		
+		//menu->setPositionY(CCBOTTOM + 45);
+		menu->setPosition(0,0);
+		GameToolbox::alignItemsHorisontally(menu->getChildren(), 5, {CCMIDX, CCBOTTOM + 45}, false);
+		
+		
+		this->addChild(menu, 100);
 		
 	//auto glview = cocos2d::CCEGLView::sharedOpenGLView();
 	//glview->setDesignResolutionSize(winSize.width + 1000, winSize.height + 100, kResolutionNoBorder);
 	//messing with this is funny
 	
-		auto btn3 = CCSprite::createWithSpriteFrameName("GJ_optionsBtn02_001.png");
-        auto myButton3 = CCMenuItemSpriteExtra::create(
-                btn3,
-                btn3,
-                this,
-                menu_selector(VideoOptionsLayer::onAdvanced)
-        );
-        auto bottomMenu3 =  CCMenu::create();
-        reinterpret_cast<CCSprite*>(bottomMenu3)->setPosition(CCPoint(winSize.width - 22, winSize.height - 35));
-	if(!menuClear) {
-				bottomMenu->addChild(myButton);
-		        bottomMenu3->addChild(myButton3);
-
-		       // this->addChild(bottomMenu, 100);
-		        this->addChild(bottomMenu2, 100);
-		        this->addChild(bottomMenu3, 100);
-				this->addChild(bottomMenu4);
-				this->addChild(bottomMenu5);
-				this->addChild(label22);
-				this->addChild(label33);
-
-	}
+/*
+	auto children = reinterpret_cast<CCMenu*>(this->getChildren());
+		
+		int count = children->getChildrenCount();
+		for(int i = 0; i < count; i++) {
+			
+			auto label = CCLabelBMFont::create(GDPS->itos(i).c_str(), "bigFont.fnt");
+			
+		    auto node = reinterpret_cast<CCNode*>(children->getChildren()->objectAtIndex(i));
 	
-        {
-            auto gm = GameManager::sharedState();
+			label->setPosition(node->getPosition());
+			this->addChild(label, 1000);
+			
+		}
+		*/
+	
+	
+	//other stuff
+        
 
           
 			auto m_nPlayerJetpack = gm->getIntGameVariable("7001");
@@ -359,7 +340,7 @@ void MenuLayerExt::onRequestCompleted(cocos2d::extension::CCHttpClient *sender, 
 			GDPS->setPlayerSwing(gm->m_nPlayerSwing);
 			GDPS->setPlayerJetpack(m_nPlayerJetpack);
 			
-/*
+
 
 			auto numReq = gm->getGameVariable("11000");
 			
@@ -381,7 +362,6 @@ void MenuLayerExt::onRequestCompleted(cocos2d::extension::CCHttpClient *sender, 
         request->release();  
     
 		gm->setGameVariable("11000", false);
-		
 		
 	
 			}else{
@@ -427,7 +407,6 @@ void MenuLayerExt::onRequestCompleted(cocos2d::extension::CCHttpClient *sender, 
 		 }
 		 
 			}
-*/
 
 
 
@@ -435,8 +414,6 @@ void MenuLayerExt::onRequestCompleted(cocos2d::extension::CCHttpClient *sender, 
 
         return ret;
     };
-	
-}
 	
 	
 	

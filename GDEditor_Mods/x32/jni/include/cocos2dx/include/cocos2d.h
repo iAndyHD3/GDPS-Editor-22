@@ -21,11 +21,6 @@ static __TYPE__* create() \
     } \
 }
 
-
-#define _BYTE uint8_t
-#define _WORD uint16_t
-#define _DWORD uint32_t
-
 #define CCBOTTOM CCDirector::sharedDirector()->getScreenBottom()
 #define CCTOP CCDirector::sharedDirector()->getScreenTop()
 #define CCLEFT CCDirector::sharedDirector()->getScreenLeft()
@@ -34,10 +29,7 @@ static __TYPE__* create() \
 #define CCMIDY CCDirector::sharedDirector()->getScreenTop() / 2
 #define CCMIDL CCDirector::sharedDirector()->getScreenLeft() / 2
 
-#define GPX getPositionX()
-#define GPY getPositionY()
-
-#define version2 2213
+#define version2 2212
 
 
 #define __STR_CAT___(str1, str2) str1##str2

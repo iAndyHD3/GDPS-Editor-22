@@ -50,5 +50,4 @@
 #include "ProfilePage.h"
 #include "SelectArtLayer.h" 
 #include "WorldSelectLayer.h"
-#include "CreateParticlePopup.h"
 #endif

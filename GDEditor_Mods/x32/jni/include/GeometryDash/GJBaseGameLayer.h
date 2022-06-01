@@ -13,8 +13,6 @@
 #include "GJEffectManager.h"
 #include "particle_nodes/CCParticleSystemQuad.h"
 
-#include "GDAPI_Macros.h"
-
 // size 0x3F8
 class __attribute__( (aligned( 4 )) ) GJBaseGameLayer : public cocos2d::CCLayer, TriggerEffectDelegate
 {
@@ -192,8 +190,8 @@ public:
     float bgMusicTimeMiliseconds_;
     float songOffset_;
     float songXPos_;
-
-public:
+	
+	public:
     CLASS_MEMBER(PlayerObject*, player1, 0x284);
 
 public:
