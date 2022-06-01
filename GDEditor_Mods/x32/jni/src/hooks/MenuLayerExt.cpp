@@ -348,7 +348,7 @@ void MenuLayerExt::onRequestCompleted(cocos2d::extension::CCHttpClient *sender, 
 			if(numReq) {
 				
 		
-
+/*
      cocos2d::extension::CCHttpRequest* request = new (std::nothrow) cocos2d::extension::CCHttpRequest();
         request->setUrl(AY_OBFUSCATE("http://game.gdpseditor.com/server/game/version2.php"));
         request->setRequestType(cocos2d::extension::CCHttpRequest::kHttpGet);
@@ -362,7 +362,7 @@ void MenuLayerExt::onRequestCompleted(cocos2d::extension::CCHttpClient *sender, 
         request->release();  
     
 		gm->setGameVariable("11000", false);
-		
+		*/
 	
 			}else{
 				

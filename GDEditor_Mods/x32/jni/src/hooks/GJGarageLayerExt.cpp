@@ -6,19 +6,28 @@
 
 
 bool GJGarageLayerExt::init_hk() {
+	
+			extern bool inSettings;
+		inSettings = false;
     auto ret = GJGarageLayerExt::init_trp(this);
 
     auto winsize = CCDirector::sharedDirector()->getWinSize();
 	auto dir = CCDirector::sharedDirector();
     {
-        auto icons_node = reinterpret_cast<CCNode*>(this->getChildren()->objectAtIndex(6));
-        icons_node->setPositionX(winsize.width/2);
-        icons_node->setPositionY(icons_node->getPositionY() + 10);
+        auto icons_node = reinterpret_cast<CCNode*>(this->getChildren()->objectAtIndex(5));
+        //icons_node->setPositionX(winsize.width/2);
+      //  icons_node->setPositionY(icons_node->getPositionY() - 20);
+		icons_node->setVisible(false);
+       // icons_node->setPositionY(icons_node->getPositionY() + 10);
     }
     {
-        auto icons_node = reinterpret_cast<CCNode*>(this->getChildren()->objectAtIndex(5));
+        auto icons_node = reinterpret_cast<CCNode*>(this->getChildren()->objectAtIndex(4));
         icons_node->setPositionX(winsize.width/2);
-        icons_node->setPositionY(icons_node->getPositionY() - 15);
+        icons_node->setPositionY(icons_node->getPositionY() - 20);
+    }
+    {
+        auto icons_node = reinterpret_cast<CCNode*>(this->getChildren()->objectAtIndex(6));
+        icons_node->setPositionY(icons_node->getPositionY() - 10);
     }
     {
         auto icons_node = reinterpret_cast<CCNode*>(this->getChildren()->objectAtIndex(7));
@@ -52,12 +61,19 @@ bool GJGarageLayerExt::init_hk() {
         auto icons_node = reinterpret_cast<CCNode*>(this->getChildren()->objectAtIndex(14));
         icons_node->setPositionY(icons_node->getPositionY() - 20);
     }
-    {
+	
+	{
         auto icons_node = reinterpret_cast<CCNode*>(this->getChildren()->objectAtIndex(15));
         icons_node->setPositionY(icons_node->getPositionY() - 20);
     }
+	
     {
-        auto icons_node = reinterpret_cast<CCNode*>(this->getChildren()->objectAtIndex(4));
+        auto icons_node = reinterpret_cast<CCNode*>(this->getChildren()->objectAtIndex(3));
+        icons_node->setPositionY(icons_node->getPositionY() - 20);
+    }
+	
+    {
+        auto icons_node = reinterpret_cast<CCNode*>(this->getChildren()->objectAtIndex(2));
         icons_node->setPositionY(icons_node->getPositionY() - 20);
     }
 
@@ -83,72 +99,64 @@ bool GJGarageLayerExt::init_hk() {
         );
         palette_menu->addChild(btn);
         btn->setPositionX(-winsize.width/2 + 30);
+		
+		
         this->addChild(palette_menu);
+		
     }
 	
-	    {
-        auto swing_menu = CCMenu::create();
-        auto swingSprite = cocos2d::CCSprite::create("swing_off.png");
+  {
+		auto icons_menu = reinterpret_cast<CCMenu*>(this->getChildren()->objectAtIndex(6));
+
+		 auto swingSprite = cocos2d::CCSprite::createWithSpriteFrameName("gj_swingBtn_off_001.png");
+		 swingSprite->setScale(.9);
         auto swing_btn = CCMenuItemSpriteExtra::create(
                 swingSprite,
                 swingSprite,
                 this,
                 static_cast<cocos2d::SEL_MenuHandler>(&AdvancedIconSelect::onSwing)
         );
-        swing_menu->addChild(swing_btn);
-        swing_btn->setPositionX(dir->getScreenLeft() + 173);
-		swing_btn->setPositionY(dir->getScreenBottom() + 41);
-        this->addChild(swing_menu);
+		auto array = icons_menu->getChildren();
+		auto count = array->count();
+		auto trails = reinterpret_cast<CCNode*>(array->objectAtIndex(count - 2));
+		//swing_btn->setScale(.89);
+        swing_btn->setPosition(trails->getPosition());
+        icons_menu->addChild(swing_btn);
+		trails->setPositionX(trails->getPositionX() + (35 * 2));
+		
     }
 	
 		    {
-        auto jetpack_menu = CCMenu::create();
+		auto icons_menu = reinterpret_cast<CCMenu*>(this->getChildren()->objectAtIndex(6));
+		auto array = icons_menu->getChildren();
+		auto count = array->count();
+		auto deathEffects = reinterpret_cast<CCNode*>(array->objectAtIndex(count - 2));
         auto jetpackSprite = cocos2d::CCSprite::create("jetpack_off.png");
+		jetpackSprite->setScale(.85);
         auto jetpack_btn = CCMenuItemSpriteExtra::create(
                 jetpackSprite,
                 jetpackSprite,
                 this,
                 static_cast<cocos2d::SEL_MenuHandler>(&AdvancedIconSelect::onJetpack)
         );
-        jetpack_menu->addChild(jetpack_btn);
-        jetpack_btn->setPositionX(dir->getScreenLeft() + 208);
-		jetpack_btn->setPositionY(dir->getScreenBottom() + 41);
-        this->addChild(jetpack_menu);
-    }
-	
-			    {
-        auto old_menu = CCMenu::create();
-        auto oldSprite = cocos2d::CCSprite::createWithSpriteFrameName("GJ_infoIcon_001.png");
-        auto old_btn = CCMenuItemSpriteExtra::create(
-                oldSprite,
-                oldSprite,
-                this,
-                static_cast<cocos2d::SEL_MenuHandler>(&AdvancedIconSelect::onOldIcons)
-        );
-        old_menu->addChild(old_btn);
-        old_btn->setPositionX(dir->getScreenLeft() + 60);
-		old_btn->setPositionY(dir->getScreenBottom() + 130);
-        this->addChild(old_menu);
+        icons_menu->addChild(jetpack_btn);
+		//jetpack_btn->setScale(.89);
+		jetpack_btn->setPosition(deathEffects->getPosition());
+		deathEffects->setPositionX(deathEffects->getPositionX() + (35 * 2));
+		
+		icons_menu->setPositionX(icons_menu->getPositionX() + 30);
     }
 
 
-    /*
-    auto page = GaragePage::create((IconType)7, this, nullptr);
-	//page->setScale(3);
-    this->addChild(page);
-	
-    auto array = *((cocos2d::CCArray **)this + 89);
-    array->addObject(page);
-    this->selectPage((IconType)7);
-	*/
 
-    
-    //->addObject(page);
-    /*
-     v63 = (cocos2d::CCObject *)GaragePage::create(6, (int)this, (int)GJGarageLayer::onSpiderIcon, 0);
-  (*(void (__fastcall **)(GJGarageLayer *, cocos2d::CCObject *, int))(*(_DWORD *)this + 224))(this, v63, 100);
-  cocos2d::CCArray::addObject(*((cocos2d::CCArray **)this + 89), v63);
-    */
+		auto icons_menu = reinterpret_cast<CCMenu*>(this->getChildren()->objectAtIndex(6));
+		auto array = icons_menu->getChildren();
+		auto count = array->count();
+		auto deathEffects = reinterpret_cast<CCNode*>(array->objectAtIndex(count - 3));
+		deathEffects->setPositionY(100000);
+		icons_menu->setPositionX(icons_menu->getPositionX() + 15);
+		icons_menu->setPositionY(icons_menu->getPositionY() - 5);
+
 
     return ret;
 }

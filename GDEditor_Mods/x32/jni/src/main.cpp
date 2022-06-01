@@ -54,6 +54,12 @@ bool userDataChanged;
 bool legendaryChanged;
 bool shouldSendDefaultValue;
 bool addBadges;
+bool isSpider;
+bool isSpider2;
+bool inSettings;
+CCLabelBMFont* CI;
+CCLabelBMFont* CO;
+int CSPcount;
 
 template < class T>
 	void *getPointer(T value)
@@ -265,12 +271,9 @@ GameObject* create_hk( int key )
 }
 
 bool isGauntlet = false;
-
 CCSpriteFrame* (*old5)(CCSpriteFrameCache*, const char*) = nullptr;
 CCSpriteFrame* sprite_hk( CCSpriteFrameCache* ptr, const char* s )
 {
-    // LOGD("SPRITE: %s", s);
-
 
     if( !strcmp( s, "GJ_fullBtn_001.png" )  )
         return old5( ptr, "GJ_creatorBtn_001.png" );
@@ -295,6 +298,45 @@ CCSpriteFrame* sprite_hk( CCSpriteFrameCache* ptr, const char* s )
 		} else {
 		return old5( ptr, s );
 		} }
+		
+		
+		extern bool inSettings;
+		
+		if(inSettings) {
+			
+		    if ( !strcmp( s, "gj_spiderBtn_off_001.png" ))
+    {
+				extern bool isSpider;
+				
+        if(!isSpider)
+        {
+            isSpider = true;
+            return old5( ptr, "gj_spiderBtn_off_001.png" );
+        }
+        {
+            isSpider = false;
+            return old5( ptr, "gj_swingBtn_off_001.png" );
+        }
+    }
+	
+			    if ( !strcmp( s, "gj_spiderBtn_on_001.png" ))
+    {
+				extern bool isSpider2;
+				
+        if(!isSpider2)
+        {
+            isSpider2 = true;
+            return old5( ptr, "gj_spiderBtn_on_001.png" );
+        }
+        {
+            isSpider2 = false;
+            return old5( ptr, "gj_swingBtn_on_001.png" );
+        }
+    }
+	
+		}
+	
+	
 
     return old5( ptr, s );
 }
@@ -681,6 +723,7 @@ cocos2d::_ccColor3B GameManager_colorForIdx_hook(GameManager *pthis, int value)
 
 bool(*levelsettings)(LevelSettingsLayer*, LevelSettingsObject*, LevelEditorLayer*);
 bool levelsettings_hk(LevelSettingsLayer* ptr, LevelSettingsObject* a2, LevelEditorLayer* a3) {
+		inSettings = true;
 
 	    auto ret = levelsettings(ptr, a2, a3);
 
