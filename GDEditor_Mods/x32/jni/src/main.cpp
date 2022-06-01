@@ -42,6 +42,7 @@
 #include "obfuscate.h"
 
 using namespace std;
+#define contains(x, y) strstr(x, y) != NULL
 
 #define null NULL
 #define targetLibName ("libcocos2dcpp.so")
@@ -858,13 +859,12 @@ void ProfilePage_loadPageFromUserInfoH(ProfilePage* self, GJUserScore* userData)
 		
 			//std::vector<std::string> vector = SplitIntoVector(modBadge, "0");
 	//std::string sVector = string_from_vector(vector);
-
 		*/
 
 		unsigned long long int modBadgeLevel = userData->modBadge_;
 
 		auto texture1 = CCString::createWithFormat("modbadge = %llu", modBadgeLevel)->getCString();
-
+/*
 	auto label33 = CCLabelBMFont::create("O", "chatFont.fnt");
 	label33->setPosition(226, 283);
 	label33->setScale(1);
@@ -872,7 +872,6 @@ void ProfilePage_loadPageFromUserInfoH(ProfilePage* self, GJUserScore* userData)
 	label33->setVisible(false);
 	self->m_pLayer->addChild(label33,60);
 	//test labels
-
 	
 	auto label44 = CCLabelBMFont::create("O", "chatFont.fnt");
 	label44->setPosition(CCMIDX - 60, 273);
@@ -880,7 +879,7 @@ void ProfilePage_loadPageFromUserInfoH(ProfilePage* self, GJUserScore* userData)
 	label44->setVisible(false);
 	//label44->setColor(ccc3(00,00,00));
 	self->m_pLayer->addChild(label44,60);
-	
+	*/
 	
 	CCSprite* original;	//original modbadge sprite
 	
@@ -951,7 +950,10 @@ void ProfilePage_loadPageFromUserInfoH(ProfilePage* self, GJUserScore* userData)
 	//concatenate b with the current char
 	//(if ch is the first char after a 0 then b will contain just ch because it got cleaned by the if == 0 before
 	//if ch is the second char of the modBadge they will concatenate
+	
 	char *s = new char[b.length() + 1];
+	
+	
     strcpy(s, b.c_str()); //copy b
 	array[k] = atoi(s); //add b to the correct array spot, k++ only happens when char is 0 (new mod badge beggins)
 	}
@@ -963,13 +965,58 @@ void ProfilePage_loadPageFromUserInfoH(ProfilePage* self, GJUserScore* userData)
 	label55->setScale(0.7);
 	label55->setVisible(false);
 	self->m_pLayer->addChild(label55,50);
-		
+	auto menu = CCMenu::create();
+	menu->setPosition(0, 0);
+	SEL_MenuHandler buttonCallback;
     for (int i = 0; i < real_length; i++) {
+	
+	bool isBadgeNew = array[i] > 2 ? true : false;
+	
+	switch(array[i]) {
+	case 1: 
+	buttonCallback = NULL;
+	break;
+	case 2: 
+	buttonCallback = NULL;
+	break;
+	
+	case 3: 
+	buttonCallback = menu_selector(ToolsLayer::onBooster);
+	break;
+	
+	case 4: 
+	buttonCallback = menu_selector(ToolsLayer::onVerified);
+	break;
+	
+	case 5: 
+	buttonCallback = menu_selector(ToolsLayer::onYoutuber);
+	break;
+	
+	case 7: 
+	buttonCallback = menu_selector(ToolsLayer::onDev);
+	break;
+	
+	case 8: 
+	buttonCallback = menu_selector(ToolsLayer::onAdmin);
+	break;
+	
+	case 9: 
+	buttonCallback = menu_selector(ToolsLayer::onOwner);
+	break;
+	
+	default:
+		buttonCallback = menu_selector(ToolsLayer::onUndefined);
+	}
 
 	auto texture = CCString::createWithFormat("modBadge_%02d_001.png", array[i])->getCString();
 	auto badge = CCSprite::createWithSpriteFrameName(texture);
-	badge->setPosition(original->getPosition());
-	self->m_pLayer->addChild(badge, 50);
+	auto btn = CCMenuItemSpriteExtra::create(badge, badge, self->m_pLayer, buttonCallback);
+	btn->setPosition(original->getPosition());
+	if(isBadgeNew) {
+	menu->addChild(btn);
+	} else {
+	self->m_pLayer->addChild(btn);
+	}
 	original->setPositionX(original->getPositionX() + 25);
 	}
 	
@@ -977,7 +1024,8 @@ void ProfilePage_loadPageFromUserInfoH(ProfilePage* self, GJUserScore* userData)
 	original->setPositionX(original->getPositionX() - (real_length * 25));
 	
 	userName->setPositionX(userName->getPositionX() + ((real_length * 25) - 25));
-	
+	self->m_pLayer->addChild(menu, 50);
+
 		
 		}
 
@@ -996,6 +1044,7 @@ void ProfilePage_loadPageFromUserInfoH(ProfilePage* self, GJUserScore* userData)
 			// change swing icon
 			if(iconIterator == 8) {
 				auto icon = (SimplePlayer*)thang;
+			thang->setPositionX(thang->getPositionX() + 7);
 
 				icon->updatePlayerFrame(reinterpret_cast<GJUserScoreExt*>(userData)->playerSwing_, IconType::Swing);
 			}
@@ -1003,10 +1052,6 @@ void ProfilePage_loadPageFromUserInfoH(ProfilePage* self, GJUserScore* userData)
 			iconIterator++;
 		}
 	}
-	
-
-
-
 
 }
 
@@ -1040,40 +1085,29 @@ void CommentCell_loadFromCommentH(CommentCell* self, GJComment* commentData) {
 	
 		std::string modBadge = itos(modBadgeLevel); 
 	int length = modBadge.length(); 
-
-
 	int real_length = 1;
 	for(int i = 0; i < length; i++) {
 	if(modBadge.substr(i, 1) == "0") 
 	real_length++;					
 	}
-	
-	int* array = new int[real_length];
-
-	
+	int array[real_length];
 	int k = 0; 
-	
 	std::string b = "";
-	
 	for(int i = 0; i < length; i++) {
-	
 	std::string ch = modBadge.substr(i, 1);
-	
-	if(ch == "0") {
-		
+	if(ch == "0") {	
 	b = "";
 	k++; 
-	
 	} else { 
-	
 	b = b + ch; 
-
 	char *s = new char[b.length() + 1];
     strcpy(s, b.c_str()); 
 	array[k] = atoi(s);
 	}
-	}
 	
+	
+	
+	}
 	int pos = 17;
 					for (int c = 0; c < commentLayer->getChildrenCount(); c++) {
 			auto percentage = (CCSprite *)commentLayer->getChildren()->objectAtIndex(c);
@@ -1101,24 +1135,70 @@ void CommentCell_loadFromCommentH(CommentCell* self, GJComment* commentData) {
 		
 	
 
+		SEL_MenuHandler buttonCallback;
+		auto menu = CCMenu::create();
+		menu->setPosition(0, 0);
 		
-
     for (int i = 0; i < real_length; i++) {
 
+	bool isBadgeNew = array[i] > 2 ? true : false;
+
+
+	switch(array[i]) {
+	case 1: 
+	buttonCallback = menu_selector(ToolsLayer::onAlert);
+	break;
+	case 2: 
+	buttonCallback = menu_selector(ToolsLayer::onAlert);
+	break;
+	
+	case 3: 
+	buttonCallback = menu_selector(ToolsLayer::onBooster);
+	break;
+	
+	case 4: 
+	buttonCallback = menu_selector(ToolsLayer::onVerified);
+	break;
+	
+	case 5: 
+	buttonCallback = menu_selector(ToolsLayer::onYoutuber);
+	break;
+	
+	case 7: 
+	buttonCallback = menu_selector(ToolsLayer::onDev);
+	break;
+	
+	case 8: 
+	buttonCallback = menu_selector(ToolsLayer::onAdmin);
+	break;
+	
+	case 9: 
+	buttonCallback = menu_selector(ToolsLayer::onOwner);
+	break;
+	
+	default:
+	buttonCallback = menu_selector(ToolsLayer::onUndefined);
+	}
+	
+	
 	auto texture = CCString::createWithFormat("modBadge_%02d_001.png", array[i])->getCString();
-	auto test = "modBadge_01_001.png";
 	auto badge = CCSprite::createWithSpriteFrameName(texture);
 	badge->setScale(.65);
-	badge->setPosition(label33->getPosition());
-	commentLayer->addChild(badge);
+	auto btn = CCMenuItemSpriteExtra::create(badge, badge, commentLayer, buttonCallback);
+	btn->setPosition(label33->getPosition());
+	if(isBadgeNew) {
+	menu->addChild(btn);
+	} else {
+	commentLayer->addChild(btn);
+	}
 
     label33->setPositionX(label33->getPositionX() + pos);
 	
 	}
 	
-	
+	commentLayer->addChild(menu);
 
-label33->setPositionX(label33->getPositionX() + ((real_length * pos) + pos));	
+	label33->setPositionX(label33->getPositionX() + ((real_length * pos) + pos));	
 	//pcg->setPositionX(pcg->getPositionX() + ((real_length * 25) - 25));
 	
 }
@@ -1206,7 +1286,7 @@ bool SetGroupIDLayer_initH(SetGroupIDLayer* self, GameObject* object, CCArray* i
 
 	return true;
 }
-
+#include "InfoAlertButton.h"
 void* (*SetupCameraRotatePopupO)(SetupCameraRotatePopup*, EffectGameObject*, cocos2d::CCArray*);
 void* SetupCameraRotatePopupH(SetupCameraRotatePopup* self, EffectGameObject* object, cocos2d::CCArray* objects) {
 	auto ret = SetupCameraRotatePopupO(self, object, objects);
@@ -1221,10 +1301,323 @@ void* SetupCameraRotatePopupH(SetupCameraRotatePopup* self, EffectGameObject* ob
 	moveInputBG->setPosition(self->_degreesInput()->getPosition());
 	moveInputBG->setOpacity(100);
 	moveInputBG->setContentSize(CCSize(50, 30));
+	
+	
+	const char* description = "Rotates the camera\n\
+- Works by changing the rotation relative to 0 degrees instead of adding/subtracting the previous degrees.";
+
+	auto btn = InfoAlertButton::create("Rotate Camera Trigger", description, 1);
+	auto menu = CCMenu::create();
+	menu->setPosition(0,0);
+	menu->addChild(btn);
+	btn->setPositionX(CCMIDX + 190);
+	btn->setPositionY(CCTOP - 25);
+	self->m_pLayer->addChild(menu);
+	
+
 
 	self->_m_pLayer()->addChild(moveInputBG, -1);
+	
+	self->registerWithTouchDispatcher();
+	CCDirector::sharedDirector()->getTouchDispatcher()->incrementForcePrio(2);
+	self->setTouchEnabled(true);
 
 	return ret;
+}
+
+#include "ColorSelectPopup.h"
+#include "CCMenuItemToggler.h"
+
+void* (*ColorSelectPopupO)(ColorSelectPopup*, EffectGameObject*, CCArray*,  ColorAction*);
+void* ColorSelectPopupH(ColorSelectPopup* self, EffectGameObject* object, CCArray* arr, ColorAction* a3) {
+	
+	auto ret = ColorSelectPopupO(self, object, arr, a3);
+	auto layer = self->m_pLayer;
+	extern int CSPcount;
+	CSPcount = layer->getChildrenCount();
+	int count = CSPcount;
+	auto menu = self->_menu();
+	int count2 = menu->getChildrenCount();
+	
+	if(count < 36) {
+		
+		auto COtoggle = reinterpret_cast<CCNode*>(menu->getChildren()->objectAtIndex(7));
+		auto CIleftArrow = reinterpret_cast<CCNode*>(menu->getChildren()->objectAtIndex(8));
+		
+		extern CCLabelBMFont* CI;
+		extern CCLabelBMFont* CO;
+		CI = CCLabelBMFont::create("Channel ID", "goldFont.fnt");
+		CI->setScale(.6);
+		CI->setPosition(CIleftArrow->GPX() + 53, CIleftArrow->GPY() + 30);
+		CI->setVisible(CIleftArrow->isVisible());
+		CIleftArrow->getParent()->addChild(CI);
+		
+		CO = CCLabelBMFont::create("Copy Opacity", "bigFont.fnt");
+		CO->setScale(.37);
+		CO->setPosition(COtoggle->GPX() + 62, COtoggle->GPY());
+		CO->setVisible(CIleftArrow->isVisible());
+		CIleftArrow->getParent()->addChild(CO);
+		return ret;
+		
+	}
+	
+
+		
+
+	auto dir = CCDirector::sharedDirector();
+	auto winSize = CCDirector::sharedDirector()->getWinSize();
+
+	auto multitrigger = reinterpret_cast<CCNode*>(menu->getChildren()->objectAtIndex(10));
+	auto multitriggerL = reinterpret_cast<CCNode*>(layer->getChildren()->objectAtIndex(16));
+	
+		auto CIscaleReference = reinterpret_cast<CCNode*>(layer->getChildren()->objectAtIndex(19));
+		auto COtoggle = reinterpret_cast<CCNode*>(menu->getChildren()->objectAtIndex(11));
+		auto CIleftArrow = reinterpret_cast<CCNode*>(menu->getChildren()->objectAtIndex(15));
+		auto CCtoggle = reinterpret_cast<CCMenuItemToggler*>(menu->getChildren()->objectAtIndex(7));
+		
+		extern CCLabelBMFont* CI;
+		extern CCLabelBMFont* CO;
+		CI = CCLabelBMFont::create("Channel ID", "goldFont.fnt");
+		CI->setScale(.6);
+		CI->setPosition(CIleftArrow->GPX() + 53, CIleftArrow->GPY() + 55);
+		CI->setVisible(CIleftArrow->isVisible());
+		CIleftArrow->getParent()->addChild(CI);
+		
+		CO = CCLabelBMFont::create("Copy Opacity", "bigFont.fnt");
+		CO->setScale(.37);
+		CO->setPosition(COtoggle->GPX() + 62, COtoggle->GPY() + 30);
+		CO->setVisible(CIleftArrow->isVisible());
+		CIleftArrow->getParent()->addChild(CO);
+
+	
+
+			for(int i = 0; i < count; i++) {
+				
+				auto node = reinterpret_cast<CCNode*>(layer->getChildren()->objectAtIndex(i));
+				switch(i) {
+					
+					case 15: //spawn label
+					node->setPosition(multitriggerL->getPosition());
+					multitriggerL->setPositionX(node->GPX() + 80);
+					break;
+					
+					case 14: //touch label
+					node->setPositionX(node->GPX() - 15);
+					break;
+					
+					case 33: case 34: case 35:
+					node->setPositionX(node->GPX() + 40);
+					break;
+					
+					case 7: //fade time slider
+					node->setPositionX(node->GPX() - 25);
+					break;
+					
+					case 8: case 9: case 19: case 20: case 21: case 22: case 23:  //opacity, slider, color id, etc
+					node->setPositionY(node->GPY() + 30);
+					break;
+					
+				}
+			}
+		
+	
+		
+			count = menu->getChildrenCount();
+			for(int i = 0; i < count; i++) {
+			
+				auto node = reinterpret_cast<CCNode*>(menu->getChildren()->objectAtIndex(i));
+				
+				switch(i) {
+					
+					case 9: //spawn btn
+					node->setPosition(multitrigger->getPosition());
+					multitrigger->setPositionX(node->GPX() + 80);
+					break;
+					case 8: //touch btn
+					node->setPositionX(node->GPX() - 15);
+					break;
+					case 12: case 13: case 14: case 11: case 16: case 15:
+					node->setPositionY(node->GPY() + 30);
+					break;
+					case 17:
+					node->setPositionY(node->GPY() + 15);
+				}
+			}
+		
+		
+	
+	self->registerWithTouchDispatcher();
+	CCDirector::sharedDirector()->getTouchDispatcher()->incrementForcePrio(2);
+	self->setTouchEnabled(true);
+	
+
+	return ret;
+}
+
+
+void (*ToggleCopyColorO)(ColorSelectPopup*, CCObject*);
+void ToggleCopyColorH(ColorSelectPopup* self, CCObject* a2) {
+	
+	ToggleCopyColorO(self, a2);
+	
+		extern int CSPcount;
+		CCMenuItemToggler* CCtoggle;
+		
+		if(CSPcount < 36) {
+		CCtoggle = reinterpret_cast<CCMenuItemToggler*>(self->_menu()->getChildren()->objectAtIndex(6));
+		} else {
+		CCtoggle = reinterpret_cast<CCMenuItemToggler*>(self->_menu()->getChildren()->objectAtIndex(7));
+		}
+		extern CCLabelBMFont* CI;
+		extern CCLabelBMFont* CO;
+		
+	CO->setVisible(CCtoggle->_isToggled());
+	CI->setVisible(CCtoggle->_isToggled());
+}
+
+
+#include "SetupZoomTriggerPopup.h"
+void* (*SetupZoomTriggerPopupO)(SetupZoomTriggerPopup*, EffectGameObject*, cocos2d::CCArray*);
+void* SetupZoomTriggerPopupH(SetupZoomTriggerPopup* self, EffectGameObject* object, cocos2d::CCArray* objects) {
+	auto ret = SetupZoomTriggerPopupO(self, object, objects);
+
+	auto dir = CCDirector::sharedDirector();
+	auto winSize = CCDirector::sharedDirector()->getWinSize();
+	auto layer = self->m_pLayer;
+	
+	auto setup = CCLabelBMFont::create("Setup Zoom", "goldFont.fnt");
+	auto node = reinterpret_cast<CCNode*>(layer->getChildren()->objectAtIndex(2));
+	setup->setPosition(node->GPX(), node->GPY() + 80);
+	setup->setScale(.8);
+	layer->addChild(setup);
+	
+			auto menu = self->_menu();
+			auto array = menu->getChildren();
+	
+	const char* description = "Changes the zoom of the camera\n\
+0 = default valuen\n\
+zoom in = closer to the player\n\
+zoom out = further away from the player";
+
+
+	auto infoBtn = InfoAlertButton::create("Zoom Trigger", description, 1);
+	auto originalInfoBtn = reinterpret_cast<CCNode*>(menu->getChildren()->objectAtIndex(1));
+	
+	
+	infoBtn->setPosition(originalInfoBtn->GPX(), originalInfoBtn->GPY() + 30);
+	originalInfoBtn->setPositionY(100000);
+	menu->addChild(infoBtn);
+		
+		int count = menu->getChildrenCount();
+		for(int i = 0; i < count; i++) {
+			
+		auto node = reinterpret_cast<CCNode*>(menu->getChildren()->objectAtIndex(i));
+
+			switch(i) {
+				
+				case 0: //ok button
+				node->setPositionY(node->GPY() - 30);
+				break;
+				case 2: case 3: case 4: //easing buttons
+				node->setPositionX(node->GPX() + 90);
+				node->setPositionY(node->GPY() + 20);
+				break;
+				case 5: case 6: case 7:
+				node->setPositionY(node->GPY() - 30);
+				break;
+
+			}
+			/*
+			auto label = CCLabelBMFont::create(itos(i).c_str(), "chatFont.fnt");
+			label->setColor({255,0,0});
+			label->setPosition(node->getPosition());
+			menu->addChild(label, 1001);
+			*/
+			
+		}
+		
+		count = layer->getChildrenCount();
+		for(int i = 0; i < count; i++) {
+			
+		auto node = reinterpret_cast<CCNode*>(layer->getChildren()->objectAtIndex(i));
+		
+
+			switch(i) {
+				
+				case 0:
+				node->setContentSize(CCSize(370, 290));
+				break;
+				case 2: case 3:
+				node->setPositionY(node->GPY() + 50);
+				break;
+				case 8: case 9:
+				node->setPositionX(node->GPX() + 90);
+				node->setPositionY(node->GPY() + 20);
+				break;
+				case 4: case 5: case 6: case 7:
+				node->setPositionX(node->GPX() + 90);
+				node->setPositionY(node->GPY() + 20);
+				break;
+				case 10: case 11: case 12:
+				node->setPositionY(node->GPY() - 30);
+				break;
+			}
+			/*
+			auto label = CCLabelBMFont::create(itos(i).c_str(), "bigFont.fnt");
+			
+			label->setScale(.6);
+			label->setPosition(node->getPosition());
+			layer->addChild(label, 1000);
+			*/
+			
+		}
+	
+	
+	self->registerWithTouchDispatcher();
+	CCDirector::sharedDirector()->getTouchDispatcher()->incrementForcePrio(2);
+	self->setTouchEnabled(true);
+
+	return ret;
+}
+
+
+
+
+
+#include "SetupCollisionTriggerPopup.h"
+void* (*SetupCollisionTriggerPopupO)(SetupCollisionTriggerPopup*, EffectGameObject*, cocos2d::CCArray*);
+void* SetupCollisionTriggerPopupH(SetupCollisionTriggerPopup* self, EffectGameObject* object, cocos2d::CCArray* objects) {
+	auto ret = SetupCollisionTriggerPopupO(self, object, objects);
+
+
+
+const char* description = "<cy>detects if 2 Collision Blocks with the selected block ids touch each other.</c>\n\
+<cp>P detects if the player is touching a collision block with the selected block id.</c>\n\
+<cl>Activate group makes the Collision Trigger behave like a Spawn Trigger once its condition is met.</c>\n\
+<cg>\"Trigger on exit\" activates the trigger when 2 collision blocks stop touching each other</c>\n\
+<cr>Warning: use as few dynamic collision blocks as possible to avoid massive lag!</c>";
+
+
+
+	auto btn = InfoAlertButton::create("Collision Trigger", description, 1);
+	auto menu = CCMenu::create();
+	menu->setPosition(0,0);
+	menu->addChild(btn);
+	auto node = reinterpret_cast<CCNode*>(self->m_pLayer->getChildren()->objectAtIndex(3));
+	btn->setPositionX(node->getPositionX() - 60);
+	btn->setPositionY(node->getPositionY() + 60);
+	self->m_pLayer->addChild(menu);
+	
+	
+	self->registerWithTouchDispatcher();
+	CCDirector::sharedDirector()->getTouchDispatcher()->incrementForcePrio(2);
+	self->setTouchEnabled(true);
+	
+		
+		
+	return ret;
+		
+		
 }
 
 bool (*levelinfoinit)( LevelInfoLayer*, GJGameLevel*, bool );
@@ -1298,7 +1691,7 @@ bool setUpLevelInfo_hk(EditLevelLayer* ptr, GJGameLevel* level) {
                 menu_selector(MenuLayer::onOptions)
         );
 		btn2->setScale(.7);
-		myButton2->setPosition(CCLEFT - 255, editBtn->getPositionY() - 20);
+		myButton2->setPosition(CCLEFT - 255, editBtn->getPositionY() - 10);
 		menu->addChild(myButton2, 1000);	
 /*
 	 	auto btn3 = CCSprite::createWithSpriteFrameName("garage_001.png");
@@ -1717,6 +2110,55 @@ void MapOnBack_hk(CCObject* a1) {
 	
 }
 
+void (*restoreO)(CCObject*);
+void restoreH(CCObject* a1) {
+FLAlertLayer::create(nullptr, "GDPS", "GDPS Editor 2.2.1.3\nBeta 6", "OK", nullptr, 400, false, 300)->show();
+}
+
+bool (*infoButton)(string, string, float);
+bool infoButton_hk(string title, string desc, float a3) {
+	
+	auto ret = infoButton(title, desc, a3);
+	
+	const char* description = desc.c_str();
+	const char* titl = title.c_str();
+	
+	//contains(x, y) = strstr(x , y) != NULL
+	if(contains(description, "Pickup trigger"))
+return infoButton("Pickup Trigger", "Adds or subtracts a value from a counter.\nOverwrite count sets the value of the counter to that of the pickup trigger.", a3);
+	
+	if(contains(titl, "Follow Player command help"))
+return infoButton("Follow Player Y","makes objects follow the Y position of the player\nOffset controls how much higher or lower the object should follow. \nDelay controls how much time passes until the object goes to the player Y position.\nMax Speed controls how fast the object should follow the players Y position\nSpeed multiplies the Max Speed.", a3);
+	
+	if(contains(titl, "Static"))
+return infoButton( "Static Camera", "Locks the camera to a specific object.\nOnly X and Y will will lock the camera to only scroll horizontally and vertically respectfully.\nExit Static moves the camera back to the player. This does not require a group.", a3);
+	
+	if(contains(titl, "offset"))
+return infoButton( "Camera Offset", "Offsets the camera by X or Y.\nThe movement will be based on the original camera position, not the current one. This means offsetting the camera twice won't double the offset", a3);
+	
+	if(contains(titl, "Rotate") && !(contains(description, "optim")) && !contains(titl, "Trigger")) //add color
+return infoButton( "Camera Guide", "Shows the position of the camera if the player was to spawn on the exact position of the Guide Trigger.\n<cg>The green line shows the entire visible area.</c>\n<cy>The yellow lines show where objects start to fade in and out.</c>", a3);
+
+	if(contains(titl, "Song"))
+return infoButton( title, "<cy>Sets the time of the song in ms.</c>\n<cr>This means 1000ms = 1 second</c>", a3);
+
+
+	if(contains(description, "ooooo") && contains(description, "uuuuu"))
+return infoButton( "Timewarp", "Changes the speed of the game like a speedhack", a3);
+
+
+	
+	if(contains(description, "function as a") && !(contains(description, "group")))
+return infoButton( "Instant Count", "test", a3);
+
+
+
+
+	return ret;
+
+}
+
+
 
 
 extern void lib_entry();
@@ -1727,6 +2169,13 @@ void loader()
 	auto cocos2d = dlopen(targetLibName != "" ? targetLibName : NULL, RTLD_LAZY);
 	auto libShira = dlopen("libgdkit.so", RTLD_LAZY);
 	
+	
+	
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16ColorSelectPopup15onToggleHSVModeEPN7cocos2d8CCObjectE"), (void*)ToggleCopyColorH, (void**)&ToggleCopyColorO);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN15InfoAlertButton6createESsSsf"), (void*)infoButton_hk, (void**)&infoButton);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN26SetupCollisionTriggerPopup4initEP16EffectGameObjectPN7cocos2d7CCArrayE"), (void*) getPointer(&SetupCollisionTriggerPopupH), (void **) &SetupCollisionTriggerPopupO);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN21SetupZoomTriggerPopup4initEP16EffectGameObjectPN7cocos2d7CCArrayE"), (void*) getPointer(&SetupZoomTriggerPopupH), (void **) &SetupZoomTriggerPopupO);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16ColorSelectPopup4initEP16EffectGameObjectPN7cocos2d7CCArrayEP11ColorAction"), (void*) getPointer(&ColorSelectPopupH), (void **) &ColorSelectPopupO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN7UILayer12ccTouchBeganEPN7cocos2d7CCTouchEPNS0_7CCEventE"), (void*)UILayer_ccTouchBeganH, (void**)&UILayer_ccTouchBeganO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN7UILayer12ccTouchEndedEPN7cocos2d7CCTouchEPNS0_7CCEventE"), (void*)UILayer_ccTouchEndedH, (void**)&UILayer_ccTouchEndedO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN14MapSelectLayer6onBackEPN7cocos2d8CCObjectE"), (void*)MapOnBack_hk, (void**)&MapOnBack);
@@ -1772,10 +2221,10 @@ void loader()
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN12OptionsLayer11customSetupEv"), (void*) OptionsLayer_customSetup_hk, (void **) &ol_customSetup_trp);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16MoreOptionsLayer9addToggleEPKcS1_S1_"), getPointer(&MoreOptionsLayerExt::addToggle_hk), (void **) &MoreOptionsLayerExt::addToggle_trp);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11GameManager18toggleGameVariableEPKc"), (void*) hook_onToggle, (void **) &onToggleTrampoline);
-	HookManager::do_hook(
-	getPointerFromSymbol(cocos2d, "_ZN12PlayerObject13releaseButtonE12PlayerButton"), (void*) release_hk, (void **) &release_trp, true);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN12PlayerObject13releaseButtonE12PlayerButton"), (void*) release_hk, (void **) &release_trp, true);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11ProfilePage20loadPageFromUserInfoEP11GJUserScore"), (void*)ProfilePage_loadPageFromUserInfoH, (void**)&ProfilePage_loadPageFromUserInfoO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11CommentCell15loadFromCommentEP9GJComment"), (void*)CommentCell_loadFromCommentH, (void**)&CommentCell_loadFromCommentO);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN12SupportLayer9onRestoreEPN7cocos2d8CCObjectE"), (void*)restoreH, (void**)&restoreO);
 
 
 	patch *tmp = new patch();
@@ -1888,6 +2337,23 @@ void loader()
 
 	tmp->addPatch("libcocos2dcpp.so", 0x237A6C, "00 bf");
 	tmp->addPatch("libcocos2dcpp.so", 0x237904, "00 bf");
+	
+	
+	
+	
+	//setup zoom stuff
+	tmp->addPatch("libcocos2dcpp.so", 0x3DAE5E, "00 BF");
+
+	//color trigger stuff
+	tmp->addPatch("libcocos2dcpp.so", 0x2D9322, "00 BF");
+	tmp->addPatch("libcocos2dcpp.so", 0x2D98F8, "00 BF");
+	
+	//collision trigger info button
+	tmp->addPatch("libcocos2dcpp.so", 0x3C35E6, "00 bf");
+	//rotate trigger info button
+	tmp->addPatch("libcocos2dcpp.so", 0x3FA2E0, "00 bf");
+	
+	
 
 	tmp->Modify();
 

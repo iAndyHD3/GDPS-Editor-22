@@ -4,9 +4,10 @@
 #include <cocos2dx/CCNode.h>
 
 #include "Slider.h"
+#include "FLAlertLayer.h"
 #include "CCTextInputNode.h"
 
-class SetupCameraRotatePopup : public cocos2d::CCLayerColor
+class SetupCameraRotatePopup : public FLAlertLayer
 {
 public:
 	CLASS_MEMBER(cocos2d::CCLayer*, m_pLayer, 0x1B8);

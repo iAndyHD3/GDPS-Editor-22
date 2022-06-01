@@ -29,6 +29,9 @@ static __TYPE__* create() \
 #define CCMIDY CCDirector::sharedDirector()->getScreenTop() / 2
 #define CCMIDL CCDirector::sharedDirector()->getScreenLeft() / 2
 
+#define GPY() getPositionY()
+#define GPX() getPositionX()
+
 #define version2 2212
 
 
