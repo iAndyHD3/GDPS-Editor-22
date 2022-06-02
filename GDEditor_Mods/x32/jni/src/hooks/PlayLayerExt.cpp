@@ -29,7 +29,7 @@ std::string PlayLayerExt::formatSecond(float value) {
 
     std::string mm = GDPS->itos(m);
     std::string ss = m > 0 ? std::string(std::max(2 - static_cast<int>(GDPS->itos(s).length()), 0), '0') + GDPS->itos(s) : GDPS->itos(s);
-	std::string msms = CCString::createWithFormat("%.3f", r - floor(r))->getCString().erase(0, 2);
+	std::string msms = std::string(CCString::createWithFormat("%.3f", r - floor(r))->getCString()).erase(0, 2);
 
     std::string result;
 
