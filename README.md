@@ -1,6 +1,7 @@
 # GDPS-Editor
 
-gdps editor 2.2 full source code (mess)
+Source code for GDPS-Editor 2.2
 
-GDEDitor_Mods = italian + andy additions\
-catto is also kinda here
+## Contributor
+
+GDEDitor_Mods - [italian](https://github.com/ItalianApkDownloader), [andy](https://github.com/iAndyHD3) and [catto](https://github.com/GDDogeYT)
