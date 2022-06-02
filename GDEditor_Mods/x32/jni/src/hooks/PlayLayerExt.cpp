@@ -13,17 +13,6 @@ void* getPointer(T value){
     return val;
 }
 
-float floorn(float v, int p)
-{
-        return std::floor(v * std::pow(10, p)) / std::pow(10, p);
-}
-
-std::string ftos(float value) {
-    std::ostringstream ss;
-    ss << value;
-    return ss.str();
-}
-
 std::string PlayLayerExt::formatSecond(float value) {
 	/*
 		r - remainder
