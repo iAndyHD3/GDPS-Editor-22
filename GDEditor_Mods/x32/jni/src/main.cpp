@@ -1141,7 +1141,7 @@ void CommentCell_loadFromCommentH(CommentCell* self, GJComment* commentData) {
 		
     for (int i = 0; i < real_length; i++) {
 
-	bool isBadgeNew = array[i] > 2 ? true : false;
+	bool isBadgeNew = array[i] > 2;
 
 
 	switch(array[i]) {
