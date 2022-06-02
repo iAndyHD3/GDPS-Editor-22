@@ -970,7 +970,7 @@ void ProfilePage_loadPageFromUserInfoH(ProfilePage* self, GJUserScore* userData)
 	SEL_MenuHandler buttonCallback;
     for (int i = 0; i < real_length; i++) {
 	
-	bool isBadgeNew = array[i] > 2 ? true : false;
+	bool isBadgeNew = array[i] > 2;
 	
 	switch(array[i]) {
 	case 1: 
