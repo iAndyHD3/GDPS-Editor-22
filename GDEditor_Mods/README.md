@@ -1,4 +1,4 @@
-# Geometry Dash 2.2 Mods
+# GDPS Editor 2.2
 
 A project aims to add some fix to the awesome project made by shira [project made by shira](https://github.com/NtTuna/GD-Editor-Leak)
 
