@@ -970,7 +970,7 @@ void ProfilePage_loadPageFromUserInfoH(ProfilePage* self, GJUserScore* userData)
 	SEL_MenuHandler buttonCallback;
     for (int i = 0; i < real_length; i++) {
 	
-	bool isBadgeNew = array[i] > 2 ? true : false;
+	bool isBadgeNew = array[i] > 2;
 	
 	switch(array[i]) {
 	case 1: 
@@ -2112,7 +2112,7 @@ void MapOnBack_hk(CCObject* a1) {
 
 void (*restoreO)(CCObject*);
 void restoreH(CCObject* a1) {
-FLAlertLayer::create(nullptr, "GDPS", "GDPS Editor 2.2.1.3\nBeta 6", "OK", nullptr, 400, false, 300)->show();
+FLAlertLayer::create(nullptr, "GDPS", "GDPS Editor 2.2.1.3\nBeta 7", "OK", nullptr, 400, false, 300)->show();
 }
 
 bool (*infoButton)(string, string, float);
@@ -2352,6 +2352,54 @@ void loader()
 	tmp->addPatch("libcocos2dcpp.so", 0x3C35E6, "00 bf");
 	//rotate trigger info button
 	tmp->addPatch("libcocos2dcpp.so", 0x3FA2E0, "00 bf");
+	
+	
+	
+	
+		//cube
+tmp->addPatch("libcocos2dcpp.so", 0x2EB1B8, "FC 29");
+tmp->addPatch("libcocos2dcpp.so", 0x2EBC4A, "4F F0 FC 09"); 
+tmp->addPatch("libcocos2dcpp.so", 0x2EACC4, "FC 27");
+tmp->addPatch("libcocos2dcpp.so", 0x26B53E, "FC 29");
+tmp->addPatch("libcocos2dcpp.so", 0x2653E4, "FC 29");
+
+
+
+//ship
+tmp->addPatch("libcocos2dcpp.so", 0x2EBC6C, "4F F0 97 09"); 
+tmp->addPatch("libcocos2dcpp.so", 0x2EAC76, "97 27"); 
+tmp->addPatch("libcocos2dcpp.so", 0x26B552, "97 2A"); 
+tmp->addPatch("libcocos2dcpp.so", 0x2658E8, "97 29"); 
+
+
+// ball
+tmp->addPatch("libcocos2dcpp.so", 0x2EBC8E, "4F F0 8F 09"); 
+tmp->addPatch("libcocos2dcpp.so", 0x2EAC82, "8F 27"); 
+tmp->addPatch("libcocos2dcpp.so", 0x265504, "8F 29"); 
+
+// ufo and wave use the same value ☠☠☠
+tmp->addPatch("libcocos2dcpp.so", 0x2EBCD2, "4F F0 73 09"); 
+tmp->addPatch("libcocos2dcpp.so", 0x2EAC8E, "73 27"); 
+tmp->addPatch("libcocos2dcpp.so", 0x265B20, "73 29"); 
+tmp->addPatch("libcocos2dcpp.so", 0x265744, "73 29");
+
+//robot
+tmp->addPatch("libcocos2dcpp.so", 0x2EBCF0, "4F F0 7E 09"); 
+tmp->addPatch("libcocos2dcpp.so", 0x2EACA0, "7E 27"); 
+tmp->addPatch("libcocos2dcpp.so", 0x265330, "7E 29"); 
+tmp->addPatch("libcocos2dcpp.so", 0x387CA6, "7E 29"); 
+//tmp->addPatch("libcocos2dcpp.so", 0x387C96, "7E 22"); 
+
+ //FUCKNIG SPIDERS HOLY FUCK WHY DOESNT IT WORK
+tmp->addPatch("libcocos2dcpp.so", 0x2EBD78, "4F F0 74 09"); 
+tmp->addPatch("libcocos2dcpp.so", 0x2EACAC, "74 27"); 
+tmp->addPatch("libcocos2dcpp.so", 0x265346, "74 29"); 
+tmp->addPatch("libcocos2dcpp.so", 0x387F0A, "74 29"); 
+	
+	
+	
+	
+	
 	
 	
 
