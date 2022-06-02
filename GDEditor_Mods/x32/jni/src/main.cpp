@@ -60,7 +60,12 @@ bool isSpider2;
 bool inSettings;
 CCLabelBMFont* CI;
 CCLabelBMFont* CO;
+CCLabelBMFont* timerLabel;
+float timer = 0;
 int CSPcount;
+
+
+
 
 template < class T>
 	void *getPointer(T value)

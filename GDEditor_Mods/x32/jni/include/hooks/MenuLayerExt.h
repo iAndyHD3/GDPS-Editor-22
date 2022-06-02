@@ -209,12 +209,12 @@ namespace cocos2d{
 
 
 
-
-
 class MenuLayerExt : public MenuLayer {
 public:
 
 FLAlertLayer* alert;
+
+
 
 public:
 		
@@ -224,9 +224,21 @@ void onRequestCompleted(cocos2d::extension::CCHttpClient *sender, cocos2d::exten
 
 
 		
-
+	
     void onDownload(CCObject* sender);
     void onJoinDiscord(CCObject* sender);
+	void onUpdate(float dt) {
+		//add all this extern shit to a class or something
+		extern float timer;
+		timer = timer + dt;
+		
+		std::ostringstream os;
+		os << timer;
+	string a = os.str();
+
+	extern CCLabelBMFont* timerLabel;
+		timerLabel->setString(a.c_str());
+	};
 
 
     void onProgressChanged(CCObject *sender);
