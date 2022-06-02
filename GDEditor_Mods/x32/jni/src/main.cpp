@@ -2163,7 +2163,35 @@ return infoButton( "Instant Count", "test", a3);
 
 }
 
+bool (*UILayerInitO)(UILayer*);
+bool UILayerInitH(UILayer* self) {
+	auto ret = UILayerInitO(self);
+	
+	 timerLabel = CCLabelBMFont::create("0", "bigFont.fnt");
+	timerLabel->setScale(.5);
+	timerLabel->setPosition(CCLEFT + 60, CCTOP - 10);
+	self->addChild(timerLabel);
+	
+	self->schedule(schedule_selector(PlayLayerExt::onUpdateTimer), 0.01);
 
+	
+	return ret;
+}
+
+
+	
+void (*destroyPlayerO)(PlayerObject*, int);
+void destroyPlayerH(PlayerObject* self, int a2)
+{
+		destroyPlayerO(self, a2);
+			PlayLayer* pl = GameManager::sharedState()->_playLayer();
+
+		//i have no idea how this works but it looks cool as fuck
+	    UILayer * layer = reinterpret_cast<UILayer *>(*((int *) pl + 409));
+
+		layer->unschedule(schedule_selector(PlayLayerExt::onUpdateTimer));
+
+}
 
 
 extern void lib_entry();
@@ -2176,6 +2204,7 @@ void loader()
 	
 	
 	
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN7UILayer4initEv"), (void*)UILayerInitH, (void**)&UILayerInitO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16ColorSelectPopup15onToggleHSVModeEPN7cocos2d8CCObjectE"), (void*)ToggleCopyColorH, (void**)&ToggleCopyColorO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN15InfoAlertButton6createESsSsf"), (void*)infoButton_hk, (void**)&infoButton);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN26SetupCollisionTriggerPopup4initEP16EffectGameObjectPN7cocos2d7CCArrayE"), (void*) getPointer(&SetupCollisionTriggerPopupH), (void **) &SetupCollisionTriggerPopupO);
@@ -2219,6 +2248,9 @@ void loader()
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN15MoreSearchLayer4initEv"), (void*) getPointer(&MoreSearchLayerExt::init_hk), (void **) &MoreSearchLayerExt::init_trp);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN10PauseLayer11customSetupEv"), (void*) getPointer(&PauseLayerExt::init_hk), (void **) &PauseLayerExt::init_trp);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN8EditorUIC2Ev"), (void*) ui_hk, (void **) &ui);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN9PlayLayer10resetLevelEv"), getPointer(&PlayLayerExt::resetLevel_hk), (void **) &PlayLayerExt::resetLevel_trp);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN12PlayerObject15playerDestroyedEb"), (void*) destroyPlayerH, (void **) &destroyPlayerO);
+//	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN12PlayerObject15playerDestroyedEb"), getPointer(&PlayLayerExt::destroyPlayer_hk), (void **) &PlayLayerExt::destroyPlayer_trp);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN9PlayLayer6updateEf"), getPointer(&PlayLayerExt::update_hk), (void **) &PlayLayerExt::update_trp);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16LevelEditorLayer10onPlaytestEv"), getPointer(&onPlaytestExt::playtest_hk), (void **) &onPlaytestExt::playtest);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11AppDelegate11trySaveGameEb"), (void*) save_hook, (void **) &save_trp);

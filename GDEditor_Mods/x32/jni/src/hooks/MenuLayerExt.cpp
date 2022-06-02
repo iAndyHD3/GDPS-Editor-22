@@ -323,15 +323,15 @@ void MenuLayerExt::onRequestCompleted(cocos2d::extension::CCHttpClient *sender, 
 		*/
 	
 		extern CCLabelBMFont* timerLabel;
-
+/*
 	//other stuff
-	timerLabel = CCLabelBMFont::create("timer", "chatFont.fnt");
+	timerLabel = CCLabelBMFont::create("0", "chatFont.fnt");
 	timerLabel->setScale(2);
 	timerLabel->setPosition(CCMIDX - 30, CCMIDY);
 	this->addChild(timerLabel);
 	
 	this->schedule(schedule_selector(MenuLayerExt::onUpdate), 0.01);
-
+*/
           
 			auto m_nPlayerJetpack = gm->getIntGameVariable("7001");
 			gm->m_nPlayerSwing = gm->getIntGameVariable("6969");
