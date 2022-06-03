@@ -21,6 +21,7 @@
     "${workspaceFolder}/include/**",
     "${workspaceFolder}/include/ndk/arm-linux-androideabi"
   ],
+  "C_Cpp.default.forcedInclude": ["numeric"],
   "C_Cpp.default.cppStandard": "gnu++14",
   "C_Cpp.default.intelliSenseMode": "gcc-x86"
 }
