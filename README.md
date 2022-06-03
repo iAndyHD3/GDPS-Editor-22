@@ -1,7 +1,12 @@
-# GDPS-Editor
+# GDPS Editor 2.2
 
-Source code for GDPS-Editor 2.2
+A project aims to add some fix to the awesome project made by shira [project made by shira](https://github.com/NtTuna/GD-Editor-Leak)
 
-## Contributor
+## Requirement
+- [Android NDK r16b](https://github.com/android/ndk/wiki/Unsupported-Downloads)
 
-GDEDitor_Mods - [italian](https://github.com/ItalianApkDownloader), [andy](https://github.com/iAndyHD3) and [catto](https://github.com/GDDogeYT)
+## Setup
+- Add Android NDK to your path
+
+## Build Instruction
+- Run `build.cmd` or `build.sh`
