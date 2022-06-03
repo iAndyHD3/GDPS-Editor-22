@@ -2208,6 +2208,10 @@ void loader()
 	auto cocos2d = dlopen(targetLibName != "" ? targetLibName : NULL, RTLD_LAZY);
 	auto libShira = dlopen("libgdkit.so", RTLD_LAZY);
 
+
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN9PlayLayer6resumeEv"), getPointer(&PlayLayerExt::resume_hk), (void **) &PlayLayerExt::resume_trp);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN9PlayLayer18togglePracticeModeEb"), getPointer(&PlayLayerExt::togglePracticeMode_hk), (void **) &PlayLayerExt::togglePracticeMode_trp);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN9PlayLayer13levelCompleteEv"), getPointer(&PlayLayerExt::levelCompleted_hk), (void **) &PlayLayerExt::levelCompleted_trp);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN7UILayer4initEv"), (void *)UILayerInitH, (void **)&UILayerInitO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16ColorSelectPopup15onToggleHSVModeEPN7cocos2d8CCObjectE"), (void *)ToggleCopyColorH, (void **)&ToggleCopyColorO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN15InfoAlertButton6createESsSsf"), (void *)infoButton_hk, (void **)&infoButton);
@@ -2254,7 +2258,6 @@ void loader()
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN8EditorUIC2Ev"), (void *)ui_hk, (void **)&ui);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN9PlayLayer10resetLevelEv"), getPointer(&PlayLayerExt::resetLevel_hk), (void **)&PlayLayerExt::resetLevel_trp);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN12PlayerObject15playerDestroyedEb"), (void *)destroyPlayerH, (void **)&destroyPlayerO);
-	//	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN12PlayerObject15playerDestroyedEb"), getPointer(&PlayLayerExt::destroyPlayer_hk), (void **) &PlayLayerExt::destroyPlayer_trp);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN9PlayLayer6updateEf"), getPointer(&PlayLayerExt::update_hk), (void **)&PlayLayerExt::update_trp);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16LevelEditorLayer10onPlaytestEv"), getPointer(&onPlaytestExt::playtest_hk), (void **)&onPlaytestExt::playtest);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN11AppDelegate11trySaveGameEb"), (void *)save_hook, (void **)&save_trp);

@@ -22,6 +22,8 @@
 # *.dylib
 # *.dll
 
+*.bat
+
 # Fortran module files
 *.mod
 *.smod

@@ -782,3 +782,4 @@ FodyWeavers.xsd
 
 GD-Editor-Leak/
 libs/
+*.bat

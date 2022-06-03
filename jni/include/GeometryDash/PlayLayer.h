@@ -10,6 +10,10 @@ class PlayLayer : public GJBaseGameLayer // GJBaseGameLayer
 public:
     unsigned char _pad2[0x284]; // 0x3e4
     GJGameLevel* level; // 0x668
+	
+public:
+
+	    CLASS_MEMBER(bool, practiceMode, 0x675);
 
 public:
     PlayLayer();
