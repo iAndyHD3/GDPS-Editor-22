@@ -57,6 +57,7 @@ bool addBadges;
 bool isSpider;
 bool isSpider2;
 bool inSettings;
+bool inParticle;
 CCLabelBMFont *CI;
 CCLabelBMFont *CO;
 CCLabelBMFont *timerLabel;
@@ -1328,6 +1329,9 @@ void *ColorSelectPopupH(ColorSelectPopup *self, EffectGameObject *object, CCArra
 {
 
 	auto ret = ColorSelectPopupO(self, object, arr, a3);
+	if(inParticle)
+	return ret;
+
 	auto layer = self->m_pLayer;
 	extern int CSPcount;
 	CSPcount = layer->getChildrenCount();
@@ -2041,14 +2045,22 @@ bool (*UILayer_ccTouchBeganO)(UILayer *, CCTouch *, CCEvent *);
 bool UILayer_ccTouchBeganH(UILayer *self, CCTouch *touch, CCEvent *event)
 {
 	auto ret = UILayer_ccTouchBeganO(self, touch, event);
-	auto pos = touch->getLocation();
 
 	PlayLayer *layer = GameManager::sharedState()->_playLayer();
 	if (layer->_player1()->_platformer())
 	{
-		if (pos.x > 200.0 || pos.y > 100.0)
-		{
+		auto pos = touch->getLocation();
+		if(!GM->getGameVariable("0113"))  {
+			if (pos.x > 250.0 || pos.y > 110.0)
 			layer->pushButton(1, 0);
+			return ret;
+		}
+		else 
+		{
+			auto pos2 = touch->getLocationInView();
+			if (pos2.x < (CCRIGHT - 250) || pos.y > 110.0)
+			layer->pushButton(1, 0);
+			return ret;
 		}
 	}
 
@@ -2073,6 +2085,7 @@ bool UILayer_ccTouchEndedH(UILayer *self, CCTouch *touch, CCEvent *event)
 bool (*CreateParticlePopup_initO)(CreateParticlePopup *, ParticleGameObject *, CCArray *, std::string);
 bool CreateParticlePopup_initH(CreateParticlePopup *self, ParticleGameObject *object, CCArray *idk, std::string data)
 {
+	inParticle = true;
 	auto ret = CreateParticlePopup_initO(self, object, idk, data);
 
 	auto nodes = self->getPageInputNodes(0);
@@ -2128,6 +2141,13 @@ void MapOnBack_hk(CCObject *a1)
 
 	auto dir = CCDirector::sharedDirector();
 	dir->pushScene(cocos2d::CCTransitionFade::create(0.5, CreatorLayer::scene()));
+}
+
+void (*ParticleOnCloseO)(CCObject *);
+void ParticleOnCloseH(CCObject *a1)
+{
+	inParticle = false;
+	return ParticleOnCloseO(a1);
 }
 
 void (*restoreO)(CCObject *);
@@ -2206,6 +2226,52 @@ void destroyPlayerH(PlayerObject *self, int a2)
 			}
 }
 
+bool (*LevelSearchLayerO)(LevelSearchLayer*);
+bool LevelSearchLayerH(LevelSearchLayer* self) {
+	
+	auto ret = LevelSearchLayerO(self);
+		auto menu = CCMenu::create();
+		menu->setPosition(0,0);
+		
+	auto dir = CCDirector::sharedDirector();
+	auto old_menu = CCMenu::create();
+	auto oldSprite = cocos2d::CCSprite::createWithSpriteFrameName("GJ_trashBtn_001.png");
+	oldSprite->setScale(.8);
+	auto old_btn = CCMenuItemSpriteExtra::create(
+		oldSprite,
+		oldSprite,
+		self,
+		static_cast<cocos2d::SEL_MenuHandler>(&LevelSearchLayer::onClearString)
+	);
+	old_menu->addChild(old_btn, 900);
+	old_btn->setPositionX(CCMIDX + 200);
+	old_btn->setPositionY(dir->getScreenTop() - 30);
+	old_menu->setPosition({ 0, 0 });
+	self->addChild(old_menu, 900);
+	
+		    auto node = reinterpret_cast<CCNode*>(self->getChildren()->objectAtIndex(4));
+			node->setContentSize(CCSize(410, 40));
+			node->setPositionX(node->getPositionX() + 20);
+/*
+	(testing) this sucks
+	
+		auto input = CCTextInputNode::create(10, 1000, "A", "B", 1000, "bigFont.fnt");
+        input->setAllowedChars("0123456789");
+        input->setMaxLabelWidth(10);
+        input->setMaxLabelScale(10);
+        input->setLabelPlaceholderScale(10);
+        input->setPosition(CCLEFT + 50, CCMIDY);
+		
+		auto aaa = CCMenu::create();
+		aaa->setPosition(0,0);
+		aaa->addChild(input, 999);
+		this->addChild(aaa, 9999);
+		*/
+
+
+	return ret;
+}
+
 extern void lib_entry();
 
 void loader()
@@ -2214,10 +2280,11 @@ void loader()
 	auto cocos2d = dlopen(targetLibName != "" ? targetLibName : NULL, RTLD_LAZY);
 	auto libShira = dlopen("libgdkit.so", RTLD_LAZY);
 
-
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16LevelSearchLayer4initEv"), (void*)LevelSearchLayerH, (void**)&LevelSearchLayerO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN9PlayLayer6resumeEv"), getPointer(&PlayLayerExt::resume_hk), (void **) &PlayLayerExt::resume_trp);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN9PlayLayer18togglePracticeModeEb"), getPointer(&PlayLayerExt::togglePracticeMode_hk), (void **) &PlayLayerExt::togglePracticeMode_trp);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN9PlayLayer13levelCompleteEv"), getPointer(&PlayLayerExt::levelCompleted_hk), (void **) &PlayLayerExt::levelCompleted_trp);
+	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN19CreateParticlePopup7onCloseEPN7cocos2d8CCObjectE"), (void *)ParticleOnCloseH, (void **)&ParticleOnCloseO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN7UILayer4initEv"), (void *)UILayerInitH, (void **)&UILayerInitO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN16ColorSelectPopup15onToggleHSVModeEPN7cocos2d8CCObjectE"), (void *)ToggleCopyColorH, (void **)&ToggleCopyColorO);
 	HookManager::do_hook(getPointerFromSymbol(cocos2d, "_ZN15InfoAlertButton6createESsSsf"), (void *)infoButton_hk, (void **)&infoButton);

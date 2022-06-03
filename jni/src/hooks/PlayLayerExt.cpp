@@ -60,8 +60,9 @@ void PlayLayerExt::onUpdateTimer(float dt)
 
 void PlayLayerExt::levelCompleted_hk()
 {
+	        levelCompleted_trp(this);
+
 	if(GM->getGameVariable("100008")) {
-        levelCompleted_trp(this);
         
             PlayLayer* pl = GameManager::sharedState()->_playLayer();
 
