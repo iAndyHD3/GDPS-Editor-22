@@ -1,6 +1,24 @@
 {
-    "C_Cpp.default.includePath": [
-        "${workspaceFolder}/jni/**",
-        "${workspaceFolder}/jni/**/**"
-    ]
+  "C_Cpp.default.includePath": [
+    "${workspaceFolder}/jni/include/cocos2dx/include",
+    "${workspaceFolder}/jni/include/GeometryDash",
+    "${workspaceFolder}/jni/include/cocos2dx/include",
+    "${workspaceFolder}/jni/include/cocos2dx/Includes",
+    "${workspaceFolder}/jni/include/cocos2dx/kazmath/include",
+    "${workspaceFolder}/jni/include/cocos2dx/platform/android",
+    "${workspaceFolder}/jni/include/cocos2dx/support",
+    "${workspaceFolder}/jni/include/cocos2dx/",
+    "${workspaceFolder}/jni/include/cocos2dx/base_nodes",
+    "${workspaceFolder}/jni/include/cocos2dx/extensions/DS_Dictionary",
+    "${workspaceFolder}/jni/include/cocos2dx/platform",
+    "${workspaceFolder}/jni/include/cocos2dx/extensions",
+    "${workspaceFolder}/jni/include",
+    "${workspaceFolder}/jni/include/includes",
+    "${workspaceFolder}/jni/include/hooks",
+    "${workspaceFolder}/jni/include/KittyMemory",
+    "${workspaceFolder}/jni/include/layers",
+    "${workspaceFolder}/include/**",
+    "${workspaceFolder}/include/ndk/arm-linux-androideabi"
+  ],
+  "C_Cpp.default.cppStandard": "c++14"
 }
