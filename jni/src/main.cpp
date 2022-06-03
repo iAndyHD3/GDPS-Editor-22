@@ -2177,6 +2177,8 @@ bool (*UILayerInitO)(UILayer *);
 bool UILayerInitH(UILayer *self)
 {
 	auto ret = UILayerInitO(self);
+			if(GM->getGameVariable("100008")) {
+
 
 	timerLabel = CCLabelBMFont::create("0", "bigFont.fnt");
 	timerLabel->setScale(.5);
@@ -2184,6 +2186,7 @@ bool UILayerInitH(UILayer *self)
 	self->addChild(timerLabel);
 
 	self->schedule(schedule_selector(PlayLayerExt::onUpdateTimer), 0.01);
+			}
 
 	return ret;
 }
@@ -2192,12 +2195,15 @@ void (*destroyPlayerO)(PlayerObject *, int);
 void destroyPlayerH(PlayerObject *self, int a2)
 {
 	destroyPlayerO(self, a2);
+			if(GM->getGameVariable("100008")) {
+
 	PlayLayer *pl = GameManager::sharedState()->_playLayer();
 
 	// i have no idea how this works but it looks cool as fuck
 	UILayer *layer = reinterpret_cast<UILayer *>(*((int *)pl + 409));
 
 	layer->unschedule(schedule_selector(PlayLayerExt::onUpdateTimer));
+			}
 }
 
 extern void lib_entry();

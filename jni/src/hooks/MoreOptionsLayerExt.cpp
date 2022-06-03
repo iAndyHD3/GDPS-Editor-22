@@ -15,7 +15,8 @@ void MoreOptionsLayerExt::addToggle_hk(const char *title, const char *code, cons
             //    addToggle_trp(this,"Original Textures","100002","Use the original textures instead of the new one.");
             addToggle_trp(this, "Remove pause button", "100005", "Meant for cleaner recordings, use the back button or the ESC key on emulator to go back");
             addToggle_trp(this, "Disable linked objects\nin editor", "100006", "To use the editor with large levels with around <cr>80K</c> objects or more you will need to <cy>activate this option</c>, otherwise <cr>entering editor may crashes</c>. After activating this option, the objects linked with the \"link controls\" option will not be linked anymore but you will be able to open the editor. <cg>Do not enable this option if you are not dealing with so many objects.</c>");
-            addToggle_trp(this, "show editor shortcut", "100007", "Adds an editor shortcut at the bottom right of the menu");
+            addToggle_trp(this, "Show editor shortcut", "100007", "Adds an editor shortcut at the bottom right of the menu");
+            addToggle_trp(this, "Timer", "100008", "Adds a timer for level speedruns, red means the attempt is invalid");
 
             GDPSManager::sharedState()->isGDPSSettings = false;
         }
