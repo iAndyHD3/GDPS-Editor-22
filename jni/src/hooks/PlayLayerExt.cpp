@@ -59,8 +59,11 @@ void PlayLayerExt::onUpdateTimer(float dt)
 void PlayLayerExt::resetLevel_hk()
 {
     resetLevel_trp(this);
-    extern float timer;
-    timer = 0;
+    
+    if (!GameManager::sharedState()->getGameVariable("675")) { // If not practice mode
+        extern float timer;
+        timer = 0;
+    }
 
     UILayer *layer = reinterpret_cast<UILayer *>(*((int *)this + 409));
     layer->schedule(schedule_selector(PlayLayerExt::onUpdateTimer), 0.01);
