@@ -73,7 +73,6 @@ void PlayLayerExt::destroyPlayer_hk(PlayerObject *self, int a2)
 
     UILayer *layer = reinterpret_cast<UILayer *>(*((int *)pl + 409));
 
-    // TODO: Check if is in platformer or not, also check if is in practice mode or not
     layer->unschedule(schedule_selector(PlayLayerExt::onUpdateTimer));
 }
 
