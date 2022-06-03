@@ -1,5 +1,6 @@
 {
   "C_Cpp.default.includePath": [
+    "${default}",
     "${workspaceFolder}/jni/include/cocos2dx/include",
     "${workspaceFolder}/jni/include/GeometryDash",
     "${workspaceFolder}/jni/include/cocos2dx/include",
@@ -20,5 +21,6 @@
     "${workspaceFolder}/include/**",
     "${workspaceFolder}/include/ndk/arm-linux-androideabi"
   ],
-  "C_Cpp.default.cppStandard": "c++14"
+  "C_Cpp.default.cppStandard": "gnu++14",
+  "C_Cpp.default.intelliSenseMode": "gcc-x86"
 }
