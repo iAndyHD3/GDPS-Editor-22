@@ -86,22 +86,33 @@ void GDPSManager::load()
     auto dict = CCDictionary::createWithContentsOfFile(path.c_str());
     dataLoaded(dict);
 }
+#include "CCMenuItemToggler.h"
+void GDPSManager::createToggleButton(const char *text, CCPoint position, CCObject *baseclass, cocos2d::SEL_MenuHandler callback, CCMenu *menu, bool toggled, bool enabled)
+{
+    auto onSpr = CCSprite::createWithSpriteFrameName("GJ_checkOn_001.png");
+    auto offSpr = CCSprite::createWithSpriteFrameName("GJ_checkOff_001.png");
 
-// what the fuck
-/*
-void GDPSManager::setWorldIsland(int id) {
+    onSpr->setScale(.7);
+    offSpr->setScale(.7);
 
-    auto v = CCString::createWithFormat("%02d",id)->getCString();
-    patch *tmp = new patch();
-    std::stringstream stream;
-    stream << std::hex << int(v[0]) << " " << std::hex << int(v[1]);
-    std::string result( stream.str() );
+    auto toggle = CCMenuItemToggler::create(
+        onSpr,
+        offSpr,
+        baseclass,
+        callback);
+    toggle->setSizeMult(1.5);
+    toggle->toggle(!toggled);
 
-    tmp->addPatch("libcocos2dcpp.so", 0x7BFD68, result);
+    auto label = CCLabelBMFont::create(text, "bigFont.fnt");
+    label->limitLabelWidth(80, 0.35, 0);
+    label->setAlignment(cocos2d::CCTextAlignment::kCCTextAlignmentLeft);
 
-    tmp->Modify();
-    }
-*/
+    toggle->setPosition(position);
+    label->setPosition(toggle->getPositionX() + 17.5 + label->getScaledContentSize().width / 2, toggle->getPositionY());
+
+    menu->addChild(toggle);
+    menu->addChild(label);
+}
 
 void GDPSManager::setPlayerSwing(int id)
 {

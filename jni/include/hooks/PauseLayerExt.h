@@ -6,6 +6,7 @@ public:
 
 CCLayer* firstLayer;
 CCLayer* secondLayer;
+CCArray* firstArray;
 
 public:
 
@@ -14,8 +15,9 @@ public:
     void onPrevPage(CCObject * sender);
 
     void onPlatformOpacity(CCObject * sender);
+    void onTimerOpacity(CCObject * sender);
+    void onToggleTimer(CCObject * sender);
 
-	void addLayer(int layer);
 
 
     static inline bool (*init_trp)(PauseLayer*);

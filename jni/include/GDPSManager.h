@@ -6,11 +6,16 @@ class GDPSManager{
 
 public:
     int opacity;
+    int opacityTimer;
     bool isGDPSSettings;
     bool playTest;
     bool pauseBtn;
     bool oldTextures;
     bool cleanMenu;
+	
+	public:
+    void createToggleButton(const char*, CCPoint, CCObject*, cocos2d::SEL_MenuHandler, CCMenu*, bool, bool);
+
 
 protected:
     bool init();

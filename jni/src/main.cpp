@@ -2197,16 +2197,17 @@ bool (*UILayerInitO)(UILayer *);
 bool UILayerInitH(UILayer *self)
 {
 	auto ret = UILayerInitO(self);
-			if(GM->getGameVariable("100008")) {
-
-
-	timerLabel = CCLabelBMFont::create("0", "bigFont.fnt");
-	timerLabel->setScale(.5);
-	timerLabel->setPosition(CCLEFT + 60, CCTOP - 10);
-	self->addChild(timerLabel);
-
-	self->schedule(schedule_selector(PlayLayerExt::onUpdateTimer), 0.01);
-			}
+			
+	
+		timerLabel = CCLabelBMFont::create("0", "bigFont.fnt");
+		timerLabel->setScale(.5);
+		timerLabel->setPosition(CCLEFT + 60, CCTOP - 10);
+		self->addChild(timerLabel);
+		if(GM->getGameVariable("100008"))
+		self->schedule(schedule_selector(PlayLayerExt::onUpdateTimer), 0.01);
+		else
+		timerLabel->setVisible(false);
+	
 
 	return ret;
 }

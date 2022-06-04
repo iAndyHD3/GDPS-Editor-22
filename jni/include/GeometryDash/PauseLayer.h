@@ -2,6 +2,7 @@
 
 #include "CCMenuItem.h" 
 #include "CCBlockLayer.h"
+#include "FLAlertLayer.h"
 
 class PauseLayer : public cocos2d::CCBlockLayer
 {

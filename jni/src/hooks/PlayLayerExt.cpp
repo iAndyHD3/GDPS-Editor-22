@@ -5,6 +5,7 @@
 #include "GDPSManager.h"
 #include "patch.h"
 #include "gd.h"
+#include "CCMenuItemToggler.h"
 #include <sstream>
 
 template <class T>
@@ -144,10 +145,15 @@ void PlayLayerExt::update_hk(float a1)
 
     if (*(int *)((long)layer + 502))
     { // is platformer
-        auto manager = GDPSManager::sharedState();
 
         auto sp = reinterpret_cast<CCSprite *>(reinterpret_cast<CCMenu *>(layer->getChildren()->objectAtIndex(0)));
 
-        sp->setOpacity(manager->opacity);
+        sp->setOpacity(GDPS->opacity);
     }
+	
+	if(GM->getGameVariable("100008")) {
+		extern CCLabelBMFont* timerLabel;
+		timerLabel->setOpacity(GDPS->opacityTimer);
+	}
+
 }
