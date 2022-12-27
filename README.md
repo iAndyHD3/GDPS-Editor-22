@@ -10,3 +10,4 @@ A project aims to add some fix to the awesome project made by shira [project mad
 
 ## Build Instruction
 - Run `build.cmd` or `build.sh`
+- .
