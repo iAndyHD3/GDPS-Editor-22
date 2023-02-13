@@ -1,7 +1,5 @@
 # GDPS Editor 2.2
-
-A project aims to add some fix to the awesome project made by shira [project made by shira](https://github.com/NtTuna/GD-Editor-Leak)
-
+old gdps editor complete source code 2.2.0.6 - 2.2.1.3
 # DISCLAIMER
 the developers of this project were beginners at that moment, so this code base contains some bad code and bad practices that should not be replicated
 
