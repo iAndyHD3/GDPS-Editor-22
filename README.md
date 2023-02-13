@@ -1,5 +1,5 @@
 # GDPS Editor 2.2
-old gdps editor complete source code 2.2.0.6 - 2.2.1.3
+old gdps editor complete source code 2.2.0.6 - 2.2.1.3 (archive)
 # DISCLAIMER
 the developers of this project were beginners at that moment, so this code base contains some bad code and bad practices that should not be replicated
 
